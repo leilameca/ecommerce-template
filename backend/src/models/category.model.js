@@ -1,5 +1,16 @@
 const mongoose = require("mongoose");
 
+const categoryImageSchema = new mongoose.Schema(
+  {
+    url: String,
+    publicId: String,
+    alt: String,
+  },
+  {
+    _id: false,
+  }
+);
+
 const categorySchema = new mongoose.Schema(
   {
     name: {
@@ -20,8 +31,8 @@ const categorySchema = new mongoose.Schema(
       trim: true,
     },
     image: {
-      url: String,
-      publicId: String,
+      type: categoryImageSchema,
+      default: undefined,
     },
     isActive: {
       type: Boolean,

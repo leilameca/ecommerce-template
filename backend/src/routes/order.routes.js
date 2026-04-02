@@ -1,10 +1,32 @@
 const express = require("express");
 
-const { listOrdersBase } = require("../controllers/order.controller");
-const { protect } = require("../middlewares/auth.middleware");
+const {
+  createOrder,
+  listOrders,
+  getOrderById,
+  updateOrderStatus,
+} = require("../controllers/order.controller");
+const { protect, restrictTo } = require("../middlewares/auth.middleware");
 
 const router = express.Router();
 
-router.get("/", protect, listOrdersBase);
+router
+  .route("/")
+  .post(createOrder)
+  .get(protect, restrictTo("super-admin", "admin", "manager"), listOrders);
+
+router.get(
+  "/:id",
+  protect,
+  restrictTo("super-admin", "admin", "manager"),
+  getOrderById
+);
+
+router.patch(
+  "/:id/status",
+  protect,
+  restrictTo("super-admin", "admin", "manager"),
+  updateOrderStatus
+);
 
 module.exports = router;

@@ -1,10 +1,17 @@
 {
   "name": "ecommerce-template",
   "private": true,
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
   "scripts": {
-    "dev": "npm --prefix backend run dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:all": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
     "install:backend": "npm --prefix backend install",
-    "start:backend": "npm --prefix backend start"
+    "install:frontend": "npm --prefix frontend install",
+    "start:backend": "npm --prefix backend start",
+    "build:frontend": "npm --prefix frontend run build"
   }
 }

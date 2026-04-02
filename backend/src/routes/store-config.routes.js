@@ -1,14 +1,14 @@
 const express = require("express");
 
 const {
-  getStoreConfigBase,
-  updateStoreConfigBase,
+  getStoreConfig,
+  upsertStoreConfig,
 } = require("../controllers/store-config.controller");
 const { protect, restrictTo } = require("../middlewares/auth.middleware");
 
 const router = express.Router();
 
-router.get("/", getStoreConfigBase);
-router.put("/", protect, restrictTo("admin", "super-admin"), updateStoreConfigBase);
+router.get("/", getStoreConfig);
+router.put("/", protect, restrictTo("super-admin", "admin"), upsertStoreConfig);
 
 module.exports = router;
