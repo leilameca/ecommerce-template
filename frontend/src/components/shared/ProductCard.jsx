@@ -21,7 +21,7 @@ export default function ProductCard({ product }) {
             <img
               src={imageUrl}
               alt={product.images?.[0]?.alt || product.name}
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+              className="h-full w-full object-contain p-4"
             />
           ) : (
             <div className="flex h-full items-center justify-center bg-[linear-gradient(180deg,rgba(250,250,250,1),rgba(244,244,245,0.92))]">

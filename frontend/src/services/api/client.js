@@ -1,6 +1,6 @@
 import { getAccessToken } from "./auth-storage";
 
-const API_BASE_URL = "http://localhost:5000/api/v1";
+export const API_BASE_URL = "http://localhost:5000/api/v1";
 
 export class ApiClientError extends Error {
   constructor(message, status, data) {
@@ -58,7 +58,17 @@ export async function apiRequest(path, options = {}) {
   });
 
   const rawResponse = await response.text();
-  const data = rawResponse ? JSON.parse(rawResponse) : null;
+  let data = null;
+
+  if (rawResponse) {
+    try {
+      data = JSON.parse(rawResponse);
+    } catch (error) {
+      data = {
+        message: rawResponse,
+      };
+    }
+  }
 
   if (!response.ok) {
     throw new ApiClientError(

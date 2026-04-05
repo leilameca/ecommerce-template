@@ -4,7 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import { ROUTE_PATHS } from "./route-paths";
 
 export default function ProtectedRoute() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { hasAdminAccess, isLoading } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
@@ -17,7 +17,7 @@ export default function ProtectedRoute() {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!hasAdminAccess) {
     return (
       <Navigate
         to={ROUTE_PATHS.adminLogin}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useDeferredValue, useEffect, useRef, useState } from "react";
 
 import AdminPageHeader from "../../components/shared/AdminPageHeader";
 import SurfaceMessage from "../../components/shared/SurfaceMessage";
@@ -15,6 +15,7 @@ import {
   getProducts,
   updateProduct,
 } from "../../services/api/products.service";
+import { uploadProductImage } from "../../services/api/uploads.service";
 
 const emptyProductForm = {
   id: "",
@@ -24,8 +25,9 @@ const emptyProductForm = {
   price: "",
   stock: "",
   category: "",
-  imageUrl: "",
-  imageAlt: "",
+  images: [],
+  draftImageUrl: "",
+  draftImageAlt: "",
   isActive: true,
 };
 
@@ -37,20 +39,32 @@ const mapProductToForm = (product) => ({
   price: String(product.price ?? ""),
   stock: String(product.stock ?? ""),
   category: product.category?._id || "",
-  imageUrl: product.images?.[0]?.url || "",
-  imageAlt: product.images?.[0]?.alt || "",
+  images: Array.isArray(product.images)
+    ? product.images.map((image) => ({
+        url: image.url || "",
+        publicId: image.publicId || "",
+        alt: image.alt || "",
+      }))
+    : [],
+  draftImageUrl: "",
+  draftImageAlt: "",
   isActive: Boolean(product.isActive),
 });
 
 export default function AdminProductsPage() {
   const { t } = useLanguage();
+  const imageFileInputRef = useRef(null);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [formState, setFormState] = useState(emptyProductForm);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [formMessage, setFormMessage] = useState("");
+  const [selectedImageFiles, setSelectedImageFiles] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const deferredSearchQuery = useDeferredValue(searchQuery);
 
   const loadPageData = async () => {
     setIsLoading(true);
@@ -84,7 +98,97 @@ export default function AdminProductsPage() {
 
   const resetForm = () => {
     setFormState(emptyProductForm);
+    setSelectedImageFiles([]);
+    if (imageFileInputRef.current) {
+      imageFileInputRef.current.value = "";
+    }
     setFormMessage("");
+  };
+
+  const handleImageFieldChange = (index, fieldName, value) => {
+    setFormState((currentValue) => ({
+      ...currentValue,
+      images: currentValue.images.map((image, imageIndex) =>
+        imageIndex === index
+          ? {
+              ...image,
+              [fieldName]: value,
+            }
+          : image
+      ),
+    }));
+  };
+
+  const handleRemoveImage = (index) => {
+    setFormState((currentValue) => ({
+      ...currentValue,
+      images: currentValue.images.filter((_, imageIndex) => imageIndex !== index),
+    }));
+  };
+
+  const handleAddImageByUrl = () => {
+    const trimmedImageUrl = formState.draftImageUrl.trim();
+    const trimmedImageAlt = formState.draftImageAlt.trim();
+
+    if (!trimmedImageUrl) {
+      setErrorMessage(t("admin_image_url_required"));
+      return;
+    }
+
+    setFormState((currentValue) => ({
+      ...currentValue,
+      images: [
+        ...currentValue.images,
+        {
+          url: trimmedImageUrl,
+          publicId: "",
+          alt: trimmedImageAlt,
+        },
+      ],
+      draftImageUrl: "",
+      draftImageAlt: "",
+    }));
+    setErrorMessage("");
+    setFormMessage(t("admin_product_image_uploaded"));
+  };
+
+  const handleUploadImage = async () => {
+    if (selectedImageFiles.length === 0) {
+      return;
+    }
+
+    setIsUploadingImage(true);
+    setErrorMessage("");
+    setFormMessage("");
+
+    try {
+      const uploadedImages = [];
+
+      for (const file of selectedImageFiles) {
+        const response = await uploadProductImage(file);
+        const uploadedImage = response?.data || {};
+
+        uploadedImages.push({
+          url: uploadedImage.url || "",
+          publicId: uploadedImage.publicId || "",
+          alt: uploadedImage.alt || file.name,
+        });
+      }
+
+      setFormState((currentValue) => ({
+        ...currentValue,
+        images: [...currentValue.images, ...uploadedImages],
+      }));
+      setSelectedImageFiles([]);
+      if (imageFileInputRef.current) {
+        imageFileInputRef.current.value = "";
+      }
+      setFormMessage(t("admin_product_image_uploaded"));
+    } catch (error) {
+      setErrorMessage(error?.message || t("admin_product_image_upload_error"));
+    } finally {
+      setIsUploadingImage(false);
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -100,14 +204,13 @@ export default function AdminProductsPage() {
       price: Number(formState.price),
       stock: Number(formState.stock),
       category: formState.category,
-      images: formState.imageUrl
-        ? [
-            {
-              url: formState.imageUrl,
-              alt: formState.imageAlt,
-            },
-          ]
-        : [],
+      images: formState.images
+        .filter((image) => image.url)
+        .map((image) => ({
+          url: image.url,
+          publicId: image.publicId || undefined,
+          alt: image.alt || undefined,
+        })),
       isActive: formState.isActive,
     };
 
@@ -142,6 +245,22 @@ export default function AdminProductsPage() {
     }
   };
 
+  const normalizedSearchQuery = deferredSearchQuery.trim().toLowerCase();
+  const filteredProducts = normalizedSearchQuery
+    ? products.filter((product) => {
+        const searchableFields = [
+          product.name,
+          product.slug,
+          product.description,
+          product.category?.name,
+        ];
+
+        return searchableFields.some((fieldValue) =>
+          String(fieldValue || "").toLowerCase().includes(normalizedSearchQuery)
+        );
+      })
+    : products;
+
   return (
     <div className="space-y-8">
       <AdminPageHeader
@@ -164,12 +283,36 @@ export default function AdminProductsPage() {
       ) : null}
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_380px]">
-        <section className="min-w-0 border border-zinc-200/80 bg-white">
+        <section className="min-w-0 overflow-hidden border border-zinc-200/80 bg-white">
           <div className="border-b border-zinc-200/80 px-4 py-4 sm:px-5">
-            <div className="text-sm font-medium text-zinc-950">Catalog products</div>
-            <div className="mt-1 text-sm text-zinc-500">
-              {t("admin_catalog_products_copy")}
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <div className="text-sm font-medium text-zinc-950">
+                  {t("admin_catalog_products")}
+                </div>
+                <div className="mt-1 text-sm text-zinc-500">
+                  {t("admin_catalog_products_copy")}
+                </div>
+              </div>
+
+              <div className="w-full max-w-md">
+                <TextInput
+                  label={t("admin_search_products")}
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder={t("admin_search_products_placeholder")}
+                />
+              </div>
             </div>
+
+            {products.length > 0 ? (
+              <div className="mt-4 text-xs font-medium uppercase tracking-[0.22em] text-zinc-400">
+                {t("admin_products_results_count", {
+                  visible: filteredProducts.length,
+                  total: products.length,
+                })}
+              </div>
+            ) : null}
           </div>
 
           {isLoading ? (
@@ -186,11 +329,18 @@ export default function AdminProductsPage() {
                 description={t("admin_no_products_copy")}
               />
             </div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="px-4 py-6 sm:px-5">
+              <SurfaceMessage
+                title={t("admin_no_matching_products")}
+                description={t("admin_no_matching_products_copy")}
+              />
+            </div>
           ) : (
             <div className="divide-y divide-zinc-200/80">
-              {products.map((product) => (
+              {filteredProducts.map((product) => (
                 <article key={product._id} className="px-4 py-4 sm:px-5">
-                  <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_160px_160px]">
+                  <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-start lg:grid-cols-[minmax(0,1fr)_140px_160px]">
                     <div className="min-w-0">
                       <h2 className="text-base font-semibold tracking-[-0.03em] text-zinc-950">
                         {product.name}
@@ -203,15 +353,21 @@ export default function AdminProductsPage() {
                       </div>
                     </div>
 
-                    <div className="text-sm font-medium text-zinc-950 lg:text-right">
+                    <div className="text-left text-sm font-medium text-zinc-950 lg:text-right">
                       {formatCurrency(product.price)}
                     </div>
 
-                    <div className="flex flex-wrap gap-2 lg:justify-end">
+                    <div className="flex flex-col gap-2 sm:flex-row md:flex-col lg:flex-row lg:justify-end">
                       <Button
                         variant="secondary"
                         size="sm"
-                        onClick={() => setFormState(mapProductToForm(product))}
+                        onClick={() => {
+                          setFormState(mapProductToForm(product));
+                          setSelectedImageFiles([]);
+                          if (imageFileInputRef.current) {
+                            imageFileInputRef.current.value = "";
+                          }
+                        }}
                       >
                         {t("admin_edit")}
                       </Button>
@@ -230,7 +386,7 @@ export default function AdminProductsPage() {
           )}
         </section>
 
-        <aside className="border border-zinc-200/80 bg-white">
+        <aside className="overflow-hidden border border-zinc-200/80 bg-white">
           <div className="border-b border-zinc-200/80 px-4 py-4 sm:px-5">
             <div className="text-sm font-medium text-zinc-950">
               {formState.id ? t("admin_edit_product") : t("admin_create_product")}
@@ -306,18 +462,142 @@ export default function AdminProductsPage() {
                 ))}
               </SelectField>
 
-              <TextInput
-                label={t("admin_image_url")}
-                value={formState.imageUrl}
-                onChange={(event) => handleFormChange("imageUrl", event.target.value)}
-                placeholder="https://..."
-              />
+              <div className="space-y-3 rounded-md border border-zinc-200 bg-zinc-50/70 p-4">
+                <div className="space-y-1">
+                  <div className="text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-400">
+                    {t("admin_image_gallery")}
+                  </div>
+                  <p className="text-sm text-zinc-500">
+                    {t("admin_image_gallery_copy")}
+                  </p>
+                </div>
 
-              <TextInput
-                label={t("admin_image_alt")}
-                value={formState.imageAlt}
-                onChange={(event) => handleFormChange("imageAlt", event.target.value)}
-              />
+                {formState.images.length > 0 ? (
+                  <div className="grid gap-4">
+                    {formState.images.map((image, index) => (
+                      <div
+                        key={`${image.url || "product-image"}-${index}`}
+                        className="rounded-md border border-zinc-200 bg-white p-3"
+                      >
+                        <div className="mb-3 flex items-center justify-between gap-3">
+                          <div className="text-sm font-medium text-zinc-900">
+                            {t("admin_image_label")} {index + 1}
+                          </div>
+
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemoveImage(index)}
+                          >
+                            {t("admin_image_remove")}
+                          </Button>
+                        </div>
+
+                        <div className="overflow-hidden rounded-md border border-zinc-200 bg-zinc-50">
+                          <img
+                            src={image.url}
+                            alt={image.alt || formState.name || `Product image ${index + 1}`}
+                            className="h-48 w-full object-contain p-3"
+                          />
+                        </div>
+
+                        <div className="mt-3 grid gap-3">
+                          <TextInput
+                            label={t("admin_image_alt")}
+                            value={image.alt}
+                            onChange={(event) =>
+                              handleImageFieldChange(index, "alt", event.target.value)
+                            }
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="rounded-md border border-dashed border-zinc-300 bg-white px-4 py-6 text-sm text-zinc-500">
+                    {t("admin_images_empty")}
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-3 rounded-md border border-zinc-200 bg-zinc-50/70 p-4">
+                <div className="space-y-1">
+                  <div className="text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-400">
+                    {t("admin_image_url")}
+                  </div>
+                  <p className="text-sm text-zinc-500">
+                    {t("admin_image_url_copy")}
+                  </p>
+                </div>
+
+                <TextInput
+                  label={t("admin_image_url")}
+                  value={formState.draftImageUrl}
+                  onChange={(event) =>
+                    handleFormChange("draftImageUrl", event.target.value)
+                  }
+                  placeholder="https://..."
+                />
+
+                <TextInput
+                  label={t("admin_image_alt")}
+                  value={formState.draftImageAlt}
+                  onChange={(event) =>
+                    handleFormChange("draftImageAlt", event.target.value)
+                  }
+                />
+
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={handleAddImageByUrl}
+                >
+                  {t("admin_image_add_url")}
+                </Button>
+              </div>
+
+              <div className="space-y-3 rounded-md border border-zinc-200 bg-zinc-50/70 p-4">
+                <div className="space-y-1">
+                  <div className="text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-400">
+                    {t("admin_image_upload")}
+                  </div>
+                  <p className="text-sm text-zinc-500">
+                    {t("admin_image_upload_copy")}
+                  </p>
+                </div>
+
+                <input
+                  ref={imageFileInputRef}
+                  type="file"
+                  multiple
+                  accept="image/png,image/jpeg,image/jpg,image/webp"
+                  className="block w-full text-sm text-zinc-600 file:mr-4 file:rounded-md file:border file:border-zinc-300 file:bg-white file:px-3.5 file:py-2.5 file:text-sm file:font-medium file:text-zinc-900"
+                  onChange={(event) =>
+                    setSelectedImageFiles(Array.from(event.target.files || []))
+                  }
+                />
+
+                {selectedImageFiles.length > 0 ? (
+                  <div className="break-words text-sm text-zinc-500">
+                    {t("admin_image_selected")}:{" "}
+                    {selectedImageFiles.map((file) => file.name).join(", ")}
+                  </div>
+                ) : null}
+
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    disabled={selectedImageFiles.length === 0 || isUploadingImage}
+                    onClick={handleUploadImage}
+                  >
+                    {isUploadingImage
+                      ? t("admin_image_uploading")
+                      : t("admin_image_upload_button")}
+                  </Button>
+                </div>
+              </div>
 
               <label className="flex items-center gap-3 border border-zinc-300 bg-white px-3.5 py-3 text-sm text-zinc-700">
                 <input
@@ -331,7 +611,7 @@ export default function AdminProductsPage() {
               </label>
 
               <div className="flex flex-col gap-3 sm:flex-row">
-                <Button type="submit" disabled={isSubmitting}>
+                <Button type="submit" disabled={isSubmitting || isUploadingImage}>
                   {isSubmitting
                     ? t("admin_saving")
                     : formState.id

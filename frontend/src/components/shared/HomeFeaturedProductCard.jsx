@@ -20,7 +20,7 @@ export default function HomeFeaturedProductCard({ product, currency = "USD" }) {
             <img
               src={imageUrl}
               alt={imageAlt}
-              className="h-full w-full object-cover transition-transform duration-700 hover:scale-[1.03]"
+              className="h-full w-full object-contain p-4"
             />
           ) : (
             <div className="flex h-full items-center justify-center bg-[linear-gradient(180deg,rgba(247,247,248,1),rgba(238,238,240,0.9))]">

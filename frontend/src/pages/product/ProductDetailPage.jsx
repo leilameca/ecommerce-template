@@ -56,17 +56,24 @@ function ProductDetailState({ title, description, tone = "default" }) {
 }
 
 function ProductImageGallery({ images, selectedImageIndex, onSelectImage }) {
-  const selectedImage = images[selectedImageIndex];
+  const selectedImage = images[selectedImageIndex] || images[0];
+  const hasMultipleImages = images.length > 1;
+  const handlePreviousImage = () => {
+    onSelectImage((selectedImageIndex - 1 + images.length) % images.length);
+  };
+  const handleNextImage = () => {
+    onSelectImage((selectedImageIndex + 1) % images.length);
+  };
 
   return (
     <div className="space-y-4">
       <div className="overflow-hidden rounded-[2rem] border border-zinc-200/80 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.05)]">
-        <div className="aspect-[4/5] bg-zinc-100">
+        <div className="relative aspect-[4/5] bg-zinc-100">
           {selectedImage?.url ? (
             <img
               src={selectedImage.url}
               alt={selectedImage.alt || "Product image"}
-              className="h-full w-full object-cover"
+              className="h-full w-full object-contain p-4 sm:p-6"
             />
           ) : (
             <div className="flex h-full items-center justify-center bg-[linear-gradient(180deg,rgba(250,250,250,1),rgba(244,244,245,0.92))]">
@@ -75,10 +82,32 @@ function ProductImageGallery({ images, selectedImageIndex, onSelectImage }) {
               </span>
             </div>
           )}
+
+          {hasMultipleImages ? (
+            <>
+              <button
+                type="button"
+                className="absolute left-4 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-zinc-200 bg-white/92 text-zinc-900 shadow-[0_14px_40px_rgba(15,23,42,0.08)] transition-colors duration-200 hover:bg-zinc-50"
+                onClick={handlePreviousImage}
+                aria-label="Previous image"
+              >
+                &#8249;
+              </button>
+
+              <button
+                type="button"
+                className="absolute right-4 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-zinc-200 bg-white/92 text-zinc-900 shadow-[0_14px_40px_rgba(15,23,42,0.08)] transition-colors duration-200 hover:bg-zinc-50"
+                onClick={handleNextImage}
+                aria-label="Next image"
+              >
+                &#8250;
+              </button>
+            </>
+          ) : null}
         </div>
       </div>
 
-      {images.length > 1 ? (
+      {hasMultipleImages ? (
         <div className="grid grid-cols-4 gap-3">
           {images.map((image, index) => (
             <button
@@ -97,7 +126,7 @@ function ProductImageGallery({ images, selectedImageIndex, onSelectImage }) {
                   <img
                     src={image.url}
                     alt={image.alt || `Product thumbnail ${index + 1}`}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-contain p-2"
                   />
                 ) : (
                   <div className="h-full w-full bg-zinc-100" />
@@ -227,19 +256,19 @@ function ProductDetailsPanel({ product, currency }) {
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row">
-          <Link
-            to={ROUTE_PATHS.catalog}
-            className="inline-flex items-center justify-center rounded-full border border-zinc-200 bg-white px-6 py-3.5 text-sm font-medium text-zinc-900 shadow-[0_14px_40px_rgba(15,23,42,0.05)] transition-colors duration-200 hover:bg-zinc-50"
-          >
-            Back to Catalog
-          </Link>
+            <Link
+              to={ROUTE_PATHS.catalog}
+              className="inline-flex items-center justify-center rounded-full border border-zinc-200 bg-white px-6 py-3.5 text-sm font-medium text-zinc-900 shadow-[0_14px_40px_rgba(15,23,42,0.05)] transition-colors duration-200 hover:bg-zinc-50"
+            >
+              Back to Catalog
+            </Link>
 
-          <Link
-            to={ROUTE_PATHS.checkout}
-            className="inline-flex items-center justify-center rounded-full border border-zinc-200 bg-white px-6 py-3.5 text-sm font-medium text-zinc-900 shadow-[0_14px_40px_rgba(15,23,42,0.05)] transition-colors duration-200 hover:bg-zinc-50"
-          >
-            Continue to Checkout
-          </Link>
+            <Link
+              to={ROUTE_PATHS.checkout}
+              className="inline-flex items-center justify-center rounded-full border border-zinc-200 bg-white px-6 py-3.5 text-sm font-medium text-zinc-900 shadow-[0_14px_40px_rgba(15,23,42,0.05)] transition-colors duration-200 hover:bg-zinc-50"
+            >
+              Continue to Checkout
+            </Link>
           </div>
         </div>
       </div>

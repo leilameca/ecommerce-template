@@ -47,8 +47,9 @@ function NavIcon({ name, className = "h-4 w-4" }) {
   if (name === "bag") {
     return (
       <svg {...commonProps}>
-        <path d="M6 8h12l-1 11H7L6 8Z" />
-        <path d="M9 8a3 3 0 1 1 6 0" />
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+        <path d="M3 6h18" />
+        <path d="M16 10a4 4 0 0 1-8 0" />
       </svg>
     );
   }
@@ -93,10 +94,10 @@ export default function Navbar() {
   ];
 
   return (
-    <div className="flex items-center justify-between gap-4 py-4 sm:py-5">
+    <div className="relative flex items-center justify-between gap-3 py-4 sm:gap-4 sm:py-5">
       <Link
         to={ROUTE_PATHS.home}
-        className="min-w-0"
+        className="min-w-0 max-w-[calc(100%-7rem)] sm:max-w-[50vw] lg:max-w-none"
         onClick={() => setIsMenuOpen(false)}
       >
         <div className="truncate text-base font-semibold tracking-[-0.03em] text-zinc-950 sm:text-lg">
@@ -104,18 +105,18 @@ export default function Navbar() {
         </div>
       </Link>
 
-        <nav className="hidden items-center gap-8 lg:flex">
-          {navigationLinks.map((item) => (
-            <NavLink
-              key={typeof item.to === "string" ? item.to : item.label}
-              to={item.to}
-              className={getLinkClassName}
-            >
-              <NavIcon name={item.icon} />
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
+      <nav className="hidden items-center gap-8 lg:flex">
+        {navigationLinks.map((item) => (
+          <NavLink
+            key={typeof item.to === "string" ? item.to : item.label}
+            to={item.to}
+            className={getLinkClassName}
+          >
+            <NavIcon name={item.icon} />
+            {item.label}
+          </NavLink>
+        ))}
+      </nav>
 
       <div className="hidden items-center gap-6 lg:flex">
         <LanguageSwitcher compact />
@@ -137,30 +138,59 @@ export default function Navbar() {
         </Link>
       </div>
 
-      <button
-        type="button"
-        aria-label="Toggle navigation"
-        aria-expanded={isMenuOpen}
-        className="inline-flex h-10 w-10 items-center justify-center text-zinc-900 lg:hidden"
-        onClick={() => setIsMenuOpen((currentValue) => !currentValue)}
-      >
-        <span className="flex flex-col gap-1.5">
-          <span className="block h-0.5 w-4 bg-current" />
-          <span className="block h-0.5 w-4 bg-current" />
-          <span className="block h-0.5 w-4 bg-current" />
-        </span>
-      </button>
+      <div className="flex items-center gap-2 lg:hidden">
+        <Link
+          to={ROUTE_PATHS.cart}
+          className="inline-flex min-w-0 items-center gap-2 rounded-full border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-700 transition-colors duration-200 hover:text-zinc-950"
+          onClick={() => setIsMenuOpen(false)}
+        >
+          <NavIcon name="bag" />
+          <span className="truncate">
+            {t("nav_bag")} {itemCount > 0 ? `(${itemCount})` : ""}
+          </span>
+        </Link>
+
+        <button
+          type="button"
+          aria-label="Toggle navigation"
+          aria-expanded={isMenuOpen}
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-900"
+          onClick={() => setIsMenuOpen((currentValue) => !currentValue)}
+        >
+          <span className="flex flex-col gap-1.5">
+            <span className="block h-0.5 w-4 bg-current" />
+            <span className="block h-0.5 w-4 bg-current" />
+            <span className="block h-0.5 w-4 bg-current" />
+          </span>
+        </button>
+      </div>
 
       {isMenuOpen ? (
-        <div className="absolute inset-x-0 top-full border-b border-zinc-200/80 bg-white px-4 py-5 shadow-[0_18px_40px_rgba(15,23,42,0.06)] sm:px-6 lg:hidden">
-          <nav className="mx-auto flex max-w-[1440px] flex-col gap-4">
-            <LanguageSwitcher compact />
+        <div className="absolute inset-x-0 top-full z-30 pt-3 lg:hidden">
+          <nav className="mx-auto flex max-w-[1440px] flex-col gap-4 rounded-[1.5rem] border border-zinc-200/80 bg-white p-4 shadow-[0_18px_40px_rgba(15,23,42,0.08)]">
+            <div className="flex items-center justify-between gap-3 border-b border-zinc-200/80 pb-4">
+              <div className="min-w-0">
+                <div className="truncate text-sm font-semibold tracking-[-0.02em] text-zinc-950">
+                  {storeName}
+                </div>
+                <div className="mt-1 text-xs text-zinc-500">{t("nav_checkout")}</div>
+              </div>
+
+              <LanguageSwitcher compact />
+            </div>
 
             {navigationLinks.map((item) => (
               <NavLink
                 key={typeof item.to === "string" ? item.to : item.label}
                 to={item.to}
-                className={getLinkClassName}
+                className={({ isActive }) =>
+                  [
+                    "inline-flex items-center gap-2 rounded-full border px-4 py-3 text-sm transition-colors duration-200",
+                    isActive
+                      ? "border-zinc-950 bg-zinc-950 text-white"
+                      : "border-zinc-200 text-zinc-700 hover:border-zinc-300 hover:text-zinc-950",
+                  ].join(" ")
+                }
                 onClick={() => setIsMenuOpen(false)}
               >
                 <NavIcon name={item.icon} />
@@ -169,17 +199,8 @@ export default function Navbar() {
             ))}
 
             <Link
-              to={ROUTE_PATHS.cart}
-              className="inline-flex items-center gap-2 text-sm text-zinc-500 transition-colors duration-200 hover:text-zinc-950"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <NavIcon name="bag" />
-              {t("nav_bag")} {itemCount > 0 ? `(${itemCount})` : ""}
-            </Link>
-
-            <Link
               to={ROUTE_PATHS.checkout}
-              className="inline-flex items-center gap-2 text-sm font-medium text-zinc-950"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-zinc-950 bg-zinc-950 px-4 py-3 text-sm font-medium text-white"
               onClick={() => setIsMenuOpen(false)}
             >
               <NavIcon name="arrow" />

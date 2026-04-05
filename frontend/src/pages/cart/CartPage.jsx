@@ -39,7 +39,7 @@ function CartItemRow({ item, currency, onDecrease, onIncrease, onRemove }) {
           <img
             src={item.imageUrl}
             alt={item.imageAlt}
-            className="aspect-square h-full w-full object-cover"
+            className="aspect-square h-full w-full object-contain p-2"
           />
         ) : (
           <div className="flex aspect-square items-center justify-center bg-[linear-gradient(180deg,rgba(250,250,250,1),rgba(244,244,245,0.92))]">

@@ -32,6 +32,9 @@ process.on("unhandledRejection", (reason) => {
 const startServer = async () => {
   try {
     validateEnv();
+    console.log("ENV TEST:");
+    console.log("MONGODB_URI exists:", !!env.MONGODB_URI);
+    console.log("JWT_SECRET exists:", !!env.JWT_SECRET);
     await connectDB();
     await ensureDefaultUserSeed();
 

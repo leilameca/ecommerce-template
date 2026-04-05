@@ -1,67 +1,155 @@
 import { createContext, useEffect, useMemo, useState } from "react";
 
-import { clearAccessToken, getAccessToken, setAccessToken } from "../services/api/auth-storage";
-import { getCurrentAdmin, loginAdmin } from "../services/api/auth.service";
+import {
+  clearAuthSession,
+  getAccessToken,
+  getStoredUser,
+  setAccessToken,
+  setStoredUser,
+} from "../services/api/auth-storage";
+import { getCurrentUser, isAllowedAdminRole, login as loginRequest } from "../services/api/auth";
 
 export const AuthContext = createContext(null);
 
+const ADMIN_ACCESS_ERROR = "You do not have permission to access the admin area.";
+
+function normalizeUser(user) {
+  if (!user || typeof user !== "object") {
+    return null;
+  }
+
+  const role = typeof user.role === "string" ? user.role.trim() : "";
+
+  if (!isAllowedAdminRole(role)) {
+    return null;
+  }
+
+  return {
+    ...user,
+    role,
+  };
+}
+
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [token, setToken] = useState(() => getAccessToken());
+  const [user, setUserState] = useState(() => normalizeUser(getStoredUser()));
+  const [isLoading, setIsLoading] = useState(() => Boolean(getAccessToken()));
+
+  const syncUser = (nextUser) => {
+    setUserState((currentUser) => {
+      const resolvedUser =
+        typeof nextUser === "function" ? nextUser(currentUser) : nextUser;
+      const normalizedUser = normalizeUser(resolvedUser);
+
+      if (normalizedUser) {
+        setStoredUser(normalizedUser);
+      } else {
+        setStoredUser(null);
+      }
+
+      return normalizedUser;
+    });
+  };
 
   useEffect(() => {
-    const bootstrapSession = async () => {
-      const token = getAccessToken();
+    let isMounted = true;
 
-      if (!token) {
+    const bootstrapSession = async () => {
+      const currentToken = getAccessToken();
+
+      if (!currentToken) {
+        if (!isMounted) {
+          return;
+        }
+
+        setToken("");
+        syncUser(null);
         setIsLoading(false);
         return;
       }
 
       try {
-        const response = await getCurrentAdmin();
-        setUser(response?.data?.user || null);
+        const response = await getCurrentUser(currentToken);
+        const currentUser = normalizeUser(response?.data?.data?.user);
+
+        if (!currentUser) {
+          throw new Error(ADMIN_ACCESS_ERROR);
+        }
+
+        if (!isMounted) {
+          return;
+        }
+
+        setToken(currentToken);
+        syncUser(currentUser);
       } catch (error) {
-        clearAccessToken();
-        setUser(null);
+        clearAuthSession();
+
+        if (!isMounted) {
+          return;
+        }
+
+        setToken("");
+        syncUser(null);
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     bootstrapSession();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const login = async (credentials) => {
-    const response = await loginAdmin(credentials);
-    const token = response?.data?.token || "";
-    const currentUser = response?.data?.user || null;
+    const response = await loginRequest(
+      credentials.email?.trim() || "",
+      credentials.password || ""
+    );
+    const nextToken = response?.data?.data?.token || "";
+    const currentUser = normalizeUser(response?.data?.data?.user);
 
-    if (token) {
-      setAccessToken(token);
+    if (!nextToken) {
+      throw new Error("Authentication token was not returned by the server.");
     }
 
-    setUser(currentUser);
+    if (!currentUser) {
+      clearAuthSession();
+      setToken("");
+      syncUser(null);
+      throw new Error(ADMIN_ACCESS_ERROR);
+    }
+
+    setAccessToken(nextToken);
+    setStoredUser(currentUser);
+    setToken(nextToken);
+    syncUser(currentUser);
 
     return response;
   };
 
   const logout = () => {
-    clearAccessToken();
-    setUser(null);
+    clearAuthSession();
+    setToken("");
+    syncUser(null);
   };
 
   const value = useMemo(
     () => ({
       user,
-      token: getAccessToken(),
+      token,
       isLoading,
-      isAuthenticated: Boolean(user),
+      isAuthenticated: Boolean(token && user),
+      hasAdminAccess: Boolean(token && user && isAllowedAdminRole(user.role)),
       login,
       logout,
-      setUser,
+      setUser: syncUser,
     }),
-    [isLoading, user]
+    [isLoading, token, user]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

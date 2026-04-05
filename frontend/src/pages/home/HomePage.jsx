@@ -70,7 +70,7 @@ function ProductTile({ product, currency }) {
           <img
             src={imageUrl}
             alt={imageAlt}
-            className="aspect-[4/5] h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+            className="aspect-[4/5] h-full w-full object-contain p-4"
           />
         ) : (
           <div className="aspect-[4/5] bg-[linear-gradient(180deg,rgba(246,246,247,1),rgba(236,236,238,0.92))]" />
@@ -114,6 +114,9 @@ export default function HomePage() {
   const storeName = config.storeName || "Commerce Studio";
   const heroImage = config.heroImage || featuredProducts[0]?.images?.[0]?.url || "";
   const heroAlt = config.storeName || featuredProducts[0]?.name || "Storefront hero";
+  const heroImageClassName = config.heroImage
+    ? "aspect-[5/6] h-full w-full object-cover lg:aspect-[4/5]"
+    : "aspect-[5/6] h-full w-full object-contain p-4 lg:aspect-[4/5] lg:p-6";
 
   return (
     <div className="space-y-16 pb-8 sm:space-y-20 lg:space-y-24">
@@ -155,7 +158,7 @@ export default function HomePage() {
             <img
               src={heroImage}
               alt={heroAlt}
-              className="aspect-[5/6] h-full w-full object-cover lg:aspect-[4/5]"
+              className={heroImageClassName}
             />
           ) : (
             <div className="aspect-[5/6] bg-[linear-gradient(180deg,rgba(245,245,245,1),rgba(231,231,231,0.92))] lg:aspect-[4/5]" />
@@ -205,7 +208,7 @@ export default function HomePage() {
             <img
               src={featuredProducts[1].images[0].url}
               alt={featuredProducts[1].images?.[0]?.alt || featuredProducts[1].name}
-              className="aspect-[5/4] h-full w-full object-cover"
+              className="aspect-[5/4] h-full w-full object-contain p-4"
             />
           ) : (
             <div className="aspect-[5/4] bg-[linear-gradient(180deg,rgba(243,243,243,1),rgba(229,229,229,0.92))]" />

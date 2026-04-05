@@ -17,7 +17,11 @@ export default function AdminPageHeader({ eyebrow, title, description, actions }
         ) : null}
       </div>
 
-      {actions ? <div className="flex flex-wrap gap-3">{actions}</div> : null}
+      {actions ? (
+        <div className="flex w-full flex-wrap gap-3 sm:w-auto [&>*]:w-full sm:[&>*]:w-auto">
+          {actions}
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+const uploadRoutes = require("./upload.routes");
 const express = require("express");
 
 const healthRoutes = require("./health.routes");
@@ -15,5 +16,5 @@ router.use("/products", productRoutes);
 router.use("/categories", categoryRoutes);
 router.use("/orders", orderRoutes);
 router.use("/store-config", storeConfigRoutes);
-
+router.use("/uploads", uploadRoutes);
 module.exports = router;
