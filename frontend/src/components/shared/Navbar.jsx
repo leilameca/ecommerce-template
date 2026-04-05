@@ -190,7 +190,7 @@ export default function Navbar() {
                   [
                     "inline-flex items-center gap-2 rounded-full border px-4 py-3 text-sm transition-colors duration-200",
                     isActive
-                      ? "border-zinc-950 bg-zinc-950 text-white"
+                      ? "border-zinc-950 bg-zinc-950 text-white hover:text-white [&_*]:text-inherit"
                       : "border-zinc-200 text-zinc-700 hover:border-zinc-300 hover:text-zinc-950",
                   ].join(" ")
                 }
@@ -213,7 +213,7 @@ export default function Navbar() {
 
               <Link
                 to={ROUTE_PATHS.checkout}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-zinc-950 bg-zinc-950 px-4 py-3 text-sm font-medium text-white"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-zinc-950 bg-zinc-950 px-4 py-3 text-sm font-medium text-white hover:text-white [&_*]:text-inherit"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <NavIcon name="arrow" />

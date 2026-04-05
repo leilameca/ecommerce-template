@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 
 import { formatCurrency } from "../../lib/format-currency";
 import { ROUTE_PATHS } from "../../routes/route-paths";
+import QuickAddToCartButton from "./QuickAddToCartButton";
 
 const createProductPath = (slug) => {
   return ROUTE_PATHS.productDetail.replace(":slug", slug);
@@ -15,27 +16,35 @@ export default function ProductCard({ product }) {
 
   return (
     <article className="group overflow-hidden rounded-[2rem] border border-zinc-200/80 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.05)] transition-transform duration-300 hover:-translate-y-1">
-      <Link to={createProductPath(product.slug)} className="block">
-        <div className="relative aspect-[4/5] overflow-hidden bg-zinc-100">
-          {imageUrl ? (
-            <img
-              src={imageUrl}
-              alt={product.images?.[0]?.alt || product.name}
-              className="h-full w-full object-contain p-4"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center bg-[linear-gradient(180deg,rgba(250,250,250,1),rgba(244,244,245,0.92))]">
-              <span className="text-[11px] font-medium uppercase tracking-[0.28em] text-zinc-400">
-                Premium Product
-              </span>
-            </div>
-          )}
+      <div className="relative">
+        <Link to={createProductPath(product.slug)} className="block">
+          <div className="relative aspect-[4/5] overflow-hidden bg-zinc-100">
+            {imageUrl ? (
+              <img
+                src={imageUrl}
+                alt={product.images?.[0]?.alt || product.name}
+                className="h-full w-full object-contain p-4"
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center bg-[linear-gradient(180deg,rgba(250,250,250,1),rgba(244,244,245,0.92))]">
+                <span className="text-[11px] font-medium uppercase tracking-[0.28em] text-zinc-400">
+                  Premium Product
+                </span>
+              </div>
+            )}
 
-          <div className="absolute left-4 top-4 rounded-full bg-white/92 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.24em] text-zinc-500 shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur-sm">
-            {categoryName}
+            <div className="absolute left-4 top-4 rounded-full bg-white/92 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.24em] text-zinc-500 shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+              {categoryName}
+            </div>
           </div>
-        </div>
-      </Link>
+        </Link>
+
+        <QuickAddToCartButton
+          product={product}
+          size="sm"
+          className="absolute right-4 top-4 z-10"
+        />
+      </div>
 
       <div className="space-y-4 p-5 sm:p-6">
         <div className="space-y-2">

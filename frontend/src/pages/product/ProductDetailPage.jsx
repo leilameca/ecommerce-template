@@ -47,7 +47,7 @@ function ProductDetailState({ title, description, tone = "default" }) {
       <p className="mt-3 max-w-2xl text-sm leading-7 text-current/75">{description}</p>
       <Link
         to={ROUTE_PATHS.catalog}
-        className="mt-6 inline-flex items-center justify-center rounded-full bg-zinc-950 px-5 py-3 text-sm font-medium text-white"
+        className="mt-6 inline-flex items-center justify-center rounded-full bg-zinc-950 px-5 py-3 text-sm font-medium text-white hover:text-white [&_*]:text-inherit"
       >
         Back to Catalog
       </Link>

@@ -5,6 +5,7 @@ import { useLanguage } from "../../hooks/useLanguage";
 import { useStoreConfig } from "../../hooks/useStoreConfig";
 import { formatCurrency } from "../../lib/format-currency";
 import { ROUTE_PATHS } from "../../routes/route-paths";
+import QuickAddToCartButton from "../../components/shared/QuickAddToCartButton";
 
 function SectionHeader({ title, actionLabel, actionTo }) {
   return (
@@ -65,17 +66,25 @@ function ProductTile({ product, currency }) {
 
   return (
     <article className="group space-y-4">
-      <Link to={productPath} className="block overflow-hidden bg-zinc-100">
-        {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt={imageAlt}
-            className="aspect-[4/5] h-full w-full object-contain p-4"
-          />
-        ) : (
-          <div className="aspect-[4/5] bg-[linear-gradient(180deg,rgba(246,246,247,1),rgba(236,236,238,0.92))]" />
-        )}
-      </Link>
+      <div className="relative">
+        <Link to={productPath} className="block overflow-hidden bg-zinc-100">
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={imageAlt}
+              className="aspect-[4/5] h-full w-full object-contain p-4"
+            />
+          ) : (
+            <div className="aspect-[4/5] bg-[linear-gradient(180deg,rgba(246,246,247,1),rgba(236,236,238,0.92))]" />
+          )}
+        </Link>
+
+        <QuickAddToCartButton
+          product={product}
+          size="sm"
+          className="absolute right-4 top-4 z-10"
+        />
+      </div>
 
       <div className="space-y-2">
         <div className="text-[11px] uppercase tracking-[0.2em] text-zinc-400">
@@ -138,7 +147,7 @@ export default function HomePage() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
               <Link
                 to={ROUTE_PATHS.catalog}
-                className="inline-flex items-center justify-center rounded-full bg-zinc-950 px-5 py-3 text-sm font-medium text-white transition-colors duration-200 hover:bg-zinc-800 sm:w-auto"
+                className="inline-flex items-center justify-center rounded-full bg-zinc-950 px-5 py-3 text-sm font-medium text-white transition-colors duration-200 hover:bg-zinc-800 hover:text-white [&_*]:text-inherit sm:w-auto"
               >
                 {t("home_shop_now")}
               </Link>

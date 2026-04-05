@@ -7,7 +7,7 @@ export default function Button({
 }) {
   const variantClassName = {
     primary:
-      "border border-zinc-950 bg-zinc-950 text-white hover:bg-zinc-800",
+      "border border-zinc-950 bg-zinc-950 text-white hover:bg-zinc-800 hover:text-white [&_*]:text-inherit",
     secondary:
       "border border-zinc-300 bg-white text-zinc-900 hover:bg-zinc-50",
     ghost: "border border-transparent bg-transparent text-zinc-600 hover:text-zinc-950",

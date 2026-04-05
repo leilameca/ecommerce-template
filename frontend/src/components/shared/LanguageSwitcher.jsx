@@ -14,7 +14,7 @@ export default function LanguageSwitcher({ compact = false }) {
         type="button"
         className={`px-3 py-2 text-xs font-medium transition-colors duration-200 ${
           language === "es"
-            ? "bg-zinc-950 text-white"
+            ? "bg-zinc-950 text-white hover:text-white"
             : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-950"
         }`}
         onClick={() => setLanguage("es")}
@@ -26,7 +26,7 @@ export default function LanguageSwitcher({ compact = false }) {
         type="button"
         className={`px-3 py-2 text-xs font-medium transition-colors duration-200 ${
           language === "en"
-            ? "bg-zinc-950 text-white"
+            ? "bg-zinc-950 text-white hover:text-white"
             : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-950"
         }`}
         onClick={() => setLanguage("en")}
