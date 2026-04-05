@@ -130,13 +130,13 @@ export default function AdminLayout() {
     { label: t("admin_orders"), to: ROUTE_PATHS.adminOrders },
     { label: t("admin_store_config"), to: ROUTE_PATHS.adminStoreConfig },
   ];
-  const sidebarWidthClass = isSidebarCollapsed ? "lg:w-[88px]" : "lg:w-[272px]";
-  const contentPaddingClass = isSidebarCollapsed ? "lg:pl-[112px]" : "lg:pl-[296px]";
+  const sidebarWidthClass = isSidebarCollapsed ? "xl:w-[88px]" : "xl:w-[272px]";
+  const contentPaddingClass = isSidebarCollapsed ? "xl:pl-[112px]" : "xl:pl-[296px]";
 
   return (
-    <div className="min-h-screen bg-zinc-100 text-zinc-950">
+    <div className="min-h-screen overflow-x-clip bg-zinc-100 text-zinc-950">
       <aside
-        className={`fixed inset-y-0 left-0 z-40 hidden overflow-y-auto border-r border-zinc-200/80 bg-white transition-[width] duration-200 lg:flex lg:flex-col ${sidebarWidthClass}`}
+        className={`fixed inset-y-0 left-0 z-40 hidden overflow-y-auto border-r border-zinc-200/80 bg-white transition-[width] duration-200 xl:flex xl:flex-col ${sidebarWidthClass}`}
       >
         <div className="flex items-center justify-end border-b border-zinc-200/80 px-4 py-3">
           <div className="flex items-center gap-2">
@@ -163,7 +163,7 @@ export default function AdminLayout() {
         />
       </aside>
 
-      <div className="sticky top-0 z-30 border-b border-zinc-200/80 bg-white/95 px-3 py-3 backdrop-blur sm:px-6 lg:hidden">
+      <div className="sticky top-0 z-30 border-b border-zinc-200/80 bg-white/95 px-3.5 py-3 backdrop-blur sm:px-5 xl:hidden">
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
             <div className="text-[10px] font-medium uppercase tracking-[0.28em] text-zinc-400">
@@ -187,7 +187,7 @@ export default function AdminLayout() {
       </div>
 
       {isMobileMenuOpen ? (
-        <div className="fixed inset-0 z-50 bg-black/25 lg:hidden">
+        <div className="fixed inset-0 z-50 bg-black/35 backdrop-blur-[2px] xl:hidden">
           <button
             type="button"
             className="absolute inset-0 h-full w-full cursor-default"
@@ -195,7 +195,7 @@ export default function AdminLayout() {
             onClick={() => setIsMobileMenuOpen(false)}
           />
 
-          <aside className="absolute inset-y-0 left-0 flex w-[320px] max-w-[88vw] flex-col overflow-y-auto border-r border-zinc-200/80 bg-white">
+          <aside className="absolute inset-y-0 left-0 flex w-[min(22rem,88vw)] flex-col overflow-y-auto border-r border-zinc-200/80 bg-white">
             <div className="flex items-center justify-between border-b border-zinc-200/80 px-4 py-3">
               <div className="flex min-w-0 items-center gap-3">
                 <div className="text-base font-semibold tracking-[-0.03em] text-zinc-950">
@@ -228,8 +228,8 @@ export default function AdminLayout() {
       ) : null}
 
       <div className={`transition-[padding] duration-200 ${contentPaddingClass}`}>
-        <main className="min-w-0 p-3 sm:p-5 lg:p-6">
-          <div className="border border-zinc-200/80 bg-white p-4 sm:p-5 lg:p-6">
+        <main className="min-w-0 p-3 sm:p-5 xl:p-6">
+          <div className="rounded-[1.5rem] border border-zinc-200/80 bg-white p-4 sm:p-5 xl:p-6">
             <Outlet />
           </div>
         </main>

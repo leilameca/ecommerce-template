@@ -94,10 +94,10 @@ export default function Navbar() {
   ];
 
   return (
-    <div className="relative flex items-center justify-between gap-3 py-4 sm:gap-4 sm:py-5">
+    <div className="relative flex min-w-0 items-center justify-between gap-3 py-4 sm:gap-4 sm:py-5">
       <Link
         to={ROUTE_PATHS.home}
-        className="min-w-0 max-w-[calc(100%-7rem)] sm:max-w-[50vw] lg:max-w-none"
+        className="min-w-0 max-w-[calc(100%-5.5rem)] sm:max-w-[min(50vw,18rem)] lg:max-w-none"
         onClick={() => setIsMenuOpen(false)}
       >
         <div className="truncate text-base font-semibold tracking-[-0.03em] text-zinc-950 sm:text-lg">
@@ -105,7 +105,7 @@ export default function Navbar() {
         </div>
       </Link>
 
-      <nav className="hidden items-center gap-8 lg:flex">
+      <nav className="hidden min-w-0 items-center gap-5 lg:flex xl:gap-8">
         {navigationLinks.map((item) => (
           <NavLink
             key={typeof item.to === "string" ? item.to : item.label}
@@ -118,7 +118,7 @@ export default function Navbar() {
         ))}
       </nav>
 
-      <div className="hidden items-center gap-6 lg:flex">
+      <div className="hidden items-center gap-4 lg:flex xl:gap-6">
         <LanguageSwitcher compact />
 
         <Link
@@ -138,16 +138,19 @@ export default function Navbar() {
         </Link>
       </div>
 
-      <div className="flex items-center gap-2 lg:hidden">
+      <div className="flex shrink-0 items-center gap-2 lg:hidden">
         <Link
           to={ROUTE_PATHS.cart}
-          className="inline-flex min-w-0 items-center gap-2 rounded-full border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-700 transition-colors duration-200 hover:text-zinc-950"
+          className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-700 transition-colors duration-200 hover:text-zinc-950"
           onClick={() => setIsMenuOpen(false)}
         >
           <NavIcon name="bag" />
-          <span className="truncate">
-            {t("nav_bag")} {itemCount > 0 ? `(${itemCount})` : ""}
-          </span>
+          {itemCount > 0 ? (
+            <span className="absolute -right-1 -top-1 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-zinc-950 px-1 text-[10px] font-medium text-white">
+              {itemCount}
+            </span>
+          ) : null}
+          <span className="sr-only">{t("nav_bag")}</span>
         </Link>
 
         <button
@@ -167,8 +170,8 @@ export default function Navbar() {
 
       {isMenuOpen ? (
         <div className="absolute inset-x-0 top-full z-30 pt-3 lg:hidden">
-          <nav className="mx-auto flex max-w-[1440px] flex-col gap-4 rounded-[1.5rem] border border-zinc-200/80 bg-white p-4 shadow-[0_18px_40px_rgba(15,23,42,0.08)]">
-            <div className="flex items-center justify-between gap-3 border-b border-zinc-200/80 pb-4">
+          <nav className="mx-auto flex max-h-[calc(100vh-6rem)] max-w-[1440px] flex-col gap-4 overflow-y-auto rounded-[1.5rem] border border-zinc-200/80 bg-white/96 p-4 shadow-[0_18px_40px_rgba(15,23,42,0.08)] backdrop-blur">
+            <div className="flex flex-col gap-3 border-b border-zinc-200/80 pb-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
                 <div className="truncate text-sm font-semibold tracking-[-0.02em] text-zinc-950">
                   {storeName}
@@ -198,14 +201,25 @@ export default function Navbar() {
               </NavLink>
             ))}
 
-            <Link
-              to={ROUTE_PATHS.checkout}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-zinc-950 bg-zinc-950 px-4 py-3 text-sm font-medium text-white"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <NavIcon name="arrow" />
-              {t("nav_checkout")}
-            </Link>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Link
+                to={ROUTE_PATHS.cart}
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm font-medium text-zinc-900"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <NavIcon name="bag" />
+                {t("nav_bag")} {itemCount > 0 ? `(${itemCount})` : ""}
+              </Link>
+
+              <Link
+                to={ROUTE_PATHS.checkout}
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-zinc-950 bg-zinc-950 px-4 py-3 text-sm font-medium text-white"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <NavIcon name="arrow" />
+                {t("nav_checkout")}
+              </Link>
+            </div>
           </nav>
         </div>
       ) : null}

@@ -53,13 +53,13 @@ const filterProducts = ({ products, selectedCategory, searchQuery }) => {
 
 function CatalogHeader() {
   return (
-    <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end">
+    <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-end">
       <div className="max-w-3xl">
         <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-zinc-400">
           Product Catalog
         </span>
 
-        <h1 className="mt-5 text-4xl font-semibold tracking-[-0.06em] text-zinc-950 sm:text-5xl">
+        <h1 className="mt-5 text-[2.75rem] font-semibold tracking-[-0.06em] text-zinc-950 sm:text-5xl">
           Curated products presented with clarity, rhythm, and space.
         </h1>
 
@@ -98,7 +98,7 @@ function CatalogToolbar({
 }) {
   return (
     <section className="rounded-[2rem] border border-zinc-200/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.05)] sm:p-6">
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_220px]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_220px]">
         <TextInput
           label="Search"
           type="search"
@@ -119,7 +119,7 @@ function CatalogToolbar({
         </SelectField>
       </div>
 
-      <div className="mt-5 flex flex-wrap gap-3">
+      <div className="mt-5 flex gap-3 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0">
         <FilterChip
           isActive={selectedCategory === ALL_CATEGORIES_VALUE}
           onClick={() => onCategoryChange(ALL_CATEGORIES_VALUE)}
@@ -214,7 +214,7 @@ export default function ProductCatalogPage() {
         </div>
 
         {isLoading ? (
-          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {Array.from({ length: 6 }).map((_, index) => (
               <div
                 key={index}
@@ -239,7 +239,7 @@ export default function ProductCatalogPage() {
             description="Try clearing the search or switching categories to explore more items from the current catalog page."
           />
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {visibleProducts.map((product) => (
               <ProductCard
                 key={product._id}

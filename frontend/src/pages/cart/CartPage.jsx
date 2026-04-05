@@ -8,7 +8,7 @@ import { ROUTE_PATHS } from "../../routes/route-paths";
 
 function EmptyCartState() {
   return (
-    <div className="rounded-[2rem] border border-zinc-200/80 bg-white p-8 shadow-[0_24px_80px_rgba(15,23,42,0.05)] sm:p-10">
+    <div className="rounded-[2rem] border border-zinc-200/80 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.05)] sm:p-10">
       <div className="text-[10px] font-medium uppercase tracking-[0.28em] text-zinc-400">
         Cart
       </div>
@@ -23,8 +23,10 @@ function EmptyCartState() {
       </p>
 
       <div className="mt-8">
-        <Link to={ROUTE_PATHS.catalog}>
-          <Button size="lg">Browse Catalog</Button>
+        <Link to={ROUTE_PATHS.catalog} className="block sm:inline-block">
+          <Button size="lg" className="w-full sm:w-auto">
+            Browse Catalog
+          </Button>
         </Link>
       </div>
     </div>
@@ -33,7 +35,7 @@ function EmptyCartState() {
 
 function CartItemRow({ item, currency, onDecrease, onIncrease, onRemove }) {
   return (
-    <article className="grid gap-5 rounded-[2rem] border border-zinc-200/80 bg-white p-5 shadow-[0_20px_60px_rgba(15,23,42,0.04)] sm:grid-cols-[120px_minmax(0,1fr)] sm:p-6">
+    <article className="grid gap-5 rounded-[2rem] border border-zinc-200/80 bg-white p-4 shadow-[0_20px_60px_rgba(15,23,42,0.04)] sm:grid-cols-[120px_minmax(0,1fr)] sm:p-6">
       <div className="overflow-hidden rounded-[1.5rem] bg-zinc-100">
         {item.imageUrl ? (
           <img
@@ -54,7 +56,7 @@ function CartItemRow({ item, currency, onDecrease, onIncrease, onRemove }) {
         <div className="space-y-2">
           <Link
             to={ROUTE_PATHS.productDetail.replace(":slug", item.slug)}
-            className="text-xl font-semibold tracking-[-0.03em] text-zinc-950 transition-colors duration-200 hover:text-zinc-700"
+            className="text-lg font-semibold tracking-[-0.03em] text-zinc-950 transition-colors duration-200 hover:text-zinc-700 sm:text-xl"
           >
             {item.name}
           </Link>
@@ -64,7 +66,7 @@ function CartItemRow({ item, currency, onDecrease, onIncrease, onRemove }) {
           </p>
         </div>
 
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 p-1">
             <button
               type="button"
@@ -88,7 +90,7 @@ function CartItemRow({ item, currency, onDecrease, onIncrease, onRemove }) {
             </button>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
             <button
               type="button"
               className="text-sm font-medium text-zinc-500 transition-colors duration-200 hover:text-rose-600"
@@ -118,7 +120,7 @@ export default function CartPage() {
 
   return (
     <div className="space-y-10 sm:space-y-12">
-      <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-end">
+      <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px] xl:items-end">
         <div className="max-w-3xl">
           <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-zinc-400">
             Shopping Cart
@@ -149,7 +151,7 @@ export default function CartPage() {
         </div>
       </section>
 
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
         <section className="space-y-5">
           {items.map((item) => (
             <CartItemRow
@@ -163,7 +165,7 @@ export default function CartPage() {
           ))}
         </section>
 
-        <aside className="space-y-5">
+        <aside className="space-y-5 xl:sticky xl:top-24">
           <div className="rounded-[2rem] border border-zinc-200/80 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.05)]">
             <div className="space-y-4">
               <div className="flex items-center justify-between text-sm text-zinc-500">

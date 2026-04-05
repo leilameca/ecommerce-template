@@ -8,7 +8,7 @@ import { ROUTE_PATHS } from "../../routes/route-paths";
 
 function SectionHeader({ title, actionLabel, actionTo }) {
   return (
-    <div className="flex items-end justify-between gap-4">
+    <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-end sm:justify-between">
       <h2 className="text-2xl font-semibold tracking-[-0.04em] text-zinc-950 sm:text-3xl">
         {title}
       </h2>
@@ -82,7 +82,7 @@ function ProductTile({ product, currency }) {
           {product.category?.name || "Product"}
         </div>
 
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <Link
               to={productPath}
@@ -119,33 +119,33 @@ export default function HomePage() {
     : "aspect-[5/6] h-full w-full object-contain p-4 lg:aspect-[4/5] lg:p-6";
 
   return (
-    <div className="space-y-16 pb-8 sm:space-y-20 lg:space-y-24">
-      <section className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-10">
-        <div className="flex flex-col justify-end py-2 lg:py-8">
+    <div className="space-y-14 pb-8 sm:space-y-20 lg:space-y-24">
+      <section className="grid gap-5 sm:gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-10">
+        <div className="flex flex-col justify-end py-0 sm:py-2 lg:py-8">
           <div className="max-w-xl">
             <div className="text-[11px] uppercase tracking-[0.22em] text-zinc-400">
               {storeName}
             </div>
 
-            <h1 className="mt-5 text-4xl font-semibold leading-[0.96] tracking-[-0.06em] text-zinc-950 sm:text-6xl lg:text-[4.9rem]">
+            <h1 className="mt-5 text-[2.8rem] font-semibold leading-[0.96] tracking-[-0.06em] text-zinc-950 sm:text-6xl lg:text-[4.9rem]">
               {t("home_hero_title")}
             </h1>
 
-            <p className="mt-5 max-w-md text-base leading-7 text-zinc-500 sm:text-lg">
+            <p className="mt-5 max-w-xl text-base leading-7 text-zinc-500 sm:text-lg">
               {t("home_hero_copy")}
             </p>
 
-            <div className="mt-8 flex items-center gap-6">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
               <Link
                 to={ROUTE_PATHS.catalog}
-                className="text-sm font-medium text-zinc-950 transition-opacity duration-200 hover:opacity-60"
+                className="inline-flex items-center justify-center rounded-full bg-zinc-950 px-5 py-3 text-sm font-medium text-white transition-colors duration-200 hover:bg-zinc-800 sm:w-auto"
               >
                 {t("home_shop_now")}
               </Link>
 
               <Link
                 to={{ pathname: ROUTE_PATHS.home, hash: "#featured" }}
-                className="text-sm text-zinc-500 transition-colors duration-200 hover:text-zinc-950"
+                className="inline-flex items-center justify-center rounded-full border border-zinc-200 bg-white px-5 py-3 text-sm text-zinc-600 transition-colors duration-200 hover:border-zinc-300 hover:text-zinc-950 sm:w-auto"
               >
                 {t("home_view_featured")}
               </Link>
@@ -153,7 +153,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="overflow-hidden bg-zinc-100">
+        <div className="overflow-hidden rounded-[2rem] bg-zinc-100">
           {heroImage ? (
             <img
               src={heroImage}
@@ -169,7 +169,7 @@ export default function HomePage() {
       <section id="collections" className="space-y-8">
         <SectionHeader title={t("home_featured_categories")} />
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {(isLoading ? Array.from({ length: 3 }) : featuredCategories).map((category, index) =>
             isLoading ? (
               <div key={index} className="space-y-4">
@@ -202,8 +202,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="grid gap-8 border-t border-zinc-200/80 pt-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center">
-        <div className="overflow-hidden bg-[#f3f3f3]">
+      <section className="grid gap-6 border-t border-zinc-200/80 pt-10 sm:gap-8 sm:pt-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center">
+        <div className="overflow-hidden rounded-[2rem] bg-[#f3f3f3]">
           {featuredProducts[1]?.images?.[0]?.url ? (
             <img
               src={featuredProducts[1].images[0].url}

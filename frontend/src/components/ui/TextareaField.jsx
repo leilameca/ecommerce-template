@@ -6,7 +6,7 @@ export default function TextareaField({
   ...props
 }) {
   return (
-    <label className={`flex flex-col gap-2 ${className}`.trim()}>
+    <label className={`flex min-w-0 flex-col gap-2 ${className}`.trim()}>
       {label ? (
         <span className="text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-400">
           {label}
@@ -16,7 +16,7 @@ export default function TextareaField({
       <textarea
         rows={rows}
         className={[
-          "rounded-md border border-zinc-300 bg-white px-3.5 py-3 text-sm text-zinc-950 outline-none transition-colors duration-200 placeholder:text-zinc-400 focus:border-zinc-950",
+          "w-full min-w-0 rounded-md border border-zinc-300 bg-white px-3.5 py-3 text-sm text-zinc-950 outline-none transition-colors duration-200 placeholder:text-zinc-400 focus:border-zinc-950",
           textareaClassName,
         ].join(" ")}
         {...props}

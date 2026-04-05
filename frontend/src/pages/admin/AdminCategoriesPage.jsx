@@ -201,7 +201,7 @@ export default function AdminCategoriesPage() {
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_360px]">
         <section className="min-w-0 overflow-hidden border border-zinc-200/80 bg-white">
           <div className="border-b border-zinc-200/80 px-4 py-4 sm:px-5">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
               <div>
                 <div className="text-sm font-medium text-zinc-950">
                   {t("admin_catalog_categories")}
@@ -294,7 +294,7 @@ export default function AdminCategoriesPage() {
           )}
         </section>
 
-        <aside className="overflow-hidden border border-zinc-200/80 bg-white">
+        <aside className="self-start overflow-hidden border border-zinc-200/80 bg-white xl:sticky xl:top-24">
           <div className="border-b border-zinc-200/80 px-4 py-4 sm:px-5">
             <div className="text-sm font-medium text-zinc-950">
               {formState.id ? t("admin_edit_category") : t("admin_create_category")}
@@ -369,7 +369,7 @@ export default function AdminCategoriesPage() {
                   onChange={(event) => handleImageUpload(event.target.files?.[0])}
                 />
 
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <p className="text-xs leading-5 text-zinc-500">
                     {isUploadingImage
                       ? t("admin_image_uploading")
@@ -407,7 +407,11 @@ export default function AdminCategoriesPage() {
               </label>
 
               <div className="flex flex-col gap-3 sm:flex-row">
-                <Button type="submit" disabled={isSubmitting || isUploadingImage}>
+                <Button
+                  type="submit"
+                  className="w-full sm:w-auto"
+                  disabled={isSubmitting || isUploadingImage}
+                >
                   {isSubmitting
                     ? t("admin_saving")
                     : formState.id
@@ -415,7 +419,12 @@ export default function AdminCategoriesPage() {
                       : t("admin_create_category_btn")}
                 </Button>
 
-                <Button type="button" variant="secondary" onClick={resetForm}>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="w-full sm:w-auto"
+                  onClick={resetForm}
+                >
                   {t("admin_reset")}
                 </Button>
               </div>

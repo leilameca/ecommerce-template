@@ -126,7 +126,7 @@ export default function AdminOrdersPage() {
 
       <section className="min-w-0 overflow-hidden border border-zinc-200/80 bg-white">
         <div className="border-b border-zinc-200/80 px-4 py-4 sm:px-5">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
             <div>
               <div className="text-sm font-medium text-zinc-950">
                 {t("admin_order_queue")}
@@ -205,7 +205,7 @@ export default function AdminOrdersPage() {
                       key={order._id}
                       className="rounded-[1.5rem] border border-zinc-200/80 bg-white p-4 sm:p-5"
                     >
-                      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_280px]">
+                      <div className="grid gap-5 2xl:grid-cols-[minmax(0,1fr)_280px]">
                         <div className="min-w-0">
                           <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                             <div className="min-w-0">
@@ -245,7 +245,7 @@ export default function AdminOrdersPage() {
                           </div>
                         </div>
 
-                        <div className="grid gap-4 border border-zinc-200/80 p-4 sm:grid-cols-2 xl:grid-cols-1">
+                        <div className="grid gap-4 border border-zinc-200/80 p-4 sm:grid-cols-2 2xl:grid-cols-1">
                           <SelectField
                             label={t("admin_order_status")}
                             value={order.orderStatus}
@@ -283,7 +283,7 @@ export default function AdminOrdersPage() {
                           </SelectField>
 
                           <Button
-                            className="w-full sm:col-span-2 xl:col-span-1"
+                            className="w-full sm:col-span-2 2xl:col-span-1"
                             disabled={savingOrderId === order._id}
                             onClick={() => handleSave(order)}
                           >

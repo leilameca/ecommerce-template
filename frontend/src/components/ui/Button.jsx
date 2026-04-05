@@ -24,7 +24,7 @@ export default function Button({
   return (
     <button
       className={[
-        "inline-flex items-center justify-center rounded-md font-medium transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50",
+        "inline-flex items-center justify-center rounded-md text-center leading-5 font-medium transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50",
         variantClassName,
         sizeClassName,
         className,

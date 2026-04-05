@@ -159,7 +159,7 @@ export default function AdminStoreConfigPage() {
           />
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid gap-4 xl:grid-cols-2">
           {mediaFieldOptions.map((option) => {
             const imageUrl = formState[option.fieldName];
             const isUploadingCurrentField = uploadingField === option.fieldName;
@@ -229,7 +229,7 @@ export default function AdminStoreConfigPage() {
           })}
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 xl:grid-cols-3">
           <TextInput
             label={t("admin_whatsapp_number")}
             value={formState.whatsappNumber}
@@ -298,7 +298,11 @@ export default function AdminStoreConfigPage() {
           </div>
         </div>
 
-        <Button type="submit" disabled={isSubmitting || isLoading || Boolean(uploadingField)}>
+        <Button
+          type="submit"
+          className="w-full sm:w-auto"
+          disabled={isSubmitting || isLoading || Boolean(uploadingField)}
+        >
           {isSubmitting ? t("admin_saving") : t("admin_save_store_configuration")}
         </Button>
       </form>

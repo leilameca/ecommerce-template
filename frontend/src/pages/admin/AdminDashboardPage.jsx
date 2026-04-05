@@ -83,7 +83,7 @@ export default function AdminDashboardPage() {
         />
       ) : null}
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <section className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
         <StatCard
           label={t("dashboard_products")}
           value={isLoading ? "..." : stats.products}
@@ -120,7 +120,7 @@ export default function AdminDashboardPage() {
             {recentOrders.map((order) => (
               <div
                 key={order._id}
-                className="grid gap-3 px-4 py-4 sm:px-5 lg:grid-cols-[minmax(0,1fr)_180px_140px]"
+                className="grid gap-3 px-4 py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:px-5 2xl:grid-cols-[minmax(0,1fr)_180px_140px]"
               >
                 <div className="min-w-0">
                   <div className="font-medium text-zinc-950">{order.customerName}</div>
@@ -129,9 +129,9 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
 
-                <div className="text-sm text-zinc-500">{order.phone}</div>
+                <div className="break-words text-sm text-zinc-500">{order.phone}</div>
 
-                <div className="text-sm font-medium text-zinc-950">
+                <div className="text-sm font-medium text-zinc-950 sm:text-right 2xl:text-left">
                   {formatCurrency(order.total, config.currency || "USD")}
                 </div>
               </div>

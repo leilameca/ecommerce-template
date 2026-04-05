@@ -21,7 +21,7 @@ const paymentMethodLabels = {
 
 function EmptyCheckoutState() {
   return (
-    <div className="rounded-[2rem] border border-zinc-200/80 bg-white p-8 shadow-[0_24px_80px_rgba(15,23,42,0.05)] sm:p-10">
+    <div className="rounded-[2rem] border border-zinc-200/80 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.05)] sm:p-10">
       <div className="text-[10px] font-medium uppercase tracking-[0.28em] text-zinc-400">
         Checkout
       </div>
@@ -35,13 +35,15 @@ function EmptyCheckoutState() {
         an order can be created.
       </p>
 
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-        <Link to={ROUTE_PATHS.catalog}>
-          <Button size="lg">Go to Catalog</Button>
+      <div className="mt-8 grid gap-3 sm:grid-cols-2">
+        <Link to={ROUTE_PATHS.catalog} className="block">
+          <Button size="lg" className="w-full">
+            Go to Catalog
+          </Button>
         </Link>
 
-        <Link to={ROUTE_PATHS.cart}>
-          <Button variant="secondary" size="lg">
+        <Link to={ROUTE_PATHS.cart} className="block">
+          <Button variant="secondary" size="lg" className="w-full">
             View Cart
           </Button>
         </Link>
@@ -52,7 +54,7 @@ function EmptyCheckoutState() {
 
 function SuccessState({ orderId, whatsappUrl, paymentMethod }) {
   return (
-    <div className="space-y-6 rounded-[2rem] border border-zinc-200/80 bg-white p-8 shadow-[0_24px_80px_rgba(15,23,42,0.05)] sm:p-10">
+    <div className="space-y-6 rounded-[2rem] border border-zinc-200/80 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.05)] sm:p-10">
       <div className="text-[10px] font-medium uppercase tracking-[0.28em] text-zinc-400">
         Order Confirmed
       </div>
@@ -65,14 +67,16 @@ function SuccessState({ orderId, whatsappUrl, paymentMethod }) {
         Order reference: <span className="font-medium text-zinc-950">{orderId}</span>
       </p>
 
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <Link to={ROUTE_PATHS.catalog}>
-          <Button size="lg">Continue Shopping</Button>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Link to={ROUTE_PATHS.catalog} className="block">
+          <Button size="lg" className="w-full">
+            Continue Shopping
+          </Button>
         </Link>
 
         {paymentMethod === "whatsapp" && whatsappUrl ? (
-          <a href={whatsappUrl} target="_blank" rel="noreferrer">
-            <Button variant="secondary" size="lg">
+          <a href={whatsappUrl} target="_blank" rel="noreferrer" className="block">
+            <Button variant="secondary" size="lg" className="w-full">
               Open WhatsApp Confirmation
             </Button>
           </a>
@@ -198,7 +202,7 @@ export default function CheckoutPage() {
           Checkout
         </span>
 
-        <h1 className="mt-5 text-4xl font-semibold tracking-[-0.06em] text-zinc-950 sm:text-5xl">
+        <h1 className="mt-5 text-[2.75rem] font-semibold tracking-[-0.06em] text-zinc-950 sm:text-5xl">
           Complete the order with a clean, reusable purchase flow.
         </h1>
 
@@ -208,9 +212,9 @@ export default function CheckoutPage() {
         </p>
       </section>
 
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
         <form
-          className="space-y-6 rounded-[2rem] border border-zinc-200/80 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.05)] sm:p-8"
+          className="space-y-6 rounded-[2rem] border border-zinc-200/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.05)] sm:p-8"
           onSubmit={handleSubmit}
         >
           <div className="grid gap-4 sm:grid-cols-2">
@@ -276,12 +280,12 @@ export default function CheckoutPage() {
             </div>
           ) : null}
 
-          <Button type="submit" size="lg" disabled={isSubmitting}>
+          <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={isSubmitting}>
             {isSubmitting ? "Creating Order..." : "Create Order"}
           </Button>
         </form>
 
-        <aside className="rounded-[2rem] border border-zinc-200/80 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.05)] sm:p-8">
+        <aside className="rounded-[2rem] border border-zinc-200/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.05)] sm:p-8 xl:sticky xl:top-24">
           <div className="text-[10px] font-medium uppercase tracking-[0.28em] text-zinc-400">
             Order Summary
           </div>
@@ -290,7 +294,7 @@ export default function CheckoutPage() {
             {items.map((item) => (
               <div
                 key={item.productId}
-                className="flex items-start justify-between gap-4 border-b border-zinc-200/80 pb-4 text-sm"
+                className="flex flex-col gap-2 border-b border-zinc-200/80 pb-4 text-sm sm:flex-row sm:items-start sm:justify-between sm:gap-4"
               >
                 <div>
                   <div className="font-medium text-zinc-950">{item.name}</div>

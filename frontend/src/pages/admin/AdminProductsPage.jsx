@@ -285,7 +285,7 @@ export default function AdminProductsPage() {
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_380px]">
         <section className="min-w-0 overflow-hidden border border-zinc-200/80 bg-white">
           <div className="border-b border-zinc-200/80 px-4 py-4 sm:px-5">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
               <div>
                 <div className="text-sm font-medium text-zinc-950">
                   {t("admin_catalog_products")}
@@ -340,7 +340,7 @@ export default function AdminProductsPage() {
             <div className="divide-y divide-zinc-200/80">
               {filteredProducts.map((product) => (
                 <article key={product._id} className="px-4 py-4 sm:px-5">
-                  <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-start lg:grid-cols-[minmax(0,1fr)_140px_160px]">
+                  <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-start 2xl:grid-cols-[minmax(0,1fr)_140px_160px]">
                     <div className="min-w-0">
                       <h2 className="text-base font-semibold tracking-[-0.03em] text-zinc-950">
                         {product.name}
@@ -353,11 +353,11 @@ export default function AdminProductsPage() {
                       </div>
                     </div>
 
-                    <div className="text-left text-sm font-medium text-zinc-950 lg:text-right">
+                    <div className="text-left text-sm font-medium text-zinc-950 2xl:text-right">
                       {formatCurrency(product.price)}
                     </div>
 
-                    <div className="flex flex-col gap-2 sm:flex-row md:flex-col lg:flex-row lg:justify-end">
+                    <div className="flex flex-col gap-2 sm:flex-row md:flex-col 2xl:flex-row 2xl:justify-end">
                       <Button
                         variant="secondary"
                         size="sm"
@@ -386,7 +386,7 @@ export default function AdminProductsPage() {
           )}
         </section>
 
-        <aside className="overflow-hidden border border-zinc-200/80 bg-white">
+        <aside className="self-start overflow-hidden border border-zinc-200/80 bg-white xl:sticky xl:top-24">
           <div className="border-b border-zinc-200/80 px-4 py-4 sm:px-5">
             <div className="text-sm font-medium text-zinc-950">
               {formState.id ? t("admin_edit_product") : t("admin_create_product")}
@@ -551,6 +551,7 @@ export default function AdminProductsPage() {
                 <Button
                   type="button"
                   variant="secondary"
+                  className="w-full sm:w-auto"
                   onClick={handleAddImageByUrl}
                 >
                   {t("admin_image_add_url")}
@@ -589,6 +590,7 @@ export default function AdminProductsPage() {
                   <Button
                     type="button"
                     variant="secondary"
+                    className="w-full sm:w-auto"
                     disabled={selectedImageFiles.length === 0 || isUploadingImage}
                     onClick={handleUploadImage}
                   >
@@ -611,7 +613,11 @@ export default function AdminProductsPage() {
               </label>
 
               <div className="flex flex-col gap-3 sm:flex-row">
-                <Button type="submit" disabled={isSubmitting || isUploadingImage}>
+                <Button
+                  type="submit"
+                  className="w-full sm:w-auto"
+                  disabled={isSubmitting || isUploadingImage}
+                >
                   {isSubmitting
                     ? t("admin_saving")
                     : formState.id
@@ -619,7 +625,12 @@ export default function AdminProductsPage() {
                       : t("admin_create_product_btn")}
                 </Button>
 
-                <Button type="button" variant="secondary" onClick={resetForm}>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="w-full sm:w-auto"
+                  onClick={resetForm}
+                >
                   {t("admin_reset")}
                 </Button>
               </div>
