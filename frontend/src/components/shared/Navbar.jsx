@@ -171,6 +171,13 @@ export default function Navbar() {
         </Link>
 
         <Link
+          to={ROUTE_PATHS.adminDashboard}
+          className="text-xs text-zinc-400 transition-colors duration-200 hover:text-zinc-950 border border-zinc-200 rounded px-2 py-1"
+        >
+          Admin
+        </Link>
+
+        <Link
           to={ROUTE_PATHS.cart}
           className="inline-flex items-center gap-2 text-sm text-zinc-500 transition-colors duration-200 hover:text-zinc-950"
         >
@@ -277,6 +284,14 @@ export default function Navbar() {
               >
                 <NavIcon name="arrow" />
                 {t("nav_checkout")}
+              </Link>
+
+              <Link
+                to={ROUTE_PATHS.adminDashboard}
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-dashed border-zinc-300 px-4 py-3 text-sm text-zinc-400 col-span-full"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Admin Panel
               </Link>
             </div>
           </nav>
