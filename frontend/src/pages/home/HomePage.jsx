@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 import { useHomeMerchandising } from "../../hooks/useHomeMerchandising";
 import { useLanguage } from "../../hooks/useLanguage";
@@ -119,6 +120,16 @@ export default function HomePage() {
   const { config } = useStoreConfig();
   const { t } = useLanguage();
   const { featuredCategories, featuredProducts, isLoading } = useHomeMerchandising();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!location.hash) return;
+    const id = location.hash.slice(1);
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [location.hash]);
   const currency = config.currency || "USD";
   const storeName = config.storeName || "Commerce Studio";
   const heroImage = config.heroImage || featuredProducts[0]?.images?.[0]?.url || "";
@@ -137,17 +148,18 @@ export default function HomePage() {
             </div>
 
             <h1 className="mt-5 text-[2.8rem] font-semibold leading-[0.96] tracking-[-0.06em] text-zinc-950 sm:text-6xl lg:text-[4.9rem]">
-              {t("home_hero_title")}
+              {config.heroTitle || t("home_hero_title")}
             </h1>
 
             <p className="mt-5 max-w-xl text-base leading-7 text-zinc-500 sm:text-lg">
-              {t("home_hero_copy")}
+              {config.heroCopy || t("home_hero_copy")}
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
               <Link
                 to={ROUTE_PATHS.catalog}
-                className="inline-flex items-center justify-center rounded-full bg-zinc-950 px-5 py-3 text-sm font-medium text-white transition-colors duration-200 hover:bg-zinc-800 hover:text-white [&_*]:text-inherit sm:w-auto"
+                className="inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-medium text-white transition-colors duration-200 hover:opacity-90 [&_*]:text-inherit sm:w-auto"
+                style={{ backgroundColor: "var(--color-primary, #111)" }}
               >
                 {t("home_shop_now")}
               </Link>

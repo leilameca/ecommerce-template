@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import AdminPageHeader from "../../components/shared/AdminPageHeader";
 import SurfaceMessage from "../../components/shared/SurfaceMessage";
 import Button from "../../components/ui/Button";
+import TextareaField from "../../components/ui/TextareaField";
 import TextInput from "../../components/ui/TextInput";
 import { useLanguage } from "../../hooks/useLanguage";
 import { useStoreConfig } from "../../hooks/useStoreConfig";
@@ -33,6 +34,8 @@ const mediaFieldOptions = [
 
 const createFormState = (config) => ({
   storeName: config.storeName || "",
+  heroTitle: config.heroTitle || "",
+  heroCopy: config.heroCopy || "",
   logoUrl: config.logoUrl || "",
   heroImage: config.heroImage || "",
   whatsappNumber: config.whatsappNumber || "",
@@ -42,6 +45,11 @@ const createFormState = (config) => ({
   enableWhatsappCheckout: Boolean(config.enableWhatsappCheckout),
   enableOnlinePayment: Boolean(config.enableOnlinePayment),
   paymentMethods: config.paymentMethods || ["whatsapp", "cash_on_delivery"],
+  contactEmail: config.contactEmail || "",
+  phone: config.phone || "",
+  instagram: config.socialLinks?.instagram || "",
+  facebook: config.socialLinks?.facebook || "",
+  tiktok: config.socialLinks?.tiktok || "",
 });
 
 export default function AdminStoreConfigPage() {
@@ -110,7 +118,14 @@ export default function AdminStoreConfigPage() {
     setSuccessMessage("");
 
     try {
-      await upsertStoreConfig(formState);
+      await upsertStoreConfig({
+        ...formState,
+        socialLinks: {
+          instagram: formState.instagram,
+          facebook: formState.facebook,
+          tiktok: formState.tiktok,
+        },
+      });
       await refreshConfig();
       setSuccessMessage(t("admin_store_configuration_updated"));
     } catch (error) {
@@ -156,6 +171,20 @@ export default function AdminStoreConfigPage() {
             label={t("admin_currency")}
             value={formState.currency}
             onChange={(event) => handleFieldChange("currency", event.target.value)}
+          />
+        </div>
+
+        <div className="grid gap-4 xl:grid-cols-2">
+          <TextInput
+            label={t("admin_hero_title")}
+            value={formState.heroTitle}
+            onChange={(event) => handleFieldChange("heroTitle", event.target.value)}
+          />
+          <TextareaField
+            label={t("admin_hero_copy")}
+            rows={3}
+            value={formState.heroCopy}
+            onChange={(event) => handleFieldChange("heroCopy", event.target.value)}
           />
         </div>
 
@@ -237,20 +266,44 @@ export default function AdminStoreConfigPage() {
               handleFieldChange("whatsappNumber", event.target.value)
             }
           />
-          <TextInput
-            label={t("admin_primary_color")}
-            value={formState.primaryColor}
-            onChange={(event) =>
-              handleFieldChange("primaryColor", event.target.value)
-            }
-          />
-          <TextInput
-            label={t("admin_secondary_color")}
-            value={formState.secondaryColor}
-            onChange={(event) =>
-              handleFieldChange("secondaryColor", event.target.value)
-            }
-          />
+          <label className="flex min-w-0 flex-col gap-2">
+            <span className="text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-400">
+              {t("admin_primary_color")}
+            </span>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={formState.primaryColor}
+                onChange={(event) => handleFieldChange("primaryColor", event.target.value)}
+                className="h-10 w-12 cursor-pointer rounded border border-zinc-300 bg-white p-1"
+              />
+              <input
+                type="text"
+                value={formState.primaryColor}
+                onChange={(event) => handleFieldChange("primaryColor", event.target.value)}
+                className="w-full min-w-0 rounded-md border border-zinc-300 bg-white px-3.5 py-3 text-sm text-zinc-950 outline-none transition-colors duration-200 focus:border-zinc-950"
+              />
+            </div>
+          </label>
+          <label className="flex min-w-0 flex-col gap-2">
+            <span className="text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-400">
+              {t("admin_secondary_color")}
+            </span>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={formState.secondaryColor}
+                onChange={(event) => handleFieldChange("secondaryColor", event.target.value)}
+                className="h-10 w-12 cursor-pointer rounded border border-zinc-300 bg-white p-1"
+              />
+              <input
+                type="text"
+                value={formState.secondaryColor}
+                onChange={(event) => handleFieldChange("secondaryColor", event.target.value)}
+                className="w-full min-w-0 rounded-md border border-zinc-300 bg-white px-3.5 py-3 text-sm text-zinc-950 outline-none transition-colors duration-200 focus:border-zinc-950"
+              />
+            </div>
+          </label>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -295,6 +348,51 @@ export default function AdminStoreConfigPage() {
                 {option.label}
               </label>
             ))}
+          </div>
+        </div>
+
+        <div>
+          <div className="text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-400">
+            {t("admin_contact_info")}
+          </div>
+          <div className="mt-3 grid gap-4 sm:grid-cols-2">
+            <TextInput
+              label={t("admin_contact_email")}
+              type="email"
+              value={formState.contactEmail}
+              onChange={(event) => handleFieldChange("contactEmail", event.target.value)}
+            />
+            <TextInput
+              label={t("admin_contact_phone")}
+              value={formState.phone}
+              onChange={(event) => handleFieldChange("phone", event.target.value)}
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-400">
+            {t("admin_social_links")}
+          </div>
+          <div className="mt-3 grid gap-4 sm:grid-cols-3">
+            <TextInput
+              label="Instagram"
+              placeholder="instagram.com/tutienda"
+              value={formState.instagram}
+              onChange={(event) => handleFieldChange("instagram", event.target.value)}
+            />
+            <TextInput
+              label="Facebook"
+              placeholder="facebook.com/tutienda"
+              value={formState.facebook}
+              onChange={(event) => handleFieldChange("facebook", event.target.value)}
+            />
+            <TextInput
+              label="TikTok"
+              placeholder="tiktok.com/@tutienda"
+              value={formState.tiktok}
+              onChange={(event) => handleFieldChange("tiktok", event.target.value)}
+            />
           </div>
         </div>
 

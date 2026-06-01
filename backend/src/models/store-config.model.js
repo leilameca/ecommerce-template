@@ -29,6 +29,16 @@ const storeConfigSchema = new mongoose.Schema(
       default: "My Store",
       trim: true,
     },
+    heroTitle: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    heroCopy: {
+      type: String,
+      default: "",
+      trim: true,
+    },
     logoUrl: {
       type: String,
       default: "",

@@ -13,6 +13,8 @@ const {
 const STORE_CONFIG_SINGLETON_KEY = "default";
 const ALLOWED_STORE_CONFIG_FIELDS = [
   "storeName",
+  "heroTitle",
+  "heroCopy",
   "logoUrl",
   "heroImage",
   "whatsappNumber",
@@ -22,6 +24,9 @@ const ALLOWED_STORE_CONFIG_FIELDS = [
   "enableWhatsappCheckout",
   "enableOnlinePayment",
   "paymentMethods",
+  "contactEmail",
+  "phone",
+  "socialLinks",
 ];
 
 const serializeStoreConfig = (storeConfig) => {
@@ -32,6 +37,8 @@ const serializeStoreConfig = (storeConfig) => {
   return {
     id: storeConfig._id,
     storeName: storeConfig.storeName || "My Store",
+    heroTitle: storeConfig.heroTitle || "",
+    heroCopy: storeConfig.heroCopy || "",
     logoUrl: storeConfig.logoUrl || storeConfig.logo?.url || "",
     heroImage: storeConfig.heroImage || "",
     whatsappNumber: storeConfig.whatsappNumber || storeConfig.phone || "",
@@ -51,6 +58,13 @@ const serializeStoreConfig = (storeConfig) => {
       Array.isArray(storeConfig.paymentMethods) && storeConfig.paymentMethods.length > 0
         ? storeConfig.paymentMethods
         : [...DEFAULT_STORE_PAYMENT_METHODS],
+    contactEmail: storeConfig.contactEmail || "",
+    phone: storeConfig.phone || storeConfig.whatsappNumber || "",
+    socialLinks: {
+      instagram: storeConfig.socialLinks?.instagram || "",
+      facebook: storeConfig.socialLinks?.facebook || "",
+      tiktok: storeConfig.socialLinks?.tiktok || "",
+    },
     createdAt: storeConfig.createdAt,
     updatedAt: storeConfig.updatedAt,
   };
@@ -58,12 +72,16 @@ const serializeStoreConfig = (storeConfig) => {
 
 const validateStoreConfigPayload = (payload) => {
   validateString(payload.storeName, "store name");
+  validateString(payload.heroTitle, "hero title");
+  validateString(payload.heroCopy, "hero copy");
   validateString(payload.logoUrl, "logo url");
   validateString(payload.heroImage, "hero image");
   validateString(payload.whatsappNumber, "whatsapp number");
   validateString(payload.currency, "currency");
   validateString(payload.primaryColor, "primary color");
   validateString(payload.secondaryColor, "secondary color");
+  validateString(payload.contactEmail, "contact email");
+  validateString(payload.phone, "phone");
 
   if (
     payload.enableWhatsappCheckout !== undefined &&
