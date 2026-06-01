@@ -100,17 +100,18 @@ export default function Navbar() {
         className="min-w-0 max-w-[calc(100%-5.5rem)] sm:max-w-[min(50vw,18rem)] lg:max-w-none"
         onClick={() => setIsMenuOpen(false)}
       >
-        {config.logoUrl ? (
-          <img
-            src={config.logoUrl}
-            alt={storeName}
-            className="h-8 w-auto object-contain sm:h-9"
-          />
-        ) : (
+        <div className="flex min-w-0 items-center gap-2.5">
+          {config.logoUrl ? (
+            <img
+              src={config.logoUrl}
+              alt={storeName}
+              className="h-7 w-auto shrink-0 object-contain sm:h-8"
+            />
+          ) : null}
           <div className="truncate text-base font-semibold tracking-[-0.03em] text-zinc-950 sm:text-lg">
             {storeName}
           </div>
-        )}
+        </div>
       </Link>
 
       <nav className="hidden min-w-0 items-center gap-5 lg:flex xl:gap-8">
