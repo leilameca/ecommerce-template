@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 
 import PageSEO from "../../components/shared/PageSEO";
 import { useLanguage } from "../../hooks/useLanguage";
+import { useStoreConfig } from "../../hooks/useStoreConfig";
+import { getLocalizedText } from "../../lib/localize-config";
 import { ROUTE_PATHS } from "../../routes/route-paths";
 
 const FAQ_KEYS = ["q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8"];
@@ -31,7 +33,23 @@ function FaqItem({ question, answer }) {
 }
 
 export default function FaqPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const { config } = useStoreConfig();
+
+  const configFaq =
+    Array.isArray(config.faqItems) && config.faqItems.length > 0
+      ? config.faqItems.map((item) => ({
+          question: getLocalizedText(item.question, language),
+          answer: getLocalizedText(item.answer, language),
+        }))
+      : null;
+
+  const faqList =
+    configFaq ||
+    FAQ_KEYS.map((key) => ({
+      question: t(`faq_${key}_q`),
+      answer: t(`faq_${key}_a`),
+    }));
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -50,11 +68,11 @@ export default function FaqPage() {
       </section>
 
       <div className="rounded-[2rem] border border-zinc-200/80 bg-white px-5 shadow-[0_20px_60px_rgba(15,23,42,0.04)] sm:px-8">
-        {FAQ_KEYS.map((key) => (
+        {faqList.map((item, index) => (
           <FaqItem
-            key={key}
-            question={t(`faq_${key}_q`)}
-            answer={t(`faq_${key}_a`)}
+            key={index}
+            question={item.question}
+            answer={item.answer}
           />
         ))}
       </div>

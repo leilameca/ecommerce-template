@@ -149,6 +149,32 @@ const storeConfigSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.Mixed,
       default: "",
     },
+    aboutTitle: {
+      type: mongoose.Schema.Types.Mixed,
+      default: "",
+    },
+    aboutCopy: {
+      type: mongoose.Schema.Types.Mixed,
+      default: "",
+    },
+    aboutMissionTitle: {
+      type: mongoose.Schema.Types.Mixed,
+      default: "",
+    },
+    aboutMissionCopy: {
+      type: mongoose.Schema.Types.Mixed,
+      default: "",
+    },
+    faqItems: {
+      type: [
+        {
+          _id: false,
+          question: { type: mongoose.Schema.Types.Mixed, default: "" },
+          answer: { type: mongoose.Schema.Types.Mixed, default: "" },
+        },
+      ],
+      default: [],
+    },
     socialLinks: {
       instagram: {
         type: String,

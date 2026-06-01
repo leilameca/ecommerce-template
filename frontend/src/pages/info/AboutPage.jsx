@@ -4,6 +4,7 @@ import Button from "../../components/ui/Button";
 import PageSEO from "../../components/shared/PageSEO";
 import { useLanguage } from "../../hooks/useLanguage";
 import { useStoreConfig } from "../../hooks/useStoreConfig";
+import { getLocalizedText } from "../../lib/localize-config";
 import { ROUTE_PATHS } from "../../routes/route-paths";
 
 const values = [
@@ -13,23 +14,28 @@ const values = [
 ];
 
 export default function AboutPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { config } = useStoreConfig();
   const storeName = config.storeName || "Commerce Studio";
 
+  const pageTitle = getLocalizedText(config.aboutTitle, language) || t("about_title");
+  const pageCopy = getLocalizedText(config.aboutCopy, language) || t("about_copy", { store: storeName });
+  const missionTitle = getLocalizedText(config.aboutMissionTitle, language) || t("about_mission_title");
+  const missionCopy = getLocalizedText(config.aboutMissionCopy, language) || t("about_mission_copy");
+
   return (
     <div className="space-y-8 sm:space-y-12">
-      <PageSEO title={t("about_title")} description={t("about_copy")} />
+      <PageSEO title={pageTitle} description={pageCopy} />
 
       <section className="max-w-3xl">
         <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-zinc-400">
           {t("about_eyebrow")}
         </span>
         <h1 className="mt-3 text-3xl font-semibold tracking-[-0.05em] text-zinc-950 sm:text-5xl">
-          {t("about_title")}
+          {pageTitle}
         </h1>
         <p className="mt-4 max-w-2xl text-base leading-8 text-zinc-600">
-          {t("about_copy", { store: storeName })}
+          {pageCopy}
         </p>
       </section>
 
@@ -38,10 +44,10 @@ export default function AboutPage() {
           {t("about_mission_label")}
         </div>
         <h2 className="mt-4 text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">
-          {t("about_mission_title")}
+          {missionTitle}
         </h2>
         <p className="mt-4 max-w-2xl text-base leading-8 text-zinc-300">
-          {t("about_mission_copy")}
+          {missionCopy}
         </p>
       </div>
 

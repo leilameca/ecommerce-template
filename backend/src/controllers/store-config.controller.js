@@ -29,6 +29,11 @@ const ALLOWED_STORE_CONFIG_FIELDS = [
   "editorialPoint1Copy",
   "editorialPoint2Title",
   "editorialPoint2Copy",
+  "aboutTitle",
+  "aboutCopy",
+  "aboutMissionTitle",
+  "aboutMissionCopy",
+  "faqItems",
   "enableWhatsappCheckout",
   "enableOnlinePayment",
   "paymentMethods",
@@ -46,6 +51,10 @@ const I18N_TEXT_FIELDS = [
   "editorialPoint1Copy",
   "editorialPoint2Title",
   "editorialPoint2Copy",
+  "aboutTitle",
+  "aboutCopy",
+  "aboutMissionTitle",
+  "aboutMissionCopy",
 ];
 
 const toI18n = (v) => {
@@ -96,6 +105,16 @@ const serializeStoreConfig = (storeConfig) => {
     editorialPoint1Copy: toI18n(storeConfig.editorialPoint1Copy),
     editorialPoint2Title: toI18n(storeConfig.editorialPoint2Title),
     editorialPoint2Copy: toI18n(storeConfig.editorialPoint2Copy),
+    aboutTitle: toI18n(storeConfig.aboutTitle),
+    aboutCopy: toI18n(storeConfig.aboutCopy),
+    aboutMissionTitle: toI18n(storeConfig.aboutMissionTitle),
+    aboutMissionCopy: toI18n(storeConfig.aboutMissionCopy),
+    faqItems: Array.isArray(storeConfig.faqItems)
+      ? storeConfig.faqItems.map((item) => ({
+          question: toI18n(item.question),
+          answer: toI18n(item.answer),
+        }))
+      : [],
     socialLinks: {
       instagram: storeConfig.socialLinks?.instagram || "",
       facebook: storeConfig.socialLinks?.facebook || "",
@@ -140,6 +159,24 @@ const validateStoreConfigPayload = (payload) => {
   validateI18nField(payload.editorialPoint1Copy, "editorialPoint1Copy");
   validateI18nField(payload.editorialPoint2Title, "editorialPoint2Title");
   validateI18nField(payload.editorialPoint2Copy, "editorialPoint2Copy");
+  validateI18nField(payload.aboutTitle, "aboutTitle");
+  validateI18nField(payload.aboutCopy, "aboutCopy");
+  validateI18nField(payload.aboutMissionTitle, "aboutMissionTitle");
+  validateI18nField(payload.aboutMissionCopy, "aboutMissionCopy");
+
+  if (payload.faqItems !== undefined) {
+    if (!Array.isArray(payload.faqItems)) {
+      throw new ApiError(400, "faqItems must be an array.");
+    }
+    for (let i = 0; i < payload.faqItems.length; i++) {
+      const item = payload.faqItems[i];
+      if (!item || typeof item !== "object") {
+        throw new ApiError(400, `faqItems[${i}] must be an object.`);
+      }
+      validateI18nField(item.question, `faqItems[${i}].question`);
+      validateI18nField(item.answer, `faqItems[${i}].answer`);
+    }
+  }
 
   const VALID_FONTS = ["default", "editorial", "minimal", "classic", "bold"];
   if (payload.fontFamily !== undefined && !VALID_FONTS.includes(payload.fontFamily)) {
@@ -221,6 +258,10 @@ const upsertStoreConfig = asyncHandler(async (req, res) => {
     if (payload[field] !== undefined) {
       storeConfig.markModified(field);
     }
+  }
+
+  if (payload.faqItems !== undefined) {
+    storeConfig.markModified("faqItems");
   }
 
   if (payload.whatsappNumber !== undefined) {

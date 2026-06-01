@@ -72,6 +72,22 @@ const createFormState = (config) => ({
   editorialPoint2Title_es: extractI18n(config.editorialPoint2Title, "es"),
   editorialPoint2Copy_en: extractI18n(config.editorialPoint2Copy, "en"),
   editorialPoint2Copy_es: extractI18n(config.editorialPoint2Copy, "es"),
+  aboutTitle_en: extractI18n(config.aboutTitle, "en"),
+  aboutTitle_es: extractI18n(config.aboutTitle, "es"),
+  aboutCopy_en: extractI18n(config.aboutCopy, "en"),
+  aboutCopy_es: extractI18n(config.aboutCopy, "es"),
+  aboutMissionTitle_en: extractI18n(config.aboutMissionTitle, "en"),
+  aboutMissionTitle_es: extractI18n(config.aboutMissionTitle, "es"),
+  aboutMissionCopy_en: extractI18n(config.aboutMissionCopy, "en"),
+  aboutMissionCopy_es: extractI18n(config.aboutMissionCopy, "es"),
+  faqItems: Array.isArray(config.faqItems)
+    ? config.faqItems.map((item) => ({
+        question_en: extractI18n(item.question, "en"),
+        question_es: extractI18n(item.question, "es"),
+        answer_en: extractI18n(item.answer, "en"),
+        answer_es: extractI18n(item.answer, "es"),
+      }))
+    : [],
   enableWhatsappCheckout: Boolean(config.enableWhatsappCheckout),
   enableOnlinePayment: Boolean(config.enableOnlinePayment),
   paymentMethods: config.paymentMethods || ["whatsapp", "cash_on_delivery"],
@@ -112,6 +128,28 @@ export default function AdminStoreConfigPage() {
           ? currentValue.paymentMethods.filter((method) => method !== paymentMethod)
           : [...currentValue.paymentMethods, paymentMethod],
       };
+    });
+  };
+
+  const addFaqItem = () => {
+    setFormState((prev) => ({
+      ...prev,
+      faqItems: [...prev.faqItems, { question_en: "", question_es: "", answer_en: "", answer_es: "" }],
+    }));
+  };
+
+  const removeFaqItem = (index) => {
+    setFormState((prev) => ({
+      ...prev,
+      faqItems: prev.faqItems.filter((_, i) => i !== index),
+    }));
+  };
+
+  const updateFaqItem = (index, field, value) => {
+    setFormState((prev) => {
+      const items = [...prev.faqItems];
+      items[index] = { ...items[index], [field]: value };
+      return { ...prev, faqItems: items };
     });
   };
 
@@ -166,6 +204,14 @@ export default function AdminStoreConfigPage() {
         editorialPoint1Copy: { en: formState.editorialPoint1Copy_en, es: formState.editorialPoint1Copy_es },
         editorialPoint2Title: { en: formState.editorialPoint2Title_en, es: formState.editorialPoint2Title_es },
         editorialPoint2Copy: { en: formState.editorialPoint2Copy_en, es: formState.editorialPoint2Copy_es },
+        aboutTitle: { en: formState.aboutTitle_en, es: formState.aboutTitle_es },
+        aboutCopy: { en: formState.aboutCopy_en, es: formState.aboutCopy_es },
+        aboutMissionTitle: { en: formState.aboutMissionTitle_en, es: formState.aboutMissionTitle_es },
+        aboutMissionCopy: { en: formState.aboutMissionCopy_en, es: formState.aboutMissionCopy_es },
+        faqItems: formState.faqItems.map((item) => ({
+          question: { en: item.question_en, es: item.question_es },
+          answer: { en: item.answer_en, es: item.answer_es },
+        })),
         enableWhatsappCheckout: formState.enableWhatsappCheckout,
         enableOnlinePayment: formState.enableOnlinePayment,
         paymentMethods: formState.paymentMethods,
@@ -551,6 +597,124 @@ export default function AdminStoreConfigPage() {
                 onChange={(event) => handleFieldChange("editorialPoint2Copy_es", event.target.value)}
               />
             </div>
+          </div>
+        </div>
+
+        <div>
+          <div className="text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-400">
+            {t("admin_about_section")}
+          </div>
+          <div className="mt-3 grid gap-4 xl:grid-cols-2">
+            <div className="space-y-3">
+              <TextInput
+                label={`${t("admin_about_title")} (EN)`}
+                value={formState.aboutTitle_en}
+                onChange={(event) => handleFieldChange("aboutTitle_en", event.target.value)}
+                placeholder="About Us"
+              />
+              <TextInput
+                label={`${t("admin_about_title")} (ES)`}
+                value={formState.aboutTitle_es}
+                onChange={(event) => handleFieldChange("aboutTitle_es", event.target.value)}
+                placeholder="Sobre Nosotros"
+              />
+            </div>
+            <div className="space-y-3">
+              <TextareaField
+                label={`${t("admin_about_copy")} (EN)`}
+                rows={2}
+                value={formState.aboutCopy_en}
+                onChange={(event) => handleFieldChange("aboutCopy_en", event.target.value)}
+              />
+              <TextareaField
+                label={`${t("admin_about_copy")} (ES)`}
+                rows={2}
+                value={formState.aboutCopy_es}
+                onChange={(event) => handleFieldChange("aboutCopy_es", event.target.value)}
+              />
+            </div>
+          </div>
+          <div className="mt-4 grid gap-4 xl:grid-cols-2">
+            <div className="space-y-3">
+              <TextInput
+                label={`${t("admin_about_mission_title")} (EN)`}
+                value={formState.aboutMissionTitle_en}
+                onChange={(event) => handleFieldChange("aboutMissionTitle_en", event.target.value)}
+              />
+              <TextInput
+                label={`${t("admin_about_mission_title")} (ES)`}
+                value={formState.aboutMissionTitle_es}
+                onChange={(event) => handleFieldChange("aboutMissionTitle_es", event.target.value)}
+              />
+            </div>
+            <div className="space-y-3">
+              <TextareaField
+                label={`${t("admin_about_mission_copy")} (EN)`}
+                rows={2}
+                value={formState.aboutMissionCopy_en}
+                onChange={(event) => handleFieldChange("aboutMissionCopy_en", event.target.value)}
+              />
+              <TextareaField
+                label={`${t("admin_about_mission_copy")} (ES)`}
+                rows={2}
+                value={formState.aboutMissionCopy_es}
+                onChange={(event) => handleFieldChange("aboutMissionCopy_es", event.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div className="text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-400">
+            {t("admin_faq_section")}
+          </div>
+          <div className="mt-3 space-y-4">
+            {formState.faqItems.length === 0 ? (
+              <p className="text-sm text-zinc-400">{t("admin_faq_empty")}</p>
+            ) : null}
+            {formState.faqItems.map((item, index) => (
+              <div key={index} className="rounded-[1.5rem] border border-zinc-200 bg-zinc-50/70 p-4 space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs font-medium text-zinc-500">#{index + 1}</span>
+                  <Button type="button" variant="ghost" size="sm" onClick={() => removeFaqItem(index)}>
+                    {t("admin_faq_remove")}
+                  </Button>
+                </div>
+                <div className="grid gap-3 xl:grid-cols-2">
+                  <TextInput
+                    label={`${t("admin_faq_question")} (EN)`}
+                    value={item.question_en}
+                    onChange={(e) => updateFaqItem(index, "question_en", e.target.value)}
+                    placeholder="Question in English"
+                  />
+                  <TextInput
+                    label={`${t("admin_faq_question")} (ES)`}
+                    value={item.question_es}
+                    onChange={(e) => updateFaqItem(index, "question_es", e.target.value)}
+                    placeholder="Pregunta en Español"
+                  />
+                </div>
+                <div className="grid gap-3 xl:grid-cols-2">
+                  <TextareaField
+                    label={`${t("admin_faq_answer")} (EN)`}
+                    rows={2}
+                    value={item.answer_en}
+                    onChange={(e) => updateFaqItem(index, "answer_en", e.target.value)}
+                    placeholder="Answer in English"
+                  />
+                  <TextareaField
+                    label={`${t("admin_faq_answer")} (ES)`}
+                    rows={2}
+                    value={item.answer_es}
+                    onChange={(e) => updateFaqItem(index, "answer_es", e.target.value)}
+                    placeholder="Respuesta en Español"
+                  />
+                </div>
+              </div>
+            ))}
+            <Button type="button" variant="secondary" size="sm" onClick={addFaqItem}>
+              + {t("admin_faq_add")}
+            </Button>
           </div>
         </div>
 

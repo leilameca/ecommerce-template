@@ -123,6 +123,7 @@ export default function StoreFooter() {
           <div className="flex flex-wrap gap-4">
             <Link to={ROUTE_PATHS.privacy} className="hover:text-zinc-950 transition-colors">{t("footer_privacy")}</Link>
             <Link to={ROUTE_PATHS.terms} className="hover:text-zinc-950 transition-colors">{t("footer_terms")}</Link>
+            <Link to={ROUTE_PATHS.adminDashboard} className="hover:text-zinc-950 transition-colors opacity-50">Admin</Link>
           </div>
         </div>
       </div>
