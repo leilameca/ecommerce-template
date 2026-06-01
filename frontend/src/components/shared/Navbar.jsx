@@ -64,6 +64,25 @@ function NavIcon({ name, className = "h-4 w-4" }) {
     );
   }
 
+  if (name === "info") {
+    return (
+      <svg {...commonProps}>
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="16" x2="12" y2="12" />
+        <line x1="12" y1="8" x2="12.01" y2="8" />
+      </svg>
+    );
+  }
+
+  if (name === "mail") {
+    return (
+      <svg {...commonProps}>
+        <rect x="2" y="4" width="20" height="16" rx="2" />
+        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+      </svg>
+    );
+  }
+
   return (
     <svg {...commonProps}>
       <rect x="4" y="4" width="6" height="6" />
@@ -102,6 +121,8 @@ export default function Navbar() {
       to: { pathname: ROUTE_PATHS.home, hash: "#featured" },
       icon: "star",
     },
+    { label: t("nav_about"), to: ROUTE_PATHS.about, icon: "info" },
+    { label: t("nav_contact"), to: ROUTE_PATHS.contact, icon: "mail" },
   ];
 
   return (
