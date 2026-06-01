@@ -25,7 +25,7 @@ export default function StoreFooter() {
   const hasContact = config.contactEmail || config.phone || config.whatsappNumber;
 
   return (
-    <footer className="border-t border-zinc-200/80 bg-white">
+    <footer className="border-t border-zinc-200/80" style={{ backgroundColor: "var(--color-background, #ffffff)" }}>
       <div className="mx-auto grid max-w-[1380px] gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[minmax(0,1.4fr)_repeat(4,minmax(0,0.6fr))] lg:px-10 lg:py-16">
         <div className="max-w-md">
           <div className="text-[11px] font-medium uppercase tracking-[0.28em] text-zinc-400">

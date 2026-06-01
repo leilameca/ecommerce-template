@@ -177,7 +177,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-[2rem] bg-zinc-100">
+        <div className="overflow-hidden rounded-[2rem]" style={{ backgroundColor: "var(--color-secondary, #f0f0f0)" }}>
           {heroImage ? (
             <img
               src={heroImage}
@@ -227,7 +227,7 @@ export default function HomePage() {
       </section>
 
       <section className="grid gap-6 border-t border-zinc-200/80 pt-10 sm:gap-8 sm:pt-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center">
-        <div className="overflow-hidden rounded-[2rem] bg-[#f3f3f3]">
+        <div className="overflow-hidden rounded-[2rem]" style={{ backgroundColor: "var(--color-secondary, #f3f3f3)" }}>
           {featuredProducts[1]?.images?.[0]?.url ? (
             <img
               src={featuredProducts[1].images[0].url}

@@ -195,7 +195,7 @@ export default function Navbar() {
         >
           <NavIcon name="bag" />
           {itemCount > 0 ? (
-            <span className="absolute -right-1 -top-1 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-zinc-950 px-1 text-[10px] font-medium text-white">
+            <span className="absolute -right-1 -top-1 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-medium text-white" style={{ backgroundColor: "var(--color-primary, #111)" }}>
               {itemCount}
             </span>
           ) : null}
@@ -239,7 +239,7 @@ export default function Navbar() {
                   [
                     "inline-flex items-center gap-2 rounded-full border px-4 py-3 text-sm transition-colors duration-200",
                     isActive && typeof item.to === "string"
-                      ? "border-zinc-950 bg-zinc-950 text-white hover:text-white [&_*]:text-inherit"
+                      ? "border-[var(--color-primary,#111)] bg-[var(--color-primary,#111)] text-white hover:text-white [&_*]:text-inherit"
                       : "border-zinc-200 text-zinc-700 hover:border-zinc-300 hover:text-zinc-950",
                   ].join(" ")
                 }
@@ -271,7 +271,8 @@ export default function Navbar() {
 
               <Link
                 to={ROUTE_PATHS.checkout}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-zinc-950 bg-zinc-950 px-4 py-3 text-sm font-medium text-white hover:text-white [&_*]:text-inherit col-span-full sm:col-span-1"
+                className="inline-flex items-center justify-center gap-2 rounded-full border px-4 py-3 text-sm font-medium text-white hover:text-white [&_*]:text-inherit col-span-full sm:col-span-1"
+                style={{ backgroundColor: "var(--color-primary, #111)", borderColor: "var(--color-primary, #111)" }}
                 onClick={() => setIsMenuOpen(false)}
               >
                 <NavIcon name="arrow" />
