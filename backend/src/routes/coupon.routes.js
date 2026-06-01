@@ -1,5 +1,5 @@
 const express = require("express");
-const { protect, authorize } = require("../middlewares/auth.middleware");
+const { protect, restrictTo } = require("../middlewares/auth.middleware");
 const {
   listCoupons,
   createCoupon,
@@ -14,7 +14,7 @@ const router = express.Router();
 router.post("/validate", validateCoupon);
 
 // Admin only
-router.use(protect, authorize("super-admin", "admin", "manager"));
+router.use(protect, restrictTo("super-admin", "admin", "manager"));
 router.get("/", listCoupons);
 router.post("/", createCoupon);
 router.patch("/:id/toggle", toggleCoupon);
