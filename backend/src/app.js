@@ -13,9 +13,20 @@ const { handleWebhook } = require("./controllers/stripe.controller");
 
 const app = express();
 
+const allowedOrigins = env.CLIENT_URL
+  ? env.CLIENT_URL.split(",").map((u) => u.trim()).filter(Boolean)
+  : ["http://localhost:5173"];
+
 app.use(
   cors({
-    origin: env.CLIENT_URL,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (curl, Postman, server-to-server)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.some((allowed) => origin === allowed || origin.endsWith(".vercel.app"))) {
+        return callback(null, true);
+      }
+      callback(new Error(`CORS: origin ${origin} not allowed`));
+    },
     credentials: true,
   })
 );
