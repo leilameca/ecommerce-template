@@ -110,29 +110,32 @@ export default function AdminDashboardPage() {
       setIsLoading(true);
       setErrorMessage("");
 
-      try {
-        const [productsRes, categoriesRes, ordersRes, analyticsRes] = await Promise.all([
-          getProducts({ page: 1, limit: 1 }),
-          getCategories(),
-          getOrders({ page: 1, limit: 6 }),
-          getSalesAnalytics({ days: 30 }),
-        ]);
+      const [productsRes, categoriesRes, ordersRes, analyticsRes] = await Promise.allSettled([
+        getProducts({ page: 1, limit: 1 }),
+        getCategories(),
+        getOrders({ page: 1, limit: 6 }),
+        getSalesAnalytics({ days: 30 }),
+      ]);
 
-        if (!isMounted) return;
+      if (!isMounted) return;
 
-        setStats({
-          products: productsRes?.pagination?.totalItems || 0,
-          categories: categoriesRes?.data?.length || 0,
-          orders: ordersRes?.pagination?.totalItems || 0,
-        });
-        setRecentOrders(ordersRes?.data || []);
-        setAnalytics(analyticsRes?.data || null);
-      } catch (error) {
-        if (!isMounted) return;
-        setErrorMessage(error?.message || "Dashboard data could not be loaded.");
-      } finally {
-        if (isMounted) setIsLoading(false);
+      if (productsRes.status === "fulfilled") {
+        setStats((prev) => ({ ...prev, products: productsRes.value?.pagination?.totalItems || 0 }));
       }
+      if (categoriesRes.status === "fulfilled") {
+        setStats((prev) => ({ ...prev, categories: categoriesRes.value?.data?.length || 0 }));
+      }
+      if (ordersRes.status === "fulfilled") {
+        setStats((prev) => ({ ...prev, orders: ordersRes.value?.pagination?.totalItems || 0 }));
+        setRecentOrders(ordersRes.value?.data || []);
+      }
+      if (analyticsRes.status === "fulfilled") {
+        setAnalytics(analyticsRes.value?.data || null);
+      } else {
+        setErrorMessage(analyticsRes.reason?.message || "Analytics data could not be loaded.");
+      }
+
+      setIsLoading(false);
     };
 
     loadDashboard();
