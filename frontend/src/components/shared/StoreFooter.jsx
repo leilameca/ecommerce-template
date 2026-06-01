@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 
 import { useLanguage } from "../../hooks/useLanguage";
 import { useStoreConfig } from "../../hooks/useStoreConfig";
+import { getLocalizedText } from "../../lib/localize-config";
 import { ROUTE_PATHS } from "../../routes/route-paths";
 
 function SocialIcon({ href, label, children }) {
@@ -17,7 +18,7 @@ function SocialIcon({ href, label, children }) {
 
 export default function StoreFooter() {
   const { config } = useStoreConfig();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const currentYear = new Date().getFullYear();
   const storeName = config.storeName || "Commerce Studio";
   const hasSocial = config.socialLinks?.instagram || config.socialLinks?.facebook || config.socialLinks?.tiktok;
@@ -32,11 +33,11 @@ export default function StoreFooter() {
           </div>
 
           <h2 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-zinc-950">
-            {config.heroTitle || t("footer_tagline")}
+            {getLocalizedText(config.heroTitle, language) || t("footer_tagline")}
           </h2>
 
           <p className="mt-4 text-sm leading-7 text-zinc-600">
-            {config.heroCopy || t("footer_copy")}
+            {getLocalizedText(config.heroCopy, language) || t("footer_copy")}
           </p>
 
           {hasSocial ? (

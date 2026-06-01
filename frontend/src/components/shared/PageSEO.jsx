@@ -1,12 +1,15 @@
 import { Helmet } from "react-helmet-async";
 
+import { useLanguage } from "../../hooks/useLanguage";
 import { useStoreConfig } from "../../hooks/useStoreConfig";
+import { getLocalizedText } from "../../lib/localize-config";
 
 export default function PageSEO({ title, description, image, canonical }) {
   const { config } = useStoreConfig();
+  const { language } = useLanguage();
   const storeName = config.storeName || "Commerce Studio";
   const fullTitle = title ? `${title} | ${storeName}` : storeName;
-  const metaDescription = description || config.heroCopy || `Shop at ${storeName}`;
+  const metaDescription = description || getLocalizedText(config.heroCopy, language) || `Shop at ${storeName}`;
   const ogImage = image || config.heroImage || config.logoUrl || "";
   const siteUrl = typeof window !== "undefined" ? window.location.origin : "";
   const canonicalUrl = canonical || (typeof window !== "undefined" ? window.location.href : "");

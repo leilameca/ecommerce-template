@@ -30,14 +30,12 @@ const storeConfigSchema = new mongoose.Schema(
       trim: true,
     },
     heroTitle: {
-      type: String,
+      type: mongoose.Schema.Types.Mixed,
       default: "",
-      trim: true,
     },
     heroCopy: {
-      type: String,
+      type: mongoose.Schema.Types.Mixed,
       default: "",
-      trim: true,
     },
     logoUrl: {
       type: String,
@@ -128,34 +126,28 @@ const storeConfigSchema = new mongoose.Schema(
       enum: ["default", "editorial", "minimal", "classic", "bold"],
     },
     editorialTitle: {
-      type: String,
+      type: mongoose.Schema.Types.Mixed,
       default: "",
-      trim: true,
     },
     editorialCopy: {
-      type: String,
+      type: mongoose.Schema.Types.Mixed,
       default: "",
-      trim: true,
     },
     editorialPoint1Title: {
-      type: String,
+      type: mongoose.Schema.Types.Mixed,
       default: "",
-      trim: true,
     },
     editorialPoint1Copy: {
-      type: String,
+      type: mongoose.Schema.Types.Mixed,
       default: "",
-      trim: true,
     },
     editorialPoint2Title: {
-      type: String,
+      type: mongoose.Schema.Types.Mixed,
       default: "",
-      trim: true,
     },
     editorialPoint2Copy: {
-      type: String,
+      type: mongoose.Schema.Types.Mixed,
       default: "",
-      trim: true,
     },
     socialLinks: {
       instagram: {

@@ -40,10 +40,18 @@ const FONT_OPTIONS = [
   { value: "bold", label: "Bold (Montserrat)", preview: "Aa" },
 ];
 
+const extractI18n = (v, lang) => {
+  if (!v) return "";
+  if (typeof v === "object" && !Array.isArray(v)) return v[lang] || "";
+  return String(v);
+};
+
 const createFormState = (config) => ({
   storeName: config.storeName || "",
-  heroTitle: config.heroTitle || "",
-  heroCopy: config.heroCopy || "",
+  heroTitle_en: extractI18n(config.heroTitle, "en"),
+  heroTitle_es: extractI18n(config.heroTitle, "es"),
+  heroCopy_en: extractI18n(config.heroCopy, "en"),
+  heroCopy_es: extractI18n(config.heroCopy, "es"),
   logoUrl: config.logoUrl || "",
   heroImage: config.heroImage || "",
   whatsappNumber: config.whatsappNumber || "",
@@ -52,12 +60,18 @@ const createFormState = (config) => ({
   secondaryColor: config.secondaryColor || "#f5f5f5",
   backgroundColor: config.backgroundColor || "#ffffff",
   fontFamily: config.fontFamily || "default",
-  editorialTitle: config.editorialTitle || "",
-  editorialCopy: config.editorialCopy || "",
-  editorialPoint1Title: config.editorialPoint1Title || "",
-  editorialPoint1Copy: config.editorialPoint1Copy || "",
-  editorialPoint2Title: config.editorialPoint2Title || "",
-  editorialPoint2Copy: config.editorialPoint2Copy || "",
+  editorialTitle_en: extractI18n(config.editorialTitle, "en"),
+  editorialTitle_es: extractI18n(config.editorialTitle, "es"),
+  editorialCopy_en: extractI18n(config.editorialCopy, "en"),
+  editorialCopy_es: extractI18n(config.editorialCopy, "es"),
+  editorialPoint1Title_en: extractI18n(config.editorialPoint1Title, "en"),
+  editorialPoint1Title_es: extractI18n(config.editorialPoint1Title, "es"),
+  editorialPoint1Copy_en: extractI18n(config.editorialPoint1Copy, "en"),
+  editorialPoint1Copy_es: extractI18n(config.editorialPoint1Copy, "es"),
+  editorialPoint2Title_en: extractI18n(config.editorialPoint2Title, "en"),
+  editorialPoint2Title_es: extractI18n(config.editorialPoint2Title, "es"),
+  editorialPoint2Copy_en: extractI18n(config.editorialPoint2Copy, "en"),
+  editorialPoint2Copy_es: extractI18n(config.editorialPoint2Copy, "es"),
   enableWhatsappCheckout: Boolean(config.enableWhatsappCheckout),
   enableOnlinePayment: Boolean(config.enableOnlinePayment),
   paymentMethods: config.paymentMethods || ["whatsapp", "cash_on_delivery"],
@@ -135,7 +149,28 @@ export default function AdminStoreConfigPage() {
 
     try {
       await upsertStoreConfig({
-        ...formState,
+        storeName: formState.storeName,
+        heroTitle: { en: formState.heroTitle_en, es: formState.heroTitle_es },
+        heroCopy: { en: formState.heroCopy_en, es: formState.heroCopy_es },
+        logoUrl: formState.logoUrl,
+        heroImage: formState.heroImage,
+        whatsappNumber: formState.whatsappNumber,
+        currency: formState.currency,
+        primaryColor: formState.primaryColor,
+        secondaryColor: formState.secondaryColor,
+        backgroundColor: formState.backgroundColor,
+        fontFamily: formState.fontFamily,
+        editorialTitle: { en: formState.editorialTitle_en, es: formState.editorialTitle_es },
+        editorialCopy: { en: formState.editorialCopy_en, es: formState.editorialCopy_es },
+        editorialPoint1Title: { en: formState.editorialPoint1Title_en, es: formState.editorialPoint1Title_es },
+        editorialPoint1Copy: { en: formState.editorialPoint1Copy_en, es: formState.editorialPoint1Copy_es },
+        editorialPoint2Title: { en: formState.editorialPoint2Title_en, es: formState.editorialPoint2Title_es },
+        editorialPoint2Copy: { en: formState.editorialPoint2Copy_en, es: formState.editorialPoint2Copy_es },
+        enableWhatsappCheckout: formState.enableWhatsappCheckout,
+        enableOnlinePayment: formState.enableOnlinePayment,
+        paymentMethods: formState.paymentMethods,
+        contactEmail: formState.contactEmail,
+        phone: formState.phone,
         socialLinks: {
           instagram: formState.instagram,
           facebook: formState.facebook,
@@ -191,17 +226,36 @@ export default function AdminStoreConfigPage() {
         </div>
 
         <div className="grid gap-4 xl:grid-cols-2">
-          <TextInput
-            label={t("admin_hero_title")}
-            value={formState.heroTitle}
-            onChange={(event) => handleFieldChange("heroTitle", event.target.value)}
-          />
-          <TextareaField
-            label={t("admin_hero_copy")}
-            rows={3}
-            value={formState.heroCopy}
-            onChange={(event) => handleFieldChange("heroCopy", event.target.value)}
-          />
+          <div className="space-y-3">
+            <TextInput
+              label={`${t("admin_hero_title")} (EN)`}
+              value={formState.heroTitle_en}
+              onChange={(event) => handleFieldChange("heroTitle_en", event.target.value)}
+              placeholder="Your headline in English"
+            />
+            <TextInput
+              label={`${t("admin_hero_title")} (ES)`}
+              value={formState.heroTitle_es}
+              onChange={(event) => handleFieldChange("heroTitle_es", event.target.value)}
+              placeholder="Tu titular en Español"
+            />
+          </div>
+          <div className="space-y-3">
+            <TextareaField
+              label={`${t("admin_hero_copy")} (EN)`}
+              rows={2}
+              value={formState.heroCopy_en}
+              onChange={(event) => handleFieldChange("heroCopy_en", event.target.value)}
+              placeholder="Subtitle or description in English"
+            />
+            <TextareaField
+              label={`${t("admin_hero_copy")} (ES)`}
+              rows={2}
+              value={formState.heroCopy_es}
+              onChange={(event) => handleFieldChange("heroCopy_es", event.target.value)}
+              placeholder="Subtítulo o descripción en Español"
+            />
+          </div>
         </div>
 
         <div className="grid gap-4 xl:grid-cols-2">
@@ -421,43 +475,80 @@ export default function AdminStoreConfigPage() {
             {t("admin_editorial_section")}
           </div>
           <div className="mt-3 grid gap-4 xl:grid-cols-2">
-            <TextInput
-              label={t("admin_editorial_title")}
-              value={formState.editorialTitle}
-              onChange={(event) => handleFieldChange("editorialTitle", event.target.value)}
-            />
-            <TextareaField
-              label={t("admin_editorial_copy")}
-              rows={3}
-              value={formState.editorialCopy}
-              onChange={(event) => handleFieldChange("editorialCopy", event.target.value)}
-            />
+            <div className="space-y-3">
+              <TextInput
+                label={`${t("admin_editorial_title")} (EN)`}
+                value={formState.editorialTitle_en}
+                onChange={(event) => handleFieldChange("editorialTitle_en", event.target.value)}
+              />
+              <TextInput
+                label={`${t("admin_editorial_title")} (ES)`}
+                value={formState.editorialTitle_es}
+                onChange={(event) => handleFieldChange("editorialTitle_es", event.target.value)}
+              />
+            </div>
+            <div className="space-y-3">
+              <TextareaField
+                label={`${t("admin_editorial_copy")} (EN)`}
+                rows={2}
+                value={formState.editorialCopy_en}
+                onChange={(event) => handleFieldChange("editorialCopy_en", event.target.value)}
+              />
+              <TextareaField
+                label={`${t("admin_editorial_copy")} (ES)`}
+                rows={2}
+                value={formState.editorialCopy_es}
+                onChange={(event) => handleFieldChange("editorialCopy_es", event.target.value)}
+              />
+            </div>
           </div>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div className="space-y-3">
               <TextInput
-                label={t("admin_editorial_point1_title")}
-                value={formState.editorialPoint1Title}
-                onChange={(event) => handleFieldChange("editorialPoint1Title", event.target.value)}
+                label={`${t("admin_editorial_point1_title")} (EN)`}
+                value={formState.editorialPoint1Title_en}
+                onChange={(event) => handleFieldChange("editorialPoint1Title_en", event.target.value)}
+              />
+              <TextInput
+                label={`${t("admin_editorial_point1_title")} (ES)`}
+                value={formState.editorialPoint1Title_es}
+                onChange={(event) => handleFieldChange("editorialPoint1Title_es", event.target.value)}
               />
               <TextareaField
                 rows={2}
-                label={t("admin_editorial_point1_copy")}
-                value={formState.editorialPoint1Copy}
-                onChange={(event) => handleFieldChange("editorialPoint1Copy", event.target.value)}
+                label={`${t("admin_editorial_point1_copy")} (EN)`}
+                value={formState.editorialPoint1Copy_en}
+                onChange={(event) => handleFieldChange("editorialPoint1Copy_en", event.target.value)}
+              />
+              <TextareaField
+                rows={2}
+                label={`${t("admin_editorial_point1_copy")} (ES)`}
+                value={formState.editorialPoint1Copy_es}
+                onChange={(event) => handleFieldChange("editorialPoint1Copy_es", event.target.value)}
               />
             </div>
             <div className="space-y-3">
               <TextInput
-                label={t("admin_editorial_point2_title")}
-                value={formState.editorialPoint2Title}
-                onChange={(event) => handleFieldChange("editorialPoint2Title", event.target.value)}
+                label={`${t("admin_editorial_point2_title")} (EN)`}
+                value={formState.editorialPoint2Title_en}
+                onChange={(event) => handleFieldChange("editorialPoint2Title_en", event.target.value)}
+              />
+              <TextInput
+                label={`${t("admin_editorial_point2_title")} (ES)`}
+                value={formState.editorialPoint2Title_es}
+                onChange={(event) => handleFieldChange("editorialPoint2Title_es", event.target.value)}
               />
               <TextareaField
                 rows={2}
-                label={t("admin_editorial_point2_copy")}
-                value={formState.editorialPoint2Copy}
-                onChange={(event) => handleFieldChange("editorialPoint2Copy", event.target.value)}
+                label={`${t("admin_editorial_point2_copy")} (EN)`}
+                value={formState.editorialPoint2Copy_en}
+                onChange={(event) => handleFieldChange("editorialPoint2Copy_en", event.target.value)}
+              />
+              <TextareaField
+                rows={2}
+                label={`${t("admin_editorial_point2_copy")} (ES)`}
+                value={formState.editorialPoint2Copy_es}
+                onChange={(event) => handleFieldChange("editorialPoint2Copy_es", event.target.value)}
               />
             </div>
           </div>

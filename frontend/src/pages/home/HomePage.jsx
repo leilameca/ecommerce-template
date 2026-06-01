@@ -6,6 +6,7 @@ import { useHomeMerchandising } from "../../hooks/useHomeMerchandising";
 import { useLanguage } from "../../hooks/useLanguage";
 import { useStoreConfig } from "../../hooks/useStoreConfig";
 import { formatCurrency } from "../../lib/format-currency";
+import { getLocalizedText } from "../../lib/localize-config";
 import { ROUTE_PATHS } from "../../routes/route-paths";
 import QuickAddToCartButton from "../../components/shared/QuickAddToCartButton";
 
@@ -119,7 +120,7 @@ function ProductTile({ product, currency }) {
 
 export default function HomePage() {
   const { config } = useStoreConfig();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { featuredCategories, featuredProducts, isLoading } = useHomeMerchandising();
   const location = useLocation();
 
@@ -141,7 +142,7 @@ export default function HomePage() {
 
   return (
     <div className="space-y-14 pb-8 sm:space-y-20 lg:space-y-24">
-      <PageSEO description={config.heroCopy} image={config.heroImage} />
+      <PageSEO description={getLocalizedText(config.heroCopy, language)} image={config.heroImage} />
       <section className="grid gap-5 sm:gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-10">
         <div className="flex flex-col justify-end py-0 sm:py-2 lg:py-8">
           <div className="max-w-xl">
@@ -150,11 +151,11 @@ export default function HomePage() {
             </div>
 
             <h1 className="mt-5 text-[2.8rem] font-semibold leading-[0.96] tracking-[-0.06em] text-zinc-950 sm:text-6xl lg:text-[4.9rem]">
-              {config.heroTitle || t("home_hero_title")}
+              {getLocalizedText(config.heroTitle, language) || t("home_hero_title")}
             </h1>
 
             <p className="mt-5 max-w-xl text-base leading-7 text-zinc-500 sm:text-lg">
-              {config.heroCopy || t("home_hero_copy")}
+              {getLocalizedText(config.heroCopy, language) || t("home_hero_copy")}
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">
@@ -244,29 +245,29 @@ export default function HomePage() {
           </div>
 
           <h2 className="mt-5 text-3xl font-semibold leading-tight tracking-[-0.05em] text-zinc-950 sm:text-4xl">
-            {config.editorialTitle || t("home_editorial_title")}
+            {getLocalizedText(config.editorialTitle, language) || t("home_editorial_title")}
           </h2>
 
           <p className="mt-5 text-base leading-7 text-zinc-500">
-            {config.editorialCopy || t("home_editorial_copy")}
+            {getLocalizedText(config.editorialCopy, language) || t("home_editorial_copy")}
           </p>
 
           <div className="mt-8 grid gap-5 border-t border-zinc-200/80 pt-6 sm:grid-cols-2">
             <div>
               <div className="text-sm font-medium text-zinc-950">
-                {config.editorialPoint1Title || t("home_editorial_point_1_title")}
+                {getLocalizedText(config.editorialPoint1Title, language) || t("home_editorial_point_1_title")}
               </div>
               <p className="mt-2 text-sm leading-6 text-zinc-500">
-                {config.editorialPoint1Copy || t("home_editorial_point_1_copy")}
+                {getLocalizedText(config.editorialPoint1Copy, language) || t("home_editorial_point_1_copy")}
               </p>
             </div>
 
             <div>
               <div className="text-sm font-medium text-zinc-950">
-                {config.editorialPoint2Title || t("home_editorial_point_2_title")}
+                {getLocalizedText(config.editorialPoint2Title, language) || t("home_editorial_point_2_title")}
               </div>
               <p className="mt-2 text-sm leading-6 text-zinc-500">
-                {config.editorialPoint2Copy || t("home_editorial_point_2_copy")}
+                {getLocalizedText(config.editorialPoint2Copy, language) || t("home_editorial_point_2_copy")}
               </p>
             </div>
           </div>

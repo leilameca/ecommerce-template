@@ -37,6 +37,26 @@ const ALLOWED_STORE_CONFIG_FIELDS = [
   "socialLinks",
 ];
 
+const I18N_TEXT_FIELDS = [
+  "heroTitle",
+  "heroCopy",
+  "editorialTitle",
+  "editorialCopy",
+  "editorialPoint1Title",
+  "editorialPoint1Copy",
+  "editorialPoint2Title",
+  "editorialPoint2Copy",
+];
+
+const toI18n = (v) => {
+  if (!v) return { en: "", es: "" };
+  if (typeof v === "object" && !Array.isArray(v)) {
+    return { en: v.en || "", es: v.es || "" };
+  }
+  const str = String(v);
+  return { en: str, es: str };
+};
+
 const serializeStoreConfig = (storeConfig) => {
   if (!storeConfig) {
     return {};
@@ -45,8 +65,8 @@ const serializeStoreConfig = (storeConfig) => {
   return {
     id: storeConfig._id,
     storeName: storeConfig.storeName || "My Store",
-    heroTitle: storeConfig.heroTitle || "",
-    heroCopy: storeConfig.heroCopy || "",
+    heroTitle: toI18n(storeConfig.heroTitle),
+    heroCopy: toI18n(storeConfig.heroCopy),
     logoUrl: storeConfig.logoUrl || storeConfig.logo?.url || "",
     heroImage: storeConfig.heroImage || "",
     whatsappNumber: storeConfig.whatsappNumber || storeConfig.phone || "",
@@ -70,12 +90,12 @@ const serializeStoreConfig = (storeConfig) => {
     phone: storeConfig.phone || storeConfig.whatsappNumber || "",
     backgroundColor: storeConfig.backgroundColor || "#ffffff",
     fontFamily: storeConfig.fontFamily || "default",
-    editorialTitle: storeConfig.editorialTitle || "",
-    editorialCopy: storeConfig.editorialCopy || "",
-    editorialPoint1Title: storeConfig.editorialPoint1Title || "",
-    editorialPoint1Copy: storeConfig.editorialPoint1Copy || "",
-    editorialPoint2Title: storeConfig.editorialPoint2Title || "",
-    editorialPoint2Copy: storeConfig.editorialPoint2Copy || "",
+    editorialTitle: toI18n(storeConfig.editorialTitle),
+    editorialCopy: toI18n(storeConfig.editorialCopy),
+    editorialPoint1Title: toI18n(storeConfig.editorialPoint1Title),
+    editorialPoint1Copy: toI18n(storeConfig.editorialPoint1Copy),
+    editorialPoint2Title: toI18n(storeConfig.editorialPoint2Title),
+    editorialPoint2Copy: toI18n(storeConfig.editorialPoint2Copy),
     socialLinks: {
       instagram: storeConfig.socialLinks?.instagram || "",
       facebook: storeConfig.socialLinks?.facebook || "",
@@ -86,10 +106,25 @@ const serializeStoreConfig = (storeConfig) => {
   };
 };
 
+const validateI18nField = (value, fieldName) => {
+  if (value === undefined) return;
+  if (typeof value === "string") return;
+  if (typeof value === "object" && !Array.isArray(value)) {
+    if (value.en !== undefined && typeof value.en !== "string") {
+      throw new ApiError(400, `${fieldName}.en must be a string.`);
+    }
+    if (value.es !== undefined && typeof value.es !== "string") {
+      throw new ApiError(400, `${fieldName}.es must be a string.`);
+    }
+    return;
+  }
+  throw new ApiError(400, `${fieldName} must be a string or { en, es } object.`);
+};
+
 const validateStoreConfigPayload = (payload) => {
   validateString(payload.storeName, "store name");
-  validateString(payload.heroTitle, "hero title");
-  validateString(payload.heroCopy, "hero copy");
+  validateI18nField(payload.heroTitle, "heroTitle");
+  validateI18nField(payload.heroCopy, "heroCopy");
   validateString(payload.logoUrl, "logo url");
   validateString(payload.heroImage, "hero image");
   validateString(payload.whatsappNumber, "whatsapp number");
@@ -99,12 +134,12 @@ const validateStoreConfigPayload = (payload) => {
   validateString(payload.contactEmail, "contact email");
   validateString(payload.phone, "phone");
   validateString(payload.backgroundColor, "background color");
-  validateString(payload.editorialTitle, "editorial title");
-  validateString(payload.editorialCopy, "editorial copy");
-  validateString(payload.editorialPoint1Title, "editorial point 1 title");
-  validateString(payload.editorialPoint1Copy, "editorial point 1 copy");
-  validateString(payload.editorialPoint2Title, "editorial point 2 title");
-  validateString(payload.editorialPoint2Copy, "editorial point 2 copy");
+  validateI18nField(payload.editorialTitle, "editorialTitle");
+  validateI18nField(payload.editorialCopy, "editorialCopy");
+  validateI18nField(payload.editorialPoint1Title, "editorialPoint1Title");
+  validateI18nField(payload.editorialPoint1Copy, "editorialPoint1Copy");
+  validateI18nField(payload.editorialPoint2Title, "editorialPoint2Title");
+  validateI18nField(payload.editorialPoint2Copy, "editorialPoint2Copy");
 
   const VALID_FONTS = ["default", "editorial", "minimal", "classic", "bold"];
   if (payload.fontFamily !== undefined && !VALID_FONTS.includes(payload.fontFamily)) {
@@ -181,6 +216,12 @@ const upsertStoreConfig = asyncHandler(async (req, res) => {
   }
 
   Object.assign(storeConfig, payload);
+
+  for (const field of I18N_TEXT_FIELDS) {
+    if (payload[field] !== undefined) {
+      storeConfig.markModified(field);
+    }
+  }
 
   if (payload.whatsappNumber !== undefined) {
     storeConfig.phone = payload.whatsappNumber;
