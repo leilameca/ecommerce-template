@@ -1,5 +1,8 @@
+import { useNavigate } from "react-router-dom";
+
 import { useCart } from "../../hooks/useCart";
 import { useLanguage } from "../../hooks/useLanguage";
+import { ROUTE_PATHS } from "../../routes/route-paths";
 
 function CartPlusIcon({ className = "h-4 w-4" }) {
   return (
@@ -28,7 +31,9 @@ export default function QuickAddToCartButton({
 }) {
   const { addItem } = useCart();
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const isOutOfStock = !product?.stock || product.stock <= 0;
+  const hasVariants = Array.isArray(product?.variants) && product.variants.length > 0;
   const sizeClassName =
     {
       sm: "h-10 w-10",
@@ -40,6 +45,11 @@ export default function QuickAddToCartButton({
     event.stopPropagation();
 
     if (isOutOfStock) {
+      return;
+    }
+
+    if (hasVariants) {
+      navigate(ROUTE_PATHS.productDetail.replace(":slug", product.slug));
       return;
     }
 

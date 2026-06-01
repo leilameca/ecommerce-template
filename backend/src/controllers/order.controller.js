@@ -87,6 +87,10 @@ const normalizeOrderItemsInput = (items) => {
     return {
       product: String(item.product),
       quantity: item.quantity,
+      variantSelections:
+        item.variantSelections && typeof item.variantSelections === "object"
+          ? item.variantSelections
+          : {},
     };
   });
 };
@@ -148,7 +152,7 @@ const createOrder = asyncHandler(async (req, res) => {
         }
       });
 
-      const items = normalizedItems.map(({ product, quantity }) => {
+      const items = normalizedItems.map(({ product, quantity, variantSelections }) => {
         const dbProduct = productsMap.get(product);
         const lineTotal = roundCurrencyValue(dbProduct.price * quantity);
 
@@ -158,6 +162,7 @@ const createOrder = asyncHandler(async (req, res) => {
           price: dbProduct.price,
           quantity,
           lineTotal,
+          variantSelections: variantSelections || {},
         };
       });
 

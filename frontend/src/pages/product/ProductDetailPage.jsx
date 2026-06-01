@@ -99,9 +99,32 @@ function ProductDetailsPanel({ product, currency, t }) {
         : t("product_detail_ready")
       : t("product_detail_unavailable_stock");
   const [quantity, setQuantity] = useState(1);
+  const [selectedVariants, setSelectedVariants] = useState({});
+  const [variantError, setVariantError] = useState("");
   const { addItem } = useCart();
 
-  useEffect(() => { setQuantity(1); }, [product._id]);
+  const hasVariants = Array.isArray(product.variants) && product.variants.length > 0;
+  const allVariantsSelected = !hasVariants || product.variants.every((v) => selectedVariants[v.name]);
+
+  useEffect(() => {
+    setQuantity(1);
+    setSelectedVariants({});
+    setVariantError("");
+  }, [product._id]);
+
+  const handleSelectVariant = (variantName, option) => {
+    setSelectedVariants((prev) => ({ ...prev, [variantName]: option }));
+    setVariantError("");
+  };
+
+  const handleAddToCart = () => {
+    if (!allVariantsSelected) {
+      setVariantError(t("product_detail_variants_required"));
+      return;
+    }
+    addItem(product, quantity, selectedVariants);
+    setVariantError("");
+  };
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -131,6 +154,42 @@ function ProductDetailsPanel({ product, currency, t }) {
           </div>
         </div>
 
+        {hasVariants ? (
+          <div className="mt-6 space-y-5 border-t border-zinc-100 pt-6">
+            <div className="text-[10px] font-medium uppercase tracking-[0.24em] text-zinc-400">{t("product_detail_variants")}</div>
+            {product.variants.map((variant) => (
+              <div key={variant.name} className="space-y-2">
+                <div className="text-sm font-medium text-zinc-700">
+                  {t("product_detail_select_variant", { name: variant.name })}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {variant.options.map((option) => {
+                    const isSelected = selectedVariants[variant.name] === option;
+                    return (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => handleSelectVariant(variant.name, option)}
+                        className={[
+                          "rounded-full border px-4 py-2 text-sm font-medium transition-colors duration-150",
+                          isSelected
+                            ? "border-zinc-950 bg-zinc-950 text-white"
+                            : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-400",
+                        ].join(" ")}
+                      >
+                        {option}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+            {variantError ? (
+              <p className="text-xs text-rose-600">{variantError}</p>
+            ) : null}
+          </div>
+        ) : null}
+
         <div className="mt-8 flex flex-col gap-4">
           <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 p-1">
@@ -144,7 +203,7 @@ function ProductDetailsPanel({ product, currency, t }) {
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
-            <Button size="lg" className="w-full" disabled={product.stock <= 0} onClick={() => addItem(product, quantity)}>
+            <Button size="lg" className="w-full" disabled={product.stock <= 0} onClick={handleAddToCart}>
               {t("product_detail_add_to_cart")}
             </Button>
             <Link to={ROUTE_PATHS.cart} className="block">

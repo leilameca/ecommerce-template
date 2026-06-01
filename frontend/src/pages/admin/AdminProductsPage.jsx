@@ -29,6 +29,8 @@ const emptyProductForm = {
   draftImageUrl: "",
   draftImageAlt: "",
   isActive: true,
+  variants: [],
+  draftVariantName: "",
 };
 
 const mapProductToForm = (product) => ({
@@ -49,6 +51,14 @@ const mapProductToForm = (product) => ({
   draftImageUrl: "",
   draftImageAlt: "",
   isActive: Boolean(product.isActive),
+  variants: Array.isArray(product.variants)
+    ? product.variants.map((v) => ({
+        name: v.name || "",
+        options: Array.isArray(v.options) ? [...v.options] : [],
+        draftOption: "",
+      }))
+    : [],
+  draftVariantName: "",
 });
 
 export default function AdminProductsPage() {
@@ -103,6 +113,53 @@ export default function AdminProductsPage() {
       imageFileInputRef.current.value = "";
     }
     setFormMessage("");
+  };
+
+  const handleAddVariant = () => {
+    const name = (formState.draftVariantName || "").trim();
+    if (!name) return;
+    if (formState.variants.some((v) => v.name.toLowerCase() === name.toLowerCase())) return;
+    setFormState((cur) => ({
+      ...cur,
+      variants: [...cur.variants, { name, options: [], draftOption: "" }],
+      draftVariantName: "",
+    }));
+  };
+
+  const handleRemoveVariant = (index) => {
+    setFormState((cur) => ({
+      ...cur,
+      variants: cur.variants.filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleVariantDraftOption = (index, value) => {
+    setFormState((cur) => ({
+      ...cur,
+      variants: cur.variants.map((v, i) => (i === index ? { ...v, draftOption: value } : v)),
+    }));
+  };
+
+  const handleAddVariantOption = (index) => {
+    const option = (formState.variants[index]?.draftOption || "").trim();
+    if (!option) return;
+    setFormState((cur) => ({
+      ...cur,
+      variants: cur.variants.map((v, i) =>
+        i === index && !v.options.includes(option)
+          ? { ...v, options: [...v.options, option], draftOption: "" }
+          : v
+      ),
+    }));
+  };
+
+  const handleRemoveVariantOption = (variantIndex, option) => {
+    setFormState((cur) => ({
+      ...cur,
+      variants: cur.variants.map((v, i) =>
+        i === variantIndex ? { ...v, options: v.options.filter((o) => o !== option) } : v
+      ),
+    }));
   };
 
   const handleImageFieldChange = (index, fieldName, value) => {
@@ -212,6 +269,9 @@ export default function AdminProductsPage() {
           alt: image.alt || undefined,
         })),
       isActive: formState.isActive,
+      variants: formState.variants
+        .filter((v) => v.name && v.options.length > 0)
+        .map((v) => ({ name: v.name, options: v.options })),
     };
 
     try {
@@ -611,6 +671,97 @@ export default function AdminProductsPage() {
                 />
                 {t("admin_active_product")}
               </label>
+
+              {/* Variants section */}
+              <div className="space-y-3 rounded-md border border-zinc-200 bg-zinc-50/70 p-4">
+                <div className="space-y-1">
+                  <div className="text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-400">
+                    {t("admin_variants")}
+                  </div>
+                  <p className="text-sm text-zinc-500">{t("admin_variants_copy")}</p>
+                </div>
+
+                {formState.variants.length === 0 ? (
+                  <div className="rounded-md border border-dashed border-zinc-300 bg-white px-4 py-4 text-sm text-zinc-500">
+                    {t("admin_variants_empty")}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {formState.variants.map((variant, variantIndex) => (
+                      <div key={variant.name} className="rounded-md border border-zinc-200 bg-white p-3">
+                        <div className="mb-2 flex items-center justify-between gap-2">
+                          <span className="text-sm font-medium text-zinc-900">{variant.name}</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemoveVariant(variantIndex)}
+                          >
+                            {t("admin_variant_remove")}
+                          </Button>
+                        </div>
+
+                        <div className="mb-3 flex flex-wrap gap-1.5">
+                          {variant.options.map((option) => (
+                            <span
+                              key={option}
+                              className="inline-flex items-center gap-1 rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-xs font-medium text-zinc-700"
+                            >
+                              {option}
+                              <button
+                                type="button"
+                                className="ml-0.5 text-zinc-400 hover:text-rose-600 transition-colors"
+                                onClick={() => handleRemoveVariantOption(variantIndex, option)}
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={variant.draftOption}
+                            onChange={(e) => handleVariantDraftOption(variantIndex, e.target.value)}
+                            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddVariantOption(variantIndex); } }}
+                            placeholder={t("admin_variant_option_placeholder")}
+                            className="min-w-0 flex-1 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-950 outline-none transition-colors duration-200 placeholder:text-zinc-400 focus:border-zinc-950"
+                          />
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => handleAddVariantOption(variantIndex)}
+                          >
+                            {t("admin_variant_option_add")}
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={formState.draftVariantName}
+                    onChange={(e) => handleFormChange("draftVariantName", e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddVariant(); } }}
+                    placeholder={t("admin_variant_name_placeholder")}
+                    className="min-w-0 flex-1 rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-950 outline-none transition-colors duration-200 placeholder:text-zinc-400 focus:border-zinc-950"
+                  />
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    onClick={handleAddVariant}
+                    disabled={!formState.draftVariantName.trim()}
+                  >
+                    {t("admin_variant_add")}
+                  </Button>
+                </div>
+              </div>
 
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Button

@@ -61,6 +61,19 @@ function CartItemRow({ item, currency, onDecrease, onIncrease, onRemove, t }) {
             {item.name}
           </Link>
 
+          {item.selectedVariants && Object.keys(item.selectedVariants).length > 0 ? (
+            <div className="flex flex-wrap gap-1.5">
+              {Object.entries(item.selectedVariants).map(([variantName, option]) => (
+                <span
+                  key={variantName}
+                  className="inline-flex items-center rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-xs font-medium text-zinc-600"
+                >
+                  {variantName}: {option}
+                </span>
+              ))}
+            </div>
+          ) : null}
+
           <p className="text-sm text-zinc-500">
             {formatCurrency(item.price, currency)} {t("cart_each")}
           </p>
@@ -155,12 +168,12 @@ export default function CartPage() {
         <section className="space-y-5">
           {items.map((item) => (
             <CartItemRow
-              key={item.productId}
+              key={item.cartItemId}
               item={item}
               currency={currency}
-              onDecrease={() => updateQuantity(item.productId, item.quantity - 1)}
-              onIncrease={() => updateQuantity(item.productId, item.quantity + 1)}
-              onRemove={() => removeItem(item.productId)}
+              onDecrease={() => updateQuantity(item.cartItemId, item.quantity - 1)}
+              onIncrease={() => updateQuantity(item.cartItemId, item.quantity + 1)}
+              onRemove={() => removeItem(item.cartItemId)}
               t={t}
             />
           ))}

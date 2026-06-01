@@ -22,6 +22,7 @@ const ALLOWED_PRODUCT_FIELDS = [
   "stock",
   "category",
   "images",
+  "variants",
   "isActive",
 ];
 

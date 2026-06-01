@@ -33,6 +33,11 @@ const orderItemSchema = new mongoose.Schema(
       required: [true, "Line total is required for each order item."],
       min: 0,
     },
+    variantSelections: {
+      type: Map,
+      of: String,
+      default: () => new Map(),
+    },
   },
   {
     _id: false,

@@ -46,6 +46,22 @@ const productSchema = new mongoose.Schema(
       required: [true, "Category is required."],
     },
     images: [productImageSchema],
+    variants: [
+      {
+        _id: false,
+        name: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        options: [
+          {
+            type: String,
+            trim: true,
+          },
+        ],
+      },
+    ],
     isActive: {
       type: Boolean,
       default: true,

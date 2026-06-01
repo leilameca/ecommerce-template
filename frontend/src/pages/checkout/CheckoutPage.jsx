@@ -173,6 +173,7 @@ export default function CheckoutPage() {
         items: items.map((item) => ({
           product: item.productId,
           quantity: item.quantity,
+          variantSelections: item.selectedVariants || {},
         })),
       });
 
@@ -369,11 +370,16 @@ export default function CheckoutPage() {
           <div className="mt-6 space-y-4">
             {items.map((item) => (
               <div
-                key={item.productId}
+                key={item.cartItemId}
                 className="flex flex-col gap-2 border-b border-zinc-200/80 pb-4 text-sm sm:flex-row sm:items-start sm:justify-between sm:gap-4"
               >
                 <div>
                   <div className="font-medium text-zinc-950">{item.name}</div>
+                  {item.selectedVariants && Object.keys(item.selectedVariants).length > 0 ? (
+                    <div className="mt-0.5 text-xs text-zinc-400">
+                      {Object.entries(item.selectedVariants).map(([k, v]) => `${k}: ${v}`).join(" · ")}
+                    </div>
+                  ) : null}
                   <div className="mt-1 text-zinc-500">
                     {item.quantity} x {formatCurrency(item.price, currency)}
                   </div>
