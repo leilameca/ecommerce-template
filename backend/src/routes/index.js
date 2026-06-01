@@ -9,6 +9,8 @@ const orderRoutes = require("./order.routes");
 const storeConfigRoutes = require("./store-config.routes");
 const userRoutes = require("./user.routes");
 const stripeRoutes = require("./stripe.routes");
+const couponRoutes = require("./coupon.routes");
+const analyticsRoutes = require("./analytics.routes");
 
 const router = express.Router();
 
@@ -21,5 +23,7 @@ router.use("/store-config", storeConfigRoutes);
 router.use("/uploads", uploadRoutes);
 router.use("/users", userRoutes);
 router.use("/stripe", stripeRoutes);
+router.use("/coupons", couponRoutes);
+router.use("/analytics", analyticsRoutes);
 
 module.exports = router;

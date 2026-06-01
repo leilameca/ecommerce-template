@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const Order = require("../models/order.model");
 const Product = require("../models/product.model");
+const Coupon = require("../models/coupon.model");
 const ApiError = require("../utils/api-error");
 const asyncHandler = require("../utils/async-handler");
 const { sendOrderNotification } = require("../services/email.service");
@@ -30,6 +31,7 @@ const ALLOWED_ORDER_FIELDS = [
   "items",
   "shipping",
   "paymentMethod",
+  "couponCode",
 ];
 const ORDER_PRODUCT_POPULATE_FIELDS = "name slug price";
 
@@ -163,7 +165,35 @@ const createOrder = asyncHandler(async (req, res) => {
         items.reduce((accumulator, item) => accumulator + item.lineTotal, 0)
       );
       const shipping = roundCurrencyValue(orderPayload.shipping || 0);
-      const total = roundCurrencyValue(subtotal + shipping);
+
+      // Apply coupon if provided
+      let discountAmount = 0;
+      let appliedCouponCode = "";
+      let couponDoc = null;
+
+      if (orderPayload.couponCode) {
+        couponDoc = await Coupon.findOne({
+          code: orderPayload.couponCode.trim().toUpperCase(),
+          isActive: true,
+        }).session(session);
+
+        if (couponDoc) {
+          const now = new Date();
+          const isExpired = couponDoc.expiresAt && now > couponDoc.expiresAt;
+          const isExhausted = couponDoc.maxUses !== null && couponDoc.usedCount >= couponDoc.maxUses;
+          const belowMin = couponDoc.minOrderAmount > 0 && subtotal < couponDoc.minOrderAmount;
+
+          if (!isExpired && !isExhausted && !belowMin) {
+            discountAmount =
+              couponDoc.type === "percentage"
+                ? roundCurrencyValue(subtotal * (couponDoc.value / 100))
+                : Math.min(couponDoc.value, subtotal);
+            appliedCouponCode = couponDoc.code;
+          }
+        }
+      }
+
+      const total = roundCurrencyValue(subtotal + shipping - discountAmount);
 
       requestedQuantities.forEach((requestedQuantity, productId) => {
         const dbProduct = productsMap.get(productId);
@@ -171,6 +201,12 @@ const createOrder = asyncHandler(async (req, res) => {
       });
 
       await Promise.all(products.map((product) => product.save({ session })));
+
+      // Increment coupon usage inside the transaction
+      if (couponDoc && appliedCouponCode) {
+        couponDoc.usedCount += 1;
+        await couponDoc.save({ session });
+      }
 
       const [order] = await Order.create(
         [
@@ -185,6 +221,8 @@ const createOrder = asyncHandler(async (req, res) => {
             items,
             subtotal,
             shipping,
+            couponCode: appliedCouponCode,
+            discountAmount,
             total,
             paymentMethod: orderPayload.paymentMethod || "whatsapp",
           },

@@ -13,4 +13,5 @@ export const ROUTE_PATHS = {
   adminOrders: "/admin/orders",
   adminStoreConfig: "/admin/store-config",
   adminUsers: "/admin/users",
+  adminCoupons: "/admin/coupons",
 };

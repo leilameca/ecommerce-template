@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
+import PageSEO from "../../components/shared/PageSEO";
 import Button from "../../components/ui/Button";
 import { useCart } from "../../hooks/useCart";
 import { useLanguage } from "../../hooks/useLanguage";
@@ -195,6 +196,11 @@ export default function ProductDetailPage() {
 
   return (
     <div className="space-y-8 sm:space-y-10">
+      <PageSEO
+        title={product.name}
+        description={product.description}
+        image={product.images?.[0]?.url}
+      />
       <div className="text-[10px] font-medium uppercase tracking-[0.28em] text-zinc-400">
         {t("product_detail_eyebrow")}
       </div>

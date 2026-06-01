@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 
+import PageSEO from "../../components/shared/PageSEO";
 import { useHomeMerchandising } from "../../hooks/useHomeMerchandising";
 import { useLanguage } from "../../hooks/useLanguage";
 import { useStoreConfig } from "../../hooks/useStoreConfig";
@@ -140,6 +141,7 @@ export default function HomePage() {
 
   return (
     <div className="space-y-14 pb-8 sm:space-y-20 lg:space-y-24">
+      <PageSEO description={config.heroCopy} image={config.heroImage} />
       <section className="grid gap-5 sm:gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-10">
         <div className="flex flex-col justify-end py-0 sm:py-2 lg:py-8">
           <div className="max-w-xl">

@@ -9,6 +9,7 @@ import AdminOrdersPage from "../pages/admin/AdminOrdersPage";
 import AdminProductsPage from "../pages/admin/AdminProductsPage";
 import AdminStoreConfigPage from "../pages/admin/AdminStoreConfigPage";
 import AdminUsersPage from "../pages/admin/AdminUsersPage";
+import AdminCouponsPage from "../pages/admin/AdminCouponsPage";
 import CartPage from "../pages/cart/CartPage";
 import ProductCatalogPage from "../pages/catalog/ProductCatalogPage";
 import CheckoutPage from "../pages/checkout/CheckoutPage";
@@ -59,6 +60,7 @@ export default function AppRouter() {
               element={<AdminStoreConfigPage />}
             />
             <Route path={ROUTE_PATHS.adminUsers} element={<AdminUsersPage />} />
+            <Route path={ROUTE_PATHS.adminCoupons} element={<AdminCouponsPage />} />
           </Route>
         </Route>
 

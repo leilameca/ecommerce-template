@@ -6,11 +6,13 @@ import SelectField from "../../components/ui/SelectField";
 import TextInput from "../../components/ui/TextInput";
 import TextareaField from "../../components/ui/TextareaField";
 import { useCart } from "../../hooks/useCart";
+import { useLanguage } from "../../hooks/useLanguage";
 import { useStoreConfig } from "../../hooks/useStoreConfig";
 import { buildWhatsappCheckoutUrl } from "../../lib/build-whatsapp-url";
 import { formatCurrency } from "../../lib/format-currency";
 import { createOrder } from "../../services/api/orders.service";
 import { createStripeSession } from "../../services/api/stripe.service";
+import { validateCoupon } from "../../services/api/coupon.service";
 import { ROUTE_PATHS } from "../../routes/route-paths";
 
 const paymentMethodLabels = {
@@ -90,6 +92,7 @@ function SuccessState({ orderId, whatsappUrl, paymentMethod }) {
 export default function CheckoutPage() {
   const { items, subtotal, clearCart, isEmpty } = useCart();
   const { config } = useStoreConfig();
+  const { t } = useLanguage();
   const currency = config.currency || "USD";
   const availablePaymentMethods = useMemo(() => {
     return config.paymentMethods?.length
@@ -109,6 +112,10 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createdOrder, setCreatedOrder] = useState(null);
   const [whatsappUrl, setWhatsappUrl] = useState("");
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponError, setCouponError] = useState("");
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
 
   useEffect(() => {
     if (!availablePaymentMethods.includes(formState.paymentMethod)) {
@@ -124,7 +131,23 @@ export default function CheckoutPage() {
   }
 
   const shipping = Number(formState.shipping || 0);
-  const total = subtotal + shipping;
+  const discountAmount = appliedCoupon?.discountAmount || 0;
+  const total = Math.max(0, subtotal + shipping - discountAmount);
+
+  const handleApplyCoupon = async () => {
+    if (!couponInput.trim()) return;
+    setIsValidatingCoupon(true);
+    setCouponError("");
+    setAppliedCoupon(null);
+    try {
+      const res = await validateCoupon(couponInput.trim(), subtotal);
+      setAppliedCoupon(res?.data || null);
+    } catch (err) {
+      setCouponError(err?.message || t("checkout_coupon_invalid"));
+    } finally {
+      setIsValidatingCoupon(false);
+    }
+  };
 
   const handleChange = (fieldName, value) => {
     setFormState((currentValue) => ({
@@ -146,6 +169,7 @@ export default function CheckoutPage() {
         notes: formState.notes,
         shipping,
         paymentMethod: formState.paymentMethod,
+        couponCode: appliedCoupon?.code || "",
         items: items.map((item) => ({
           product: item.productId,
           quantity: item.quantity,
@@ -287,6 +311,45 @@ export default function CheckoutPage() {
             placeholder="Delivery details or special instructions"
           />
 
+          {/* Coupon code */}
+          <div>
+            <div className="text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-400 mb-2">
+              {t("checkout_coupon_label")}
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={couponInput}
+                onChange={(e) => { setCouponInput(e.target.value.toUpperCase()); setCouponError(""); }}
+                placeholder={t("checkout_coupon_placeholder")}
+                className="w-full min-w-0 rounded-md border border-zinc-300 bg-white px-3.5 py-3 text-sm font-mono text-zinc-950 outline-none transition-colors duration-200 placeholder:text-zinc-400 focus:border-zinc-950"
+                disabled={Boolean(appliedCoupon)}
+              />
+              {appliedCoupon ? (
+                <Button type="button" variant="secondary" onClick={() => { setAppliedCoupon(null); setCouponInput(""); }}>
+                  {t("checkout_coupon_remove")}
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={handleApplyCoupon}
+                  disabled={isValidatingCoupon || !couponInput.trim()}
+                >
+                  {isValidatingCoupon ? "..." : t("checkout_coupon_apply")}
+                </Button>
+              )}
+            </div>
+            {couponError ? (
+              <p className="mt-1.5 text-xs text-rose-600">{couponError}</p>
+            ) : null}
+            {appliedCoupon ? (
+              <p className="mt-1.5 text-xs text-emerald-600">
+                {t("checkout_coupon_applied")}: -{formatCurrency(appliedCoupon.discountAmount, currency)}
+              </p>
+            ) : null}
+          </div>
+
           {errorMessage ? (
             <div className="rounded-[1.5rem] border border-rose-200 bg-rose-50/70 px-4 py-3 text-sm text-rose-700">
               {errorMessage}
@@ -333,6 +396,13 @@ export default function CheckoutPage() {
               <span>Shipping</span>
               <span>{formatCurrency(shipping, currency)}</span>
             </div>
+
+            {appliedCoupon ? (
+              <div className="flex items-center justify-between text-emerald-600">
+                <span>{t("checkout_coupon_discount")} ({appliedCoupon.code})</span>
+                <span>-{formatCurrency(discountAmount, currency)}</span>
+              </div>
+            ) : null}
 
             <div className="flex items-center justify-between border-t border-zinc-200/80 pt-4 text-base font-semibold text-zinc-950">
               <span>Total</span>

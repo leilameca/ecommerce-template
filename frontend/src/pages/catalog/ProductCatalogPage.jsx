@@ -1,5 +1,6 @@
 import { useDeferredValue, useEffect, useState } from "react";
 
+import PageSEO from "../../components/shared/PageSEO";
 import ProductCard from "../../components/shared/ProductCard";
 import FilterChip from "../../components/ui/FilterChip";
 import PaginationControls from "../../components/ui/PaginationControls";
@@ -182,6 +183,7 @@ export default function ProductCatalogPage() {
 
   return (
     <div className="space-y-10 sm:space-y-12">
+      <PageSEO title={t("catalog_title")} />
       <CatalogHeader t={t} />
 
       <CatalogToolbar
