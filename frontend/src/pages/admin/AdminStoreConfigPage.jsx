@@ -32,6 +32,14 @@ const mediaFieldOptions = [
   },
 ];
 
+const FONT_OPTIONS = [
+  { value: "default", label: "Default (Inter)", preview: "Aa" },
+  { value: "editorial", label: "Editorial (Playfair Display)", preview: "Aa" },
+  { value: "minimal", label: "Minimal (DM Sans)", preview: "Aa" },
+  { value: "classic", label: "Clásica (Lora)", preview: "Aa" },
+  { value: "bold", label: "Bold (Montserrat)", preview: "Aa" },
+];
+
 const createFormState = (config) => ({
   storeName: config.storeName || "",
   heroTitle: config.heroTitle || "",
@@ -42,6 +50,14 @@ const createFormState = (config) => ({
   currency: config.currency || "USD",
   primaryColor: config.primaryColor || "#111111",
   secondaryColor: config.secondaryColor || "#f5f5f5",
+  backgroundColor: config.backgroundColor || "#ffffff",
+  fontFamily: config.fontFamily || "default",
+  editorialTitle: config.editorialTitle || "",
+  editorialCopy: config.editorialCopy || "",
+  editorialPoint1Title: config.editorialPoint1Title || "",
+  editorialPoint1Copy: config.editorialPoint1Copy || "",
+  editorialPoint2Title: config.editorialPoint2Title || "",
+  editorialPoint2Copy: config.editorialPoint2Copy || "",
   enableWhatsappCheckout: Boolean(config.enableWhatsappCheckout),
   enableOnlinePayment: Boolean(config.enableOnlinePayment),
   paymentMethods: config.paymentMethods || ["whatsapp", "cash_on_delivery"],
@@ -258,7 +274,7 @@ export default function AdminStoreConfigPage() {
           })}
         </div>
 
-        <div className="grid gap-4 xl:grid-cols-3">
+        <div className="grid gap-4 xl:grid-cols-4">
           <TextInput
             label={t("admin_whatsapp_number")}
             value={formState.whatsappNumber}
@@ -304,6 +320,55 @@ export default function AdminStoreConfigPage() {
               />
             </div>
           </label>
+          <label className="flex min-w-0 flex-col gap-2">
+            <span className="text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-400">
+              {t("admin_background_color")}
+            </span>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={formState.backgroundColor}
+                onChange={(event) => handleFieldChange("backgroundColor", event.target.value)}
+                className="h-10 w-12 cursor-pointer rounded border border-zinc-300 bg-white p-1"
+              />
+              <input
+                type="text"
+                value={formState.backgroundColor}
+                onChange={(event) => handleFieldChange("backgroundColor", event.target.value)}
+                className="w-full min-w-0 rounded-md border border-zinc-300 bg-white px-3.5 py-3 text-sm text-zinc-950 outline-none transition-colors duration-200 focus:border-zinc-950"
+              />
+            </div>
+          </label>
+        </div>
+
+        <div>
+          <div className="text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-400">
+            {t("admin_font_family")}
+          </div>
+          <div className="mt-3 grid gap-3 sm:grid-cols-3 xl:grid-cols-5">
+            {FONT_OPTIONS.map((option) => (
+              <label
+                key={option.value}
+                className={[
+                  "flex cursor-pointer flex-col gap-2 rounded-[1.25rem] border p-4 transition-colors duration-200",
+                  formState.fontFamily === option.value
+                    ? "border-zinc-950 bg-zinc-950 text-white"
+                    : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300",
+                ].join(" ")}
+              >
+                <input
+                  type="radio"
+                  name="fontFamily"
+                  value={option.value}
+                  checked={formState.fontFamily === option.value}
+                  onChange={() => handleFieldChange("fontFamily", option.value)}
+                  className="sr-only"
+                />
+                <span className="text-2xl font-semibold leading-none">{option.preview}</span>
+                <span className="text-xs leading-4">{option.label}</span>
+              </label>
+            ))}
+          </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -348,6 +413,53 @@ export default function AdminStoreConfigPage() {
                 {option.label}
               </label>
             ))}
+          </div>
+        </div>
+
+        <div>
+          <div className="text-[11px] font-medium uppercase tracking-[0.24em] text-zinc-400">
+            {t("admin_editorial_section")}
+          </div>
+          <div className="mt-3 grid gap-4 xl:grid-cols-2">
+            <TextInput
+              label={t("admin_editorial_title")}
+              value={formState.editorialTitle}
+              onChange={(event) => handleFieldChange("editorialTitle", event.target.value)}
+            />
+            <TextareaField
+              label={t("admin_editorial_copy")}
+              rows={3}
+              value={formState.editorialCopy}
+              onChange={(event) => handleFieldChange("editorialCopy", event.target.value)}
+            />
+          </div>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <div className="space-y-3">
+              <TextInput
+                label={t("admin_editorial_point1_title")}
+                value={formState.editorialPoint1Title}
+                onChange={(event) => handleFieldChange("editorialPoint1Title", event.target.value)}
+              />
+              <TextareaField
+                rows={2}
+                label={t("admin_editorial_point1_copy")}
+                value={formState.editorialPoint1Copy}
+                onChange={(event) => handleFieldChange("editorialPoint1Copy", event.target.value)}
+              />
+            </div>
+            <div className="space-y-3">
+              <TextInput
+                label={t("admin_editorial_point2_title")}
+                value={formState.editorialPoint2Title}
+                onChange={(event) => handleFieldChange("editorialPoint2Title", event.target.value)}
+              />
+              <TextareaField
+                rows={2}
+                label={t("admin_editorial_point2_copy")}
+                value={formState.editorialPoint2Copy}
+                onChange={(event) => handleFieldChange("editorialPoint2Copy", event.target.value)}
+              />
+            </div>
           </div>
         </div>
 

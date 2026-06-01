@@ -242,25 +242,29 @@ export default function HomePage() {
           </div>
 
           <h2 className="mt-5 text-3xl font-semibold leading-tight tracking-[-0.05em] text-zinc-950 sm:text-4xl">
-            {t("home_editorial_title")}
+            {config.editorialTitle || t("home_editorial_title")}
           </h2>
 
           <p className="mt-5 text-base leading-7 text-zinc-500">
-            {t("home_editorial_copy")}
+            {config.editorialCopy || t("home_editorial_copy")}
           </p>
 
           <div className="mt-8 grid gap-5 border-t border-zinc-200/80 pt-6 sm:grid-cols-2">
             <div>
-              <div className="text-sm font-medium text-zinc-950">{t("home_editorial_point_1_title")}</div>
+              <div className="text-sm font-medium text-zinc-950">
+                {config.editorialPoint1Title || t("home_editorial_point_1_title")}
+              </div>
               <p className="mt-2 text-sm leading-6 text-zinc-500">
-                {t("home_editorial_point_1_copy")}
+                {config.editorialPoint1Copy || t("home_editorial_point_1_copy")}
               </p>
             </div>
 
             <div>
-              <div className="text-sm font-medium text-zinc-950">{t("home_editorial_point_2_title")}</div>
+              <div className="text-sm font-medium text-zinc-950">
+                {config.editorialPoint2Title || t("home_editorial_point_2_title")}
+              </div>
               <p className="mt-2 text-sm leading-6 text-zinc-500">
-                {t("home_editorial_point_2_copy")}
+                {config.editorialPoint2Copy || t("home_editorial_point_2_copy")}
               </p>
             </div>
           </div>

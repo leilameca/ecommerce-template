@@ -116,6 +116,47 @@ const storeConfigSchema = new mongoose.Schema(
         default: "#f5f5f5",
       },
     },
+    backgroundColor: {
+      type: String,
+      default: "#ffffff",
+      trim: true,
+    },
+    fontFamily: {
+      type: String,
+      default: "default",
+      trim: true,
+      enum: ["default", "editorial", "minimal", "classic", "bold"],
+    },
+    editorialTitle: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    editorialCopy: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    editorialPoint1Title: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    editorialPoint1Copy: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    editorialPoint2Title: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    editorialPoint2Copy: {
+      type: String,
+      default: "",
+      trim: true,
+    },
     socialLinks: {
       instagram: {
         type: String,

@@ -21,6 +21,14 @@ const ALLOWED_STORE_CONFIG_FIELDS = [
   "currency",
   "primaryColor",
   "secondaryColor",
+  "backgroundColor",
+  "fontFamily",
+  "editorialTitle",
+  "editorialCopy",
+  "editorialPoint1Title",
+  "editorialPoint1Copy",
+  "editorialPoint2Title",
+  "editorialPoint2Copy",
   "enableWhatsappCheckout",
   "enableOnlinePayment",
   "paymentMethods",
@@ -60,6 +68,14 @@ const serializeStoreConfig = (storeConfig) => {
         : [...DEFAULT_STORE_PAYMENT_METHODS],
     contactEmail: storeConfig.contactEmail || "",
     phone: storeConfig.phone || storeConfig.whatsappNumber || "",
+    backgroundColor: storeConfig.backgroundColor || "#ffffff",
+    fontFamily: storeConfig.fontFamily || "default",
+    editorialTitle: storeConfig.editorialTitle || "",
+    editorialCopy: storeConfig.editorialCopy || "",
+    editorialPoint1Title: storeConfig.editorialPoint1Title || "",
+    editorialPoint1Copy: storeConfig.editorialPoint1Copy || "",
+    editorialPoint2Title: storeConfig.editorialPoint2Title || "",
+    editorialPoint2Copy: storeConfig.editorialPoint2Copy || "",
     socialLinks: {
       instagram: storeConfig.socialLinks?.instagram || "",
       facebook: storeConfig.socialLinks?.facebook || "",
@@ -82,6 +98,18 @@ const validateStoreConfigPayload = (payload) => {
   validateString(payload.secondaryColor, "secondary color");
   validateString(payload.contactEmail, "contact email");
   validateString(payload.phone, "phone");
+  validateString(payload.backgroundColor, "background color");
+  validateString(payload.editorialTitle, "editorial title");
+  validateString(payload.editorialCopy, "editorial copy");
+  validateString(payload.editorialPoint1Title, "editorial point 1 title");
+  validateString(payload.editorialPoint1Copy, "editorial point 1 copy");
+  validateString(payload.editorialPoint2Title, "editorial point 2 title");
+  validateString(payload.editorialPoint2Copy, "editorial point 2 copy");
+
+  const VALID_FONTS = ["default", "editorial", "minimal", "classic", "bold"];
+  if (payload.fontFamily !== undefined && !VALID_FONTS.includes(payload.fontFamily)) {
+    throw new ApiError(400, `Invalid font family: ${payload.fontFamily}.`);
+  }
 
   if (
     payload.enableWhatsappCheckout !== undefined &&
