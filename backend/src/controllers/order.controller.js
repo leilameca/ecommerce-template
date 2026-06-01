@@ -230,6 +230,7 @@ const createOrder = asyncHandler(async (req, res) => {
             discountAmount,
             total,
             paymentMethod: orderPayload.paymentMethod || "whatsapp",
+            customer: req.customer ? req.customer._id : null,
           },
         ],
         { session }

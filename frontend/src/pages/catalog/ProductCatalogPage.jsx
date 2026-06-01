@@ -55,34 +55,18 @@ const filterProducts = ({ products, selectedCategory, searchQuery }) => {
 
 function CatalogHeader({ t }) {
   return (
-    <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-end">
-      <div className="max-w-3xl">
-        <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-zinc-400">
-          {t("catalog_eyebrow")}
-        </span>
+    <section className="max-w-3xl">
+      <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-zinc-400">
+        {t("catalog_eyebrow")}
+      </span>
 
-        <h1 className="mt-5 text-[2.75rem] font-semibold tracking-[-0.06em] text-zinc-950 sm:text-5xl">
-          {t("catalog_title")}
-        </h1>
+      <h1 className="mt-3 text-2xl font-semibold tracking-[-0.05em] text-zinc-950 sm:text-4xl">
+        {t("catalog_title")}
+      </h1>
 
-        <p className="mt-5 max-w-2xl text-base leading-8 text-zinc-600">
-          {t("catalog_copy")}
-        </p>
-      </div>
-
-      <div className="rounded-[2rem] border border-zinc-200/80 bg-white p-5 shadow-[0_22px_70px_rgba(15,23,42,0.05)] sm:p-6">
-        <div className="text-[10px] font-medium uppercase tracking-[0.28em] text-zinc-400">
-          {t("catalog_view_title")}
-        </div>
-
-        <div className="mt-4 text-2xl font-semibold tracking-[-0.05em] text-zinc-950">
-          {t("catalog_view_heading")}
-        </div>
-
-        <p className="mt-3 text-sm leading-7 text-zinc-600">
-          {t("catalog_view_copy")}
-        </p>
-      </div>
+      <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-600 sm:text-base sm:leading-8 sm:mt-3">
+        {t("catalog_copy")}
+      </p>
     </section>
   );
 }
@@ -98,7 +82,7 @@ function CatalogToolbar({
   t,
 }) {
   return (
-    <section className="rounded-[2rem] border border-zinc-200/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.05)] sm:p-6">
+    <section className="rounded-[1.5rem] border border-zinc-200/80 bg-white p-3.5 shadow-[0_20px_60px_rgba(15,23,42,0.04)] sm:p-5">
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_220px]">
         <TextInput
           label={t("catalog_search")}
@@ -182,7 +166,7 @@ export default function ProductCatalogPage() {
   const visibleProducts = sortProducts(filteredProducts, sortValue);
 
   return (
-    <div className="space-y-10 sm:space-y-12">
+    <div className="space-y-5 sm:space-y-8">
       <PageSEO title={t("catalog_title")} />
       <CatalogHeader t={t} />
 

@@ -15,6 +15,20 @@ const signUserToken = (user) => {
   );
 };
 
+const signCustomerToken = (customer) => {
+  return jwt.sign(
+    {
+      id: customer._id,
+      type: "customer",
+    },
+    env.JWT_SECRET,
+    {
+      expiresIn: env.JWT_EXPIRES_IN,
+    }
+  );
+};
+
 module.exports = {
   signUserToken,
+  signCustomerToken,
 };

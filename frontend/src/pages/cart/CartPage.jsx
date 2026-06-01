@@ -35,7 +35,7 @@ function EmptyCartState({ t }) {
 
 function CartItemRow({ item, currency, onDecrease, onIncrease, onRemove, t }) {
   return (
-    <article className="grid gap-5 rounded-[2rem] border border-zinc-200/80 bg-white p-4 shadow-[0_20px_60px_rgba(15,23,42,0.04)] sm:grid-cols-[120px_minmax(0,1fr)] sm:p-6">
+    <article className="grid gap-4 rounded-[1.5rem] border border-zinc-200/80 bg-white p-3.5 shadow-[0_16px_48px_rgba(15,23,42,0.04)] sm:grid-cols-[100px_minmax(0,1fr)] sm:p-5">
       <div className="overflow-hidden rounded-[1.5rem] bg-zinc-100">
         {item.imageUrl ? (
           <img
@@ -133,38 +133,38 @@ export default function CartPage() {
   }
 
   return (
-    <div className="space-y-10 sm:space-y-12">
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px] xl:items-end">
+    <div className="space-y-5 sm:space-y-8">
+      <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px] xl:items-end">
         <div className="max-w-3xl">
           <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-zinc-400">
             {t("cart_eyebrow")}
           </span>
 
-          <h1 className="mt-5 text-4xl font-semibold tracking-[-0.06em] text-zinc-950 sm:text-5xl">
+          <h1 className="mt-3 text-2xl font-semibold tracking-[-0.05em] text-zinc-950 sm:text-4xl">
             {t("cart_title")}
           </h1>
 
-          <p className="mt-5 max-w-2xl text-base leading-8 text-zinc-600">
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-zinc-600 sm:text-base sm:leading-8">
             {t("cart_copy")}
           </p>
         </div>
 
-        <div className="rounded-[2rem] border border-zinc-200/80 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.05)]">
+        <div className="rounded-[1.5rem] border border-zinc-200/80 bg-white p-4 shadow-[0_20px_60px_rgba(15,23,42,0.04)] sm:p-5">
           <div className="text-[10px] font-medium uppercase tracking-[0.28em] text-zinc-400">
             {t("cart_order_summary")}
           </div>
 
-          <div className="mt-5 text-3xl font-semibold tracking-[-0.05em] text-zinc-950">
+          <div className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-zinc-950 sm:text-3xl">
             {formatCurrency(subtotal, currency)}
           </div>
 
-          <p className="mt-3 text-sm leading-7 text-zinc-600">
+          <p className="mt-2 text-sm leading-6 text-zinc-600">
             {t("cart_subtotal_copy")}
           </p>
         </div>
       </section>
 
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
         <section className="space-y-5">
           {items.map((item) => (
             <CartItemRow
@@ -179,8 +179,8 @@ export default function CartPage() {
           ))}
         </section>
 
-        <aside className="space-y-5 xl:sticky xl:top-24">
-          <div className="rounded-[2rem] border border-zinc-200/80 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.05)]">
+        <aside className="space-y-4 xl:sticky xl:top-20">
+          <div className="rounded-[1.5rem] border border-zinc-200/80 bg-white p-4 shadow-[0_20px_60px_rgba(15,23,42,0.05)] sm:p-5">
             <div className="space-y-4">
               <div className="flex items-center justify-between text-sm text-zinc-500">
                 <span>{t("cart_items")}</span>

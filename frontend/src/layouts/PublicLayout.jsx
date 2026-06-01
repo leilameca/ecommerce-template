@@ -12,7 +12,7 @@ export default function PublicLayout() {
         </div>
       </header>
 
-      <main className="mx-auto min-h-screen max-w-[1440px] px-3.5 py-4 sm:px-6 sm:py-8 lg:px-10 lg:py-10">
+      <main className="mx-auto min-h-screen max-w-[1440px] px-3.5 py-3 sm:px-6 sm:py-8 lg:px-10 lg:py-10">
         <Outlet />
       </main>
 

@@ -3,6 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useCart } from "../../hooks/useCart";
+import { useCustomerAuth } from "../../hooks/useCustomerAuth";
 import { useLanguage } from "../../hooks/useLanguage";
 import { useStoreConfig } from "../../hooks/useStoreConfig";
 import { ROUTE_PATHS } from "../../routes/route-paths";
@@ -73,11 +74,21 @@ function NavIcon({ name, className = "h-4 w-4" }) {
   );
 }
 
+function AccountIcon({ className = "h-4 w-4" }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+    </svg>
+  );
+}
+
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { itemCount } = useCart();
   const { config } = useStoreConfig();
   const { t } = useLanguage();
+  const { customer, isAuthenticated } = useCustomerAuth();
   const storeName = config.storeName || "Commerce Studio";
   const navigationLinks = [
     { label: t("nav_shop"), to: ROUTE_PATHS.catalog, icon: "grid" },
@@ -129,6 +140,14 @@ export default function Navbar() {
 
       <div className="hidden items-center gap-4 lg:flex xl:gap-6">
         <LanguageSwitcher compact />
+
+        <Link
+          to={isAuthenticated ? ROUTE_PATHS.accountOrders : ROUTE_PATHS.accountLogin}
+          className="inline-flex items-center gap-2 text-sm text-zinc-500 transition-colors duration-200 hover:text-zinc-950"
+        >
+          <AccountIcon />
+          {isAuthenticated ? customer?.name?.split(" ")[0] : t("nav_sign_in")}
+        </Link>
 
         <Link
           to={ROUTE_PATHS.cart}
@@ -212,6 +231,15 @@ export default function Navbar() {
 
             <div className="grid gap-3 sm:grid-cols-2">
               <Link
+                to={isAuthenticated ? ROUTE_PATHS.accountOrders : ROUTE_PATHS.accountLogin}
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm font-medium text-zinc-900"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <AccountIcon />
+                {isAuthenticated ? customer?.name?.split(" ")[0] : t("nav_sign_in")}
+              </Link>
+
+              <Link
                 to={ROUTE_PATHS.cart}
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm font-medium text-zinc-900"
                 onClick={() => setIsMenuOpen(false)}
@@ -222,7 +250,7 @@ export default function Navbar() {
 
               <Link
                 to={ROUTE_PATHS.checkout}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-zinc-950 bg-zinc-950 px-4 py-3 text-sm font-medium text-white hover:text-white [&_*]:text-inherit"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-zinc-950 bg-zinc-950 px-4 py-3 text-sm font-medium text-white hover:text-white [&_*]:text-inherit col-span-full sm:col-span-1"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <NavIcon name="arrow" />

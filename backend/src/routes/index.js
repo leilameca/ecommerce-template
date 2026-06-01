@@ -11,6 +11,7 @@ const userRoutes = require("./user.routes");
 const stripeRoutes = require("./stripe.routes");
 const couponRoutes = require("./coupon.routes");
 const analyticsRoutes = require("./analytics.routes");
+const customerRoutes = require("./customer.routes");
 
 const router = express.Router();
 
@@ -25,5 +26,6 @@ router.use("/users", userRoutes);
 router.use("/stripe", stripeRoutes);
 router.use("/coupons", couponRoutes);
 router.use("/analytics", analyticsRoutes);
+router.use("/customers", customerRoutes);
 
 module.exports = router;

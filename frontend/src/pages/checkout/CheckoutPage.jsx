@@ -6,6 +6,7 @@ import SelectField from "../../components/ui/SelectField";
 import TextInput from "../../components/ui/TextInput";
 import TextareaField from "../../components/ui/TextareaField";
 import { useCart } from "../../hooks/useCart";
+import { useCustomerAuth } from "../../hooks/useCustomerAuth";
 import { useLanguage } from "../../hooks/useLanguage";
 import { useStoreConfig } from "../../hooks/useStoreConfig";
 import { buildWhatsappCheckoutUrl } from "../../lib/build-whatsapp-url";
@@ -93,6 +94,7 @@ export default function CheckoutPage() {
   const { items, subtotal, clearCart, isEmpty } = useCart();
   const { config } = useStoreConfig();
   const { t } = useLanguage();
+  const { customer, token: customerToken } = useCustomerAuth();
   const currency = config.currency || "USD";
   const availablePaymentMethods = useMemo(() => {
     return config.paymentMethods?.length
@@ -101,8 +103,8 @@ export default function CheckoutPage() {
   }, [config.paymentMethods]);
 
   const [formState, setFormState] = useState({
-    customerName: "",
-    phone: "",
+    customerName: customer?.name || "",
+    phone: customer?.phone || "",
     address: "",
     notes: "",
     shipping: "0",
@@ -162,20 +164,23 @@ export default function CheckoutPage() {
     setErrorMessage("");
 
     try {
-      const response = await createOrder({
-        customerName: formState.customerName,
-        phone: formState.phone,
-        address: formState.address,
-        notes: formState.notes,
-        shipping,
-        paymentMethod: formState.paymentMethod,
-        couponCode: appliedCoupon?.code || "",
-        items: items.map((item) => ({
-          product: item.productId,
-          quantity: item.quantity,
-          variantSelections: item.selectedVariants || {},
-        })),
-      });
+      const response = await createOrder(
+        {
+          customerName: formState.customerName,
+          phone: formState.phone,
+          address: formState.address,
+          notes: formState.notes,
+          shipping,
+          paymentMethod: formState.paymentMethod,
+          couponCode: appliedCoupon?.code || "",
+          items: items.map((item) => ({
+            product: item.productId,
+            quantity: item.quantity,
+            variantSelections: item.selectedVariants || {},
+          })),
+        },
+        customerToken || null
+      );
 
       const created = response?.data || null;
 
@@ -234,25 +239,24 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="space-y-10 sm:space-y-12">
+    <div className="space-y-5 sm:space-y-8">
       <section className="max-w-3xl">
         <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-zinc-400">
-          Checkout
+          {t("checkout_eyebrow")}
         </span>
 
-        <h1 className="mt-5 text-[2.75rem] font-semibold tracking-[-0.06em] text-zinc-950 sm:text-5xl">
-          Complete the order with a clean, reusable purchase flow.
+        <h1 className="mt-3 text-2xl font-semibold tracking-[-0.05em] text-zinc-950 sm:text-4xl">
+          {t("checkout_title")}
         </h1>
 
-        <p className="mt-5 max-w-2xl text-base leading-8 text-zinc-600">
-          This form creates a real order in the backend and can redirect to
-          WhatsApp when the store configuration enables that flow.
+        <p className="mt-2 max-w-2xl text-sm leading-7 text-zinc-600 sm:text-base sm:leading-8 sm:mt-3">
+          {t("checkout_copy")}
         </p>
       </section>
 
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px] xl:items-start">
         <form
-          className="space-y-6 rounded-[2rem] border border-zinc-200/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.05)] sm:p-8"
+          className="space-y-5 rounded-[1.5rem] border border-zinc-200/80 bg-white p-4 shadow-[0_20px_60px_rgba(15,23,42,0.04)] sm:p-6"
           onSubmit={handleSubmit}
         >
           <div className="grid gap-4 sm:grid-cols-2">
@@ -362,7 +366,7 @@ export default function CheckoutPage() {
           </Button>
         </form>
 
-        <aside className="rounded-[2rem] border border-zinc-200/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.05)] sm:p-8 xl:sticky xl:top-24">
+        <aside className="rounded-[1.5rem] border border-zinc-200/80 bg-white p-4 shadow-[0_20px_60px_rgba(15,23,42,0.04)] sm:p-6 xl:sticky xl:top-20">
           <div className="text-[10px] font-medium uppercase tracking-[0.28em] text-zinc-400">
             Order Summary
           </div>

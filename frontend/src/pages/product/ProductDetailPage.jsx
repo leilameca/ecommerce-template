@@ -127,22 +127,22 @@ function ProductDetailsPanel({ product, currency, t }) {
   };
 
   return (
-    <div className="space-y-6 sm:space-y-8">
-      <div className="space-y-5">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="space-y-3 sm:space-y-4">
         <div className="flex flex-wrap items-center gap-3">
           <span className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-[10px] font-medium uppercase tracking-[0.24em] text-zinc-500">{categoryName}</span>
           <span className="text-[10px] font-medium uppercase tracking-[0.24em] text-zinc-400">{stockLabel}</span>
         </div>
         <div>
-          <h1 className="text-3xl font-semibold tracking-[-0.06em] text-zinc-950 sm:text-5xl">{product.name}</h1>
-          <div className="mt-5 text-3xl font-semibold tracking-[-0.05em] text-zinc-950">{formatCurrency(product.price, currency)}</div>
+          <h1 className="text-2xl font-semibold tracking-[-0.05em] text-zinc-950 sm:text-4xl lg:text-5xl">{product.name}</h1>
+          <div className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-zinc-950 sm:text-3xl">{formatCurrency(product.price, currency)}</div>
         </div>
         <p className="max-w-2xl text-[15px] leading-7 text-zinc-600 sm:text-base sm:leading-8">
           {product.description || t("product_detail_fallback_copy")}
         </p>
       </div>
 
-      <div className="rounded-[2rem] border border-zinc-200/80 bg-white p-5 shadow-[0_22px_70px_rgba(15,23,42,0.05)] sm:p-6">
+      <div className="rounded-[1.5rem] border border-zinc-200/80 bg-white p-4 shadow-[0_18px_56px_rgba(15,23,42,0.05)] sm:p-5">
         <div className="grid gap-6 sm:grid-cols-2">
           <div>
             <div className="text-[10px] font-medium uppercase tracking-[0.24em] text-zinc-400">{t("product_detail_category")}</div>
@@ -254,7 +254,7 @@ export default function ProductDetailPage() {
   const images = product.images && product.images.length > 0 ? product.images : [{ url: "", alt: product.name }];
 
   return (
-    <div className="space-y-8 sm:space-y-10">
+    <div className="space-y-4 sm:space-y-8">
       <PageSEO
         title={product.name}
         description={product.description}
@@ -263,7 +263,7 @@ export default function ProductDetailPage() {
       <div className="text-[10px] font-medium uppercase tracking-[0.28em] text-zinc-400">
         {t("product_detail_eyebrow")}
       </div>
-      <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_460px] xl:gap-14">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_440px] xl:gap-12">
         <ProductImageGallery images={images} selectedImageIndex={selectedImageIndex} onSelectImage={setSelectedImageIndex} />
         <ProductDetailsPanel product={product} currency={config.currency || "USD"} t={t} />
       </div>

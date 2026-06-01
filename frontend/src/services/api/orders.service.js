@@ -1,9 +1,10 @@
 import { apiRequest, buildQueryString } from "./client";
 
-export function createOrder(payload) {
+export function createOrder(payload, customerToken = null) {
   return apiRequest("/orders", {
     method: "POST",
     body: payload,
+    headers: customerToken ? { Authorization: `Bearer ${customerToken}` } : undefined,
   });
 }
 

@@ -115,6 +115,11 @@ const orderSchema = new mongoose.Schema(
       enum: ORDER_STATUSES,
       default: "pending",
     },
+    customer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Customer",
+      default: null,
+    },
   },
   {
     timestamps: true,

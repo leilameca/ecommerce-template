@@ -7,12 +7,13 @@ const {
   updateOrderStatus,
 } = require("../controllers/order.controller");
 const { protect, restrictTo } = require("../middlewares/auth.middleware");
+const { optionalCustomer } = require("../middlewares/customer.middleware");
 
 const router = express.Router();
 
 router
   .route("/")
-  .post(createOrder)
+  .post(optionalCustomer, createOrder)
   .get(protect, restrictTo("super-admin", "admin", "manager"), listOrders);
 
 router.get(
