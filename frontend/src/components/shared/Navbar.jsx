@@ -151,7 +151,7 @@ export default function Navbar() {
           <NavLink
             key={typeof item.to === "string" ? item.to : item.label}
             to={item.to}
-            className={getLinkClassName}
+            className={typeof item.to === "string" ? getLinkClassName : () => getLinkClassName({ isActive: false })}
           >
             <NavIcon name={item.icon} />
             {item.label}
@@ -238,7 +238,7 @@ export default function Navbar() {
                 className={({ isActive }) =>
                   [
                     "inline-flex items-center gap-2 rounded-full border px-4 py-3 text-sm transition-colors duration-200",
-                    isActive
+                    isActive && typeof item.to === "string"
                       ? "border-zinc-950 bg-zinc-950 text-white hover:text-white [&_*]:text-inherit"
                       : "border-zinc-200 text-zinc-700 hover:border-zinc-300 hover:text-zinc-950",
                   ].join(" ")
