@@ -78,14 +78,18 @@ function SuccessState({ orderId, whatsappUrl, paymentMethod }) {
           </Button>
         </Link>
 
-        {paymentMethod === "whatsapp" && whatsappUrl ? (
-          <a href={whatsappUrl} target="_blank" rel="noreferrer" className="block">
-            <Button variant="secondary" size="lg" className="w-full">
-              Open WhatsApp Confirmation
-            </Button>
-          </a>
-        ) : null}
+        <Link to={ROUTE_PATHS.orderStatus.replace(":id", orderId)} className="block">
+          <Button variant="secondary" size="lg" className="w-full">
+            View Order Status
+          </Button>
+        </Link>
       </div>
+
+      {paymentMethod === "whatsapp" && whatsappUrl ? (
+        <a href={whatsappUrl} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-zinc-500 hover:text-zinc-950">
+          Open WhatsApp Confirmation
+        </a>
+      ) : null}
     </div>
   );
 }

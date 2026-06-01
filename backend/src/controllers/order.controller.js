@@ -5,7 +5,7 @@ const Product = require("../models/product.model");
 const Coupon = require("../models/coupon.model");
 const ApiError = require("../utils/api-error");
 const asyncHandler = require("../utils/async-handler");
-const { sendOrderNotification } = require("../services/email.service");
+const { sendOrderNotification, sendCustomerOrderConfirmation } = require("../services/email.service");
 const {
   getPagination,
   buildPaginationMeta,
@@ -231,6 +231,7 @@ const createOrder = asyncHandler(async (req, res) => {
             total,
             paymentMethod: orderPayload.paymentMethod || "whatsapp",
             customer: req.customer ? req.customer._id : null,
+            customerEmail: req.customer ? req.customer.email : "",
           },
         ],
         { session }
@@ -250,6 +251,9 @@ const createOrder = asyncHandler(async (req, res) => {
 
   // Fire-and-forget — email failure must not break order creation
   sendOrderNotification(createdOrder).catch(() => {});
+  if (createdOrder.customerEmail) {
+    sendCustomerOrderConfirmation(createdOrder).catch(() => {});
+  }
 
   res.status(201).json({
     success: true,
@@ -333,9 +337,27 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
   });
 });
 
+const getPublicOrder = asyncHandler(async (req, res) => {
+  validateObjectId(req.params.id, "order id");
+
+  const order = await populateOrderProducts(Order.findById(req.params.id))
+    .select("-customer -customerEmail")
+    .lean();
+
+  if (!order) {
+    throw new ApiError(404, "Order not found.");
+  }
+
+  res.status(200).json({
+    success: true,
+    data: order,
+  });
+});
+
 module.exports = {
   createOrder,
   listOrders,
   getOrderById,
   updateOrderStatus,
+  getPublicOrder,
 };

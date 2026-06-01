@@ -29,3 +29,17 @@ export function getCustomerOrders(token) {
     headers: customerAuthHeader(token),
   });
 }
+
+export function requestPasswordReset(email) {
+  return apiRequest("/customers/forgot-password", {
+    method: "POST",
+    body: { email },
+  });
+}
+
+export function resetPassword(token, password) {
+  return apiRequest("/customers/reset-password", {
+    method: "POST",
+    body: { token, password },
+  });
+}

@@ -2,12 +2,14 @@
 import { Link, useParams } from "react-router-dom";
 
 import PageSEO from "../../components/shared/PageSEO";
+import ProductCard from "../../components/shared/ProductCard";
 import Button from "../../components/ui/Button";
 import { useCart } from "../../hooks/useCart";
 import { useLanguage } from "../../hooks/useLanguage";
 import { formatCurrency } from "../../lib/format-currency";
 import { useProductDetail } from "../../hooks/useProductDetail";
 import { useStoreConfig } from "../../hooks/useStoreConfig";
+import { getProducts } from "../../services/api/products.service";
 import { ROUTE_PATHS } from "../../routes/route-paths";
 
 function ProductDetailSkeleton() {
@@ -236,8 +238,23 @@ export default function ProductDetailPage() {
   const { product, isLoading, errorMessage } = useProductDetail(slug);
   const { config } = useStoreConfig();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const currency = config.currency || "USD";
 
   useEffect(() => { setSelectedImageIndex(0); }, [slug]);
+
+  useEffect(() => {
+    if (!product?.category?.slug) return;
+    let cancelled = false;
+    getProducts({ category: product.category.slug, limit: 5 })
+      .then((res) => {
+        if (cancelled) return;
+        const list = (res?.data || []).filter((p) => p.slug !== product.slug).slice(0, 4);
+        setRelatedProducts(list);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [product?.category?.slug, product?.slug]);
 
   if (isLoading) return <ProductDetailSkeleton />;
 
@@ -253,6 +270,23 @@ export default function ProductDetailPage() {
 
   const images = product.images && product.images.length > 0 ? product.images : [{ url: "", alt: product.name }];
 
+  const availability = product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock";
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description || "",
+    image: product.images?.map((img) => img.url).filter(Boolean) || [],
+    sku: product._id,
+    offers: {
+      "@type": "Offer",
+      priceCurrency: currency,
+      price: product.price,
+      availability,
+      url: typeof window !== "undefined" ? window.location.href : "",
+    },
+  };
+
   return (
     <div className="space-y-4 sm:space-y-8">
       <PageSEO
@@ -260,13 +294,27 @@ export default function ProductDetailPage() {
         description={product.description}
         image={product.images?.[0]?.url}
       />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="text-[10px] font-medium uppercase tracking-[0.28em] text-zinc-400">
         {t("product_detail_eyebrow")}
       </div>
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_440px] xl:gap-12">
         <ProductImageGallery images={images} selectedImageIndex={selectedImageIndex} onSelectImage={setSelectedImageIndex} />
-        <ProductDetailsPanel product={product} currency={config.currency || "USD"} t={t} />
+        <ProductDetailsPanel product={product} currency={currency} t={t} />
       </div>
+
+      {relatedProducts.length > 0 ? (
+        <section className="space-y-5 border-t border-zinc-200/80 pt-8">
+          <h2 className="text-xl font-semibold tracking-[-0.04em] text-zinc-950 sm:text-2xl">
+            {t("product_detail_related")}
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {relatedProducts.map((p) => (
+              <ProductCard key={p._id} product={{ ...p, currency }} />
+            ))}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }

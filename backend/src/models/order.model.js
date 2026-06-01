@@ -120,6 +120,12 @@ const orderSchema = new mongoose.Schema(
       ref: "Customer",
       default: null,
     },
+    customerEmail: {
+      type: String,
+      default: "",
+      trim: true,
+      lowercase: true,
+    },
   },
   {
     timestamps: true,

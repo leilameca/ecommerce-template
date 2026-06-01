@@ -5,11 +5,14 @@ const {
   listOrders,
   getOrderById,
   updateOrderStatus,
+  getPublicOrder,
 } = require("../controllers/order.controller");
 const { protect, restrictTo } = require("../middlewares/auth.middleware");
 const { optionalCustomer } = require("../middlewares/customer.middleware");
 
 const router = express.Router();
+
+router.get("/public/:id", getPublicOrder);
 
 router
   .route("/")

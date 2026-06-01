@@ -22,3 +22,7 @@ export function updateOrderStatus(orderId, payload) {
     body: payload,
   });
 }
+
+export function getPublicOrder(orderId) {
+  return apiRequest(`/orders/public/${orderId}`);
+}

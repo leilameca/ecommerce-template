@@ -83,12 +83,15 @@ export default function AccountLoginPage() {
           </Button>
         </form>
 
-        <p className="mt-5 text-center text-sm text-zinc-500">
+        <p className="mt-4 text-center text-sm text-zinc-500">
+          <Link to={ROUTE_PATHS.accountForgotPassword} className="font-medium text-zinc-950 hover:underline">
+            {t("account_forgot_password")}
+          </Link>
+        </p>
+
+        <p className="mt-3 text-center text-sm text-zinc-500">
           {t("account_no_account")}{" "}
-          <Link
-            to={ROUTE_PATHS.accountRegister}
-            className="font-medium text-zinc-950 hover:underline"
-          >
+          <Link to={ROUTE_PATHS.accountRegister} className="font-medium text-zinc-950 hover:underline">
             {t("account_register_link")}
           </Link>
         </p>

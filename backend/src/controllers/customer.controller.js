@@ -1,8 +1,12 @@
+const crypto = require("crypto");
+
 const Customer = require("../models/customer.model");
 const Order = require("../models/order.model");
 const ApiError = require("../utils/api-error");
 const asyncHandler = require("../utils/async-handler");
 const { signCustomerToken } = require("../utils/jwt");
+const { sendPasswordResetEmail } = require("../services/email.service");
+const { env } = require("../config/env");
 
 const ORDER_PRODUCT_POPULATE_FIELDS = "name slug price";
 
@@ -100,9 +104,65 @@ const getCustomerOrders = asyncHandler(async (req, res) => {
   });
 });
 
+const requestPasswordReset = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) throw new ApiError(400, "Email is required.");
+
+  const customer = await Customer.findOne({ email: email.toLowerCase().trim() })
+    .select("+resetPasswordToken +resetPasswordExpires");
+
+  // Always respond 200 to prevent email enumeration
+  if (!customer || !customer.isActive) {
+    res.status(200).json({ success: true, message: "If that email exists, a reset link was sent." });
+    return;
+  }
+
+  const token = crypto.randomBytes(32).toString("hex");
+  customer.resetPasswordToken = crypto.createHash("sha256").update(token).digest("hex");
+  customer.resetPasswordExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+  await customer.save();
+
+  const resetUrl = `${env.CLIENT_URL}/account/reset-password?token=${token}`;
+  await sendPasswordResetEmail({ email: customer.email, name: customer.name, resetUrl });
+
+  res.status(200).json({ success: true, message: "If that email exists, a reset link was sent." });
+});
+
+const resetPassword = asyncHandler(async (req, res) => {
+  const { token, password } = req.body;
+
+  if (!token || !password) throw new ApiError(400, "Token and new password are required.");
+  if (password.length < 8) throw new ApiError(400, "Password must be at least 8 characters.");
+
+  const hashed = crypto.createHash("sha256").update(token).digest("hex");
+
+  const customer = await Customer.findOne({
+    resetPasswordToken: hashed,
+    resetPasswordExpires: { $gt: new Date() },
+  }).select("+resetPasswordToken +resetPasswordExpires +password");
+
+  if (!customer) throw new ApiError(400, "Reset link is invalid or has expired.");
+
+  customer.password = password;
+  customer.resetPasswordToken = null;
+  customer.resetPasswordExpires = null;
+  await customer.save();
+
+  const newToken = signCustomerToken(customer);
+
+  res.status(200).json({
+    success: true,
+    message: "Password reset successfully.",
+    data: { token: newToken, customer: formatCustomer(customer) },
+  });
+});
+
 module.exports = {
   registerCustomer,
   loginCustomer,
   getCustomerProfile,
   getCustomerOrders,
+  requestPasswordReset,
+  resetPassword,
 };

@@ -13,6 +13,9 @@ import AdminCouponsPage from "../pages/admin/AdminCouponsPage";
 import AccountLoginPage from "../pages/account/AccountLoginPage";
 import AccountRegisterPage from "../pages/account/AccountRegisterPage";
 import AccountOrdersPage from "../pages/account/AccountOrdersPage";
+import AccountForgotPasswordPage from "../pages/account/AccountForgotPasswordPage";
+import AccountResetPasswordPage from "../pages/account/AccountResetPasswordPage";
+import OrderStatusPage from "../pages/order/OrderStatusPage";
 import CartPage from "../pages/cart/CartPage";
 import ProductCatalogPage from "../pages/catalog/ProductCatalogPage";
 import CheckoutPage from "../pages/checkout/CheckoutPage";
@@ -36,9 +39,12 @@ export default function AppRouter() {
           <Route path={ROUTE_PATHS.checkoutSuccess} element={<CheckoutSuccessPage />} />
           <Route path={ROUTE_PATHS.checkoutCancel} element={<CheckoutCancelPage />} />
           <Route path={ROUTE_PATHS.productDetail} element={<ProductDetailPage />} />
+          <Route path={ROUTE_PATHS.orderStatus} element={<OrderStatusPage />} />
           <Route path={ROUTE_PATHS.accountLogin} element={<AccountLoginPage />} />
           <Route path={ROUTE_PATHS.accountRegister} element={<AccountRegisterPage />} />
           <Route path={ROUTE_PATHS.accountOrders} element={<AccountOrdersPage />} />
+          <Route path={ROUTE_PATHS.accountForgotPassword} element={<AccountForgotPasswordPage />} />
+          <Route path={ROUTE_PATHS.accountResetPassword} element={<AccountResetPasswordPage />} />
         </Route>
 
         <Route path={ROUTE_PATHS.adminLogin} element={<AdminLoginPage />} />
