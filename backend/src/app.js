@@ -9,6 +9,7 @@ const {
   notFoundMiddleware,
   errorHandler,
 } = require("./middlewares/error.middleware");
+const { handleWebhook } = require("./controllers/stripe.controller");
 
 const app = express();
 
@@ -19,6 +20,14 @@ app.use(
   })
 );
 app.use(helmet());
+
+// Stripe webhook must receive the raw body before express.json() parses it
+app.post(
+  "/api/v1/stripe/webhook",
+  express.raw({ type: "application/json" }),
+  handleWebhook
+);
+
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
 

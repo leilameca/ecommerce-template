@@ -129,6 +129,7 @@ export default function AdminLayout() {
     { label: t("admin_categories"), to: ROUTE_PATHS.adminCategories },
     { label: t("admin_orders"), to: ROUTE_PATHS.adminOrders },
     { label: t("admin_store_config"), to: ROUTE_PATHS.adminStoreConfig },
+    ...(user?.role === "super-admin" ? [{ label: "Users", to: ROUTE_PATHS.adminUsers }] : []),
   ];
   const sidebarWidthClass = isSidebarCollapsed ? "xl:w-[88px]" : "xl:w-[272px]";
   const contentPaddingClass = isSidebarCollapsed ? "xl:pl-[112px]" : "xl:pl-[296px]";

@@ -10,6 +10,7 @@ import { useStoreConfig } from "../../hooks/useStoreConfig";
 import { buildWhatsappCheckoutUrl } from "../../lib/build-whatsapp-url";
 import { formatCurrency } from "../../lib/format-currency";
 import { createOrder } from "../../services/api/orders.service";
+import { createStripeSession } from "../../services/api/stripe.service";
 import { ROUTE_PATHS } from "../../routes/route-paths";
 
 const paymentMethodLabels = {
@@ -152,6 +153,18 @@ export default function CheckoutPage() {
       });
 
       const created = response?.data || null;
+
+      // Redirect to Stripe Checkout before clearing the cart
+      if (formState.paymentMethod === "online_payment" && created?._id) {
+        const sessionResponse = await createStripeSession(created._id);
+        const stripeUrl = sessionResponse?.data?.url;
+        if (stripeUrl) {
+          clearCart();
+          window.location.href = stripeUrl;
+          return;
+        }
+      }
+
       setCreatedOrder(created);
 
       const whatsappMessage = [

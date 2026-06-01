@@ -4,10 +4,13 @@ export const ROUTE_PATHS = {
   productDetail: "/products/:slug",
   cart: "/cart",
   checkout: "/checkout",
+  checkoutSuccess: "/checkout/success",
+  checkoutCancel: "/checkout/cancel",
   adminLogin: "/admin/login",
   adminDashboard: "/admin",
   adminProducts: "/admin/products",
   adminCategories: "/admin/categories",
   adminOrders: "/admin/orders",
   adminStoreConfig: "/admin/store-config",
+  adminUsers: "/admin/users",
 };

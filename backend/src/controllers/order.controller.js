@@ -4,6 +4,7 @@ const Order = require("../models/order.model");
 const Product = require("../models/product.model");
 const ApiError = require("../utils/api-error");
 const asyncHandler = require("../utils/async-handler");
+const { sendOrderNotification } = require("../services/email.service");
 const {
   getPagination,
   buildPaginationMeta,
@@ -202,6 +203,9 @@ const createOrder = asyncHandler(async (req, res) => {
   }
 
   await createdOrder.populate("items.product", ORDER_PRODUCT_POPULATE_FIELDS);
+
+  // Fire-and-forget — email failure must not break order creation
+  sendOrderNotification(createdOrder).catch(() => {});
 
   res.status(201).json({
     success: true,

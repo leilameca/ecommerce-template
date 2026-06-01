@@ -2,30 +2,30 @@ import { Link } from "react-router-dom";
 
 import Button from "../../components/ui/Button";
 import { useCart } from "../../hooks/useCart";
+import { useLanguage } from "../../hooks/useLanguage";
 import { useStoreConfig } from "../../hooks/useStoreConfig";
 import { formatCurrency } from "../../lib/format-currency";
 import { ROUTE_PATHS } from "../../routes/route-paths";
 
-function EmptyCartState() {
+function EmptyCartState({ t }) {
   return (
     <div className="rounded-[2rem] border border-zinc-200/80 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.05)] sm:p-10">
       <div className="text-[10px] font-medium uppercase tracking-[0.28em] text-zinc-400">
-        Cart
+        {t("cart_eyebrow")}
       </div>
 
       <h1 className="mt-5 text-3xl font-semibold tracking-[-0.05em] text-zinc-950 sm:text-4xl">
-        Your cart is still empty.
+        {t("cart_empty_title")}
       </h1>
 
       <p className="mt-4 max-w-2xl text-sm leading-7 text-zinc-600 sm:text-base">
-        Start with the catalog and add premium products to the bag before moving
-        into checkout.
+        {t("cart_empty_copy")}
       </p>
 
       <div className="mt-8">
         <Link to={ROUTE_PATHS.catalog} className="block sm:inline-block">
           <Button size="lg" className="w-full sm:w-auto">
-            Browse Catalog
+            {t("cart_browse_catalog")}
           </Button>
         </Link>
       </div>
@@ -33,7 +33,7 @@ function EmptyCartState() {
   );
 }
 
-function CartItemRow({ item, currency, onDecrease, onIncrease, onRemove }) {
+function CartItemRow({ item, currency, onDecrease, onIncrease, onRemove, t }) {
   return (
     <article className="grid gap-5 rounded-[2rem] border border-zinc-200/80 bg-white p-4 shadow-[0_20px_60px_rgba(15,23,42,0.04)] sm:grid-cols-[120px_minmax(0,1fr)] sm:p-6">
       <div className="overflow-hidden rounded-[1.5rem] bg-zinc-100">
@@ -62,7 +62,7 @@ function CartItemRow({ item, currency, onDecrease, onIncrease, onRemove }) {
           </Link>
 
           <p className="text-sm text-zinc-500">
-            {formatCurrency(item.price, currency)} each
+            {formatCurrency(item.price, currency)} {t("cart_each")}
           </p>
         </div>
 
@@ -96,7 +96,7 @@ function CartItemRow({ item, currency, onDecrease, onIncrease, onRemove }) {
               className="text-sm font-medium text-zinc-500 transition-colors duration-200 hover:text-rose-600"
               onClick={onRemove}
             >
-              Remove
+              {t("cart_remove")}
             </button>
 
             <div className="text-lg font-semibold tracking-[-0.03em] text-zinc-950">
@@ -110,12 +110,13 @@ function CartItemRow({ item, currency, onDecrease, onIncrease, onRemove }) {
 }
 
 export default function CartPage() {
+  const { t } = useLanguage();
   const { items, subtotal, isEmpty, updateQuantity, removeItem, clearCart } = useCart();
   const { config } = useStoreConfig();
   const currency = config.currency || "USD";
 
   if (isEmpty) {
-    return <EmptyCartState />;
+    return <EmptyCartState t={t} />;
   }
 
   return (
@@ -123,22 +124,21 @@ export default function CartPage() {
       <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px] xl:items-end">
         <div className="max-w-3xl">
           <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-zinc-400">
-            Shopping Cart
+            {t("cart_eyebrow")}
           </span>
 
           <h1 className="mt-5 text-4xl font-semibold tracking-[-0.06em] text-zinc-950 sm:text-5xl">
-            Review your selection before checkout.
+            {t("cart_title")}
           </h1>
 
           <p className="mt-5 max-w-2xl text-base leading-8 text-zinc-600">
-            Fine-tune quantities, validate totals, and continue into a cleaner
-            checkout flow connected to your backend order system.
+            {t("cart_copy")}
           </p>
         </div>
 
         <div className="rounded-[2rem] border border-zinc-200/80 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.05)]">
           <div className="text-[10px] font-medium uppercase tracking-[0.28em] text-zinc-400">
-            Order Summary
+            {t("cart_order_summary")}
           </div>
 
           <div className="mt-5 text-3xl font-semibold tracking-[-0.05em] text-zinc-950">
@@ -146,7 +146,7 @@ export default function CartPage() {
           </div>
 
           <p className="mt-3 text-sm leading-7 text-zinc-600">
-            Subtotal before shipping and payment method selection.
+            {t("cart_subtotal_copy")}
           </p>
         </div>
       </section>
@@ -161,6 +161,7 @@ export default function CartPage() {
               onDecrease={() => updateQuantity(item.productId, item.quantity - 1)}
               onIncrease={() => updateQuantity(item.productId, item.quantity + 1)}
               onRemove={() => removeItem(item.productId)}
+              t={t}
             />
           ))}
         </section>
@@ -169,19 +170,19 @@ export default function CartPage() {
           <div className="rounded-[2rem] border border-zinc-200/80 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.05)]">
             <div className="space-y-4">
               <div className="flex items-center justify-between text-sm text-zinc-500">
-                <span>Items</span>
+                <span>{t("cart_items")}</span>
                 <span>{items.length}</span>
               </div>
 
               <div className="flex items-center justify-between border-b border-zinc-200/80 pb-4 text-sm text-zinc-500">
-                <span>Subtotal</span>
+                <span>{t("cart_subtotal")}</span>
                 <span className="font-medium text-zinc-950">
                   {formatCurrency(subtotal, currency)}
                 </span>
               </div>
 
               <div className="flex items-center justify-between text-base font-semibold text-zinc-950">
-                <span>Estimated total</span>
+                <span>{t("cart_estimated_total")}</span>
                 <span>{formatCurrency(subtotal, currency)}</span>
               </div>
             </div>
@@ -189,7 +190,7 @@ export default function CartPage() {
             <div className="mt-6 flex flex-col gap-3">
               <Link to={ROUTE_PATHS.checkout}>
                 <Button size="lg" className="w-full">
-                  Continue to Checkout
+                  {t("cart_continue_checkout")}
                 </Button>
               </Link>
 
@@ -199,7 +200,7 @@ export default function CartPage() {
                 className="w-full"
                 onClick={clearCart}
               >
-                Clear Cart
+                {t("cart_clear")}
               </Button>
             </div>
           </div>

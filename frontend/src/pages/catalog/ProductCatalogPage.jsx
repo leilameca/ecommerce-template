@@ -6,6 +6,7 @@ import PaginationControls from "../../components/ui/PaginationControls";
 import SelectField from "../../components/ui/SelectField";
 import TextInput from "../../components/ui/TextInput";
 import { useCatalogData } from "../../hooks/useCatalogData";
+import { useLanguage } from "../../hooks/useLanguage";
 import { useStoreConfig } from "../../hooks/useStoreConfig";
 
 const DEFAULT_LIMIT = 12;
@@ -51,36 +52,34 @@ const filterProducts = ({ products, selectedCategory, searchQuery }) => {
   });
 };
 
-function CatalogHeader() {
+function CatalogHeader({ t }) {
   return (
     <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-end">
       <div className="max-w-3xl">
         <span className="text-[10px] font-medium uppercase tracking-[0.32em] text-zinc-400">
-          Product Catalog
+          {t("catalog_eyebrow")}
         </span>
 
         <h1 className="mt-5 text-[2.75rem] font-semibold tracking-[-0.06em] text-zinc-950 sm:text-5xl">
-          Curated products presented with clarity, rhythm, and space.
+          {t("catalog_title")}
         </h1>
 
         <p className="mt-5 max-w-2xl text-base leading-8 text-zinc-600">
-          A premium listing experience built to adapt across industries while
-          keeping the storefront calm, polished, and conversion-ready.
+          {t("catalog_copy")}
         </p>
       </div>
 
       <div className="rounded-[2rem] border border-zinc-200/80 bg-white p-5 shadow-[0_22px_70px_rgba(15,23,42,0.05)] sm:p-6">
         <div className="text-[10px] font-medium uppercase tracking-[0.28em] text-zinc-400">
-          Catalog View
+          {t("catalog_view_title")}
         </div>
 
         <div className="mt-4 text-2xl font-semibold tracking-[-0.05em] text-zinc-950">
-          Clean filters, premium cards, soft pagination.
+          {t("catalog_view_heading")}
         </div>
 
         <p className="mt-3 text-sm leading-7 text-zinc-600">
-          Structured for scalable product browsing while keeping the interface
-          quiet and brand-forward.
+          {t("catalog_view_copy")}
         </p>
       </div>
     </section>
@@ -95,27 +94,28 @@ function CatalogToolbar({
   onCategoryChange,
   sortValue,
   onSortChange,
+  t,
 }) {
   return (
     <section className="rounded-[2rem] border border-zinc-200/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.05)] sm:p-6">
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_220px]">
         <TextInput
-          label="Search"
+          label={t("catalog_search")}
           type="search"
-          placeholder="Search products, descriptions, or categories"
+          placeholder={t("catalog_search_placeholder")}
           value={searchValue}
           onChange={(event) => onSearchChange(event.target.value)}
         />
 
         <SelectField
-          label="Sort by"
+          label={t("catalog_sort_by")}
           value={sortValue}
           onChange={(event) => onSortChange(event.target.value)}
         >
-          <option value="featured">Featured</option>
-          <option value="price-asc">Price: Low to high</option>
-          <option value="price-desc">Price: High to low</option>
-          <option value="name">Name</option>
+          <option value="featured">{t("catalog_sort_featured")}</option>
+          <option value="price-asc">{t("catalog_sort_price_asc")}</option>
+          <option value="price-desc">{t("catalog_sort_price_desc")}</option>
+          <option value="name">{t("catalog_sort_name")}</option>
         </SelectField>
       </div>
 
@@ -124,7 +124,7 @@ function CatalogToolbar({
           isActive={selectedCategory === ALL_CATEGORIES_VALUE}
           onClick={() => onCategoryChange(ALL_CATEGORIES_VALUE)}
         >
-          All Categories
+          {t("catalog_all_categories")}
         </FilterChip>
 
         {categories.map((category) => (
@@ -156,6 +156,7 @@ function CatalogState({ title, description, tone = "default" }) {
 }
 
 export default function ProductCatalogPage() {
+  const { t } = useLanguage();
   const { config } = useStoreConfig();
   const [page, setPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
@@ -181,7 +182,7 @@ export default function ProductCatalogPage() {
 
   return (
     <div className="space-y-10 sm:space-y-12">
-      <CatalogHeader />
+      <CatalogHeader t={t} />
 
       <CatalogToolbar
         searchValue={searchValue}
@@ -191,24 +192,23 @@ export default function ProductCatalogPage() {
         onCategoryChange={setSelectedCategory}
         sortValue={sortValue}
         onSortChange={setSortValue}
+        t={t}
       />
 
       <section className="space-y-8">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="text-[10px] font-medium uppercase tracking-[0.28em] text-zinc-400">
-              Visible Selection
+              {t("catalog_visible_selection")}
             </div>
             <h2 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-zinc-950">
-              {visibleProducts.length} products on this view
+              {t("catalog_products_on_view", { count: visibleProducts.length })}
             </h2>
           </div>
 
           {pagination ? (
             <p className="text-sm text-zinc-500">
-              Showing page{" "}
-              <span className="font-medium text-zinc-950">{pagination.page}</span> of{" "}
-              <span className="font-medium text-zinc-950">{pagination.totalPages}</span>
+              {t("catalog_showing_page", { page: pagination.page, total: pagination.totalPages })}
             </p>
           ) : null}
         </div>
@@ -230,13 +230,13 @@ export default function ProductCatalogPage() {
         ) : errorMessage ? (
           <CatalogState
             tone="error"
-            title="Catalog unavailable"
+            title={t("catalog_unavailable")}
             description={errorMessage}
           />
         ) : visibleProducts.length === 0 ? (
           <CatalogState
-            title="No products match these filters"
-            description="Try clearing the search or switching categories to explore more items from the current catalog page."
+            title={t("catalog_empty_title")}
+            description={t("catalog_empty_copy")}
           />
         ) : (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">

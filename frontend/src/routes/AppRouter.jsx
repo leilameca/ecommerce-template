@@ -8,9 +8,12 @@ import AdminLoginPage from "../pages/admin/AdminLoginPage";
 import AdminOrdersPage from "../pages/admin/AdminOrdersPage";
 import AdminProductsPage from "../pages/admin/AdminProductsPage";
 import AdminStoreConfigPage from "../pages/admin/AdminStoreConfigPage";
+import AdminUsersPage from "../pages/admin/AdminUsersPage";
 import CartPage from "../pages/cart/CartPage";
 import ProductCatalogPage from "../pages/catalog/ProductCatalogPage";
 import CheckoutPage from "../pages/checkout/CheckoutPage";
+import CheckoutSuccessPage from "../pages/checkout/CheckoutSuccessPage";
+import CheckoutCancelPage from "../pages/checkout/CheckoutCancelPage";
 import HomePage from "../pages/home/HomePage";
 import ProductDetailPage from "../pages/product/ProductDetailPage";
 import ProtectedRoute from "./ProtectedRoute";
@@ -26,6 +29,8 @@ export default function AppRouter() {
           <Route path={ROUTE_PATHS.catalog} element={<ProductCatalogPage />} />
           <Route path={ROUTE_PATHS.cart} element={<CartPage />} />
           <Route path={ROUTE_PATHS.checkout} element={<CheckoutPage />} />
+          <Route path={ROUTE_PATHS.checkoutSuccess} element={<CheckoutSuccessPage />} />
+          <Route path={ROUTE_PATHS.checkoutCancel} element={<CheckoutCancelPage />} />
           <Route
             path={ROUTE_PATHS.productDetail}
             element={<ProductDetailPage />}
@@ -53,6 +58,7 @@ export default function AppRouter() {
               path={ROUTE_PATHS.adminStoreConfig}
               element={<AdminStoreConfigPage />}
             />
+            <Route path={ROUTE_PATHS.adminUsers} element={<AdminUsersPage />} />
           </Route>
         </Route>
 

@@ -17,6 +17,16 @@ const env = Object.freeze({
   CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME?.trim() || "",
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY?.trim() || "",
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET?.trim() || "",
+  // Stripe (optional — leave blank to disable online payment)
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY?.trim() || "",
+  STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET?.trim() || "",
+  // Email via SMTP (optional — leave blank to disable order emails)
+  SMTP_HOST: process.env.SMTP_HOST?.trim() || "",
+  SMTP_PORT: Number(process.env.SMTP_PORT) || 587,
+  SMTP_USER: process.env.SMTP_USER?.trim() || "",
+  SMTP_PASS: process.env.SMTP_PASS?.trim() || "",
+  SMTP_FROM: process.env.SMTP_FROM?.trim() || "",
+  STORE_NOTIFICATION_EMAIL: process.env.STORE_NOTIFICATION_EMAIL?.trim() || "",
 });
 
 const validateEnv = () => {
