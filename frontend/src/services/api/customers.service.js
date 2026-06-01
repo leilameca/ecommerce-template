@@ -43,3 +43,19 @@ export function resetPassword(token, password) {
     body: { token, password },
   });
 }
+
+export function updateCustomerProfile(token, data) {
+  return apiRequest("/customers/me", {
+    method: "PUT",
+    headers: customerAuthHeader(token),
+    body: data,
+  });
+}
+
+export function changeCustomerPassword(token, currentPassword, newPassword) {
+  return apiRequest("/customers/me/password", {
+    method: "PUT",
+    headers: customerAuthHeader(token),
+    body: { currentPassword, newPassword },
+  });
+}

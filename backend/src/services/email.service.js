@@ -152,4 +152,29 @@ const sendPasswordResetEmail = async ({ email, name, resetUrl }) => {
   }
 };
 
-module.exports = { sendOrderNotification, sendCustomerOrderConfirmation, sendPasswordResetEmail };
+const sendContactMessage = async ({ name, email, message }) => {
+  if (!isEmailConfigured()) return;
+
+  const to = env.STORE_NOTIFICATION_EMAIL || env.SMTP_USER;
+  const html = `
+    <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#18181b">
+      <h2 style="font-size:20px;font-weight:600;margin-bottom:4px">New contact message</h2>
+      <p style="color:#71717a;font-size:13px;margin-top:0">From: <strong>${name}</strong> &lt;${email}&gt;</p>
+      <div style="background:#f4f4f5;padding:16px;border-radius:8px;font-size:14px;line-height:1.6;color:#18181b;white-space:pre-wrap">${message}</div>
+    </div>
+  `;
+
+  try {
+    await createTransporter().sendMail({
+      from: env.SMTP_FROM,
+      to,
+      replyTo: email,
+      subject: `Contact form message from ${name}`,
+      html,
+    });
+  } catch (error) {
+    console.error("[email] Failed to send contact message:", error.message);
+  }
+};
+
+module.exports = { sendOrderNotification, sendCustomerOrderConfirmation, sendPasswordResetEmail, sendContactMessage };

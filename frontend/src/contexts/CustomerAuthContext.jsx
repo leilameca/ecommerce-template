@@ -97,6 +97,12 @@ export function CustomerAuthProvider({ children }) {
     setCustomer(null);
   };
 
+  const updateCustomerData = (updatedCustomer) => {
+    const merged = { ...customer, ...updatedCustomer };
+    persist(token, merged);
+    setCustomer(merged);
+  };
+
   const value = useMemo(
     () => ({
       customer,
@@ -106,6 +112,7 @@ export function CustomerAuthProvider({ children }) {
       register,
       login,
       logout,
+      updateCustomerData,
     }),
     [customer, token, isLoading]
   );

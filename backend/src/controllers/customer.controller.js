@@ -158,6 +158,53 @@ const resetPassword = asyncHandler(async (req, res) => {
   });
 });
 
+const updateCustomerProfile = asyncHandler(async (req, res) => {
+  const { name, phone } = req.body;
+
+  if (name !== undefined) {
+    if (!name || typeof name !== "string" || !name.trim()) {
+      throw new ApiError(400, "Name cannot be empty.");
+    }
+    req.customer.name = name.trim();
+  }
+
+  if (phone !== undefined) {
+    req.customer.phone = String(phone).trim();
+  }
+
+  await req.customer.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Profile updated.",
+    data: formatCustomer(req.customer),
+  });
+});
+
+const changeCustomerPassword = asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    throw new ApiError(400, "Current and new passwords are required.");
+  }
+
+  if (newPassword.length < 8) {
+    throw new ApiError(400, "New password must be at least 8 characters.");
+  }
+
+  const customer = await Customer.findById(req.customer._id).select("+password");
+  const isValid = await customer.comparePassword(currentPassword);
+
+  if (!isValid) {
+    throw new ApiError(401, "Current password is incorrect.");
+  }
+
+  customer.password = newPassword;
+  await customer.save();
+
+  res.status(200).json({ success: true, message: "Password changed successfully." });
+});
+
 module.exports = {
   registerCustomer,
   loginCustomer,
@@ -165,4 +212,6 @@ module.exports = {
   getCustomerOrders,
   requestPasswordReset,
   resetPassword,
+  updateCustomerProfile,
+  changeCustomerPassword,
 };

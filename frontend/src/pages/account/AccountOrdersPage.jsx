@@ -143,6 +143,15 @@ export default function AccountOrdersPage() {
         </Button>
       </section>
 
+      <div className="flex gap-1 rounded-full border border-zinc-200 bg-zinc-50 p-1 text-sm font-medium w-fit">
+        <span className="rounded-full bg-white px-4 py-1.5 text-zinc-950 shadow-sm">
+          {t("account_nav_orders")}
+        </span>
+        <Link to={ROUTE_PATHS.accountProfile} className="rounded-full px-4 py-1.5 text-zinc-500 transition-colors hover:text-zinc-950">
+          {t("account_nav_profile")}
+        </Link>
+      </div>
+
       {error ? (
         <div className="rounded-xl border border-rose-200 bg-rose-50/70 px-4 py-3 text-sm text-rose-700">
           {error}

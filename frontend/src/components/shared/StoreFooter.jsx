@@ -26,7 +26,7 @@ export default function StoreFooter() {
 
   return (
     <footer className="border-t border-zinc-200/80 bg-white">
-      <div className="mx-auto grid max-w-[1380px] gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,0.6fr))] lg:px-10 lg:py-16">
+      <div className="mx-auto grid max-w-[1380px] gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[minmax(0,1.4fr)_repeat(4,minmax(0,0.6fr))] lg:px-10 lg:py-16">
         <div className="max-w-md">
           <div className="text-[11px] font-medium uppercase tracking-[0.28em] text-zinc-400">
             {storeName}
@@ -65,46 +65,44 @@ export default function StoreFooter() {
           <div className="text-sm font-semibold tracking-[-0.02em] text-zinc-950">
             {t("footer_shop")}
           </div>
-
           <div className="mt-4 flex flex-col gap-3 text-sm text-zinc-600">
-            <Link to={ROUTE_PATHS.home} className="transition-colors hover:text-zinc-950">
-              {t("footer_home")}
-            </Link>
-            <Link to={ROUTE_PATHS.catalog} className="transition-colors hover:text-zinc-950">
-              {t("footer_catalog")}
-            </Link>
-            <Link to={ROUTE_PATHS.cart} className="transition-colors hover:text-zinc-950">
-              {t("footer_cart")}
-            </Link>
-            <Link to={ROUTE_PATHS.checkout} className="transition-colors hover:text-zinc-950">
-              {t("footer_checkout")}
-            </Link>
+            <Link to={ROUTE_PATHS.home} className="transition-colors hover:text-zinc-950">{t("footer_home")}</Link>
+            <Link to={ROUTE_PATHS.catalog} className="transition-colors hover:text-zinc-950">{t("footer_catalog")}</Link>
+            <Link to={ROUTE_PATHS.cart} className="transition-colors hover:text-zinc-950">{t("footer_cart")}</Link>
+            <Link to={ROUTE_PATHS.checkout} className="transition-colors hover:text-zinc-950">{t("footer_checkout")}</Link>
           </div>
         </div>
 
         <div>
           <div className="text-sm font-semibold tracking-[-0.02em] text-zinc-950">
-            {t("footer_store")}
+            {t("footer_info")}
           </div>
-
           <div className="mt-4 flex flex-col gap-3 text-sm text-zinc-600">
-            <Link to={ROUTE_PATHS.adminLogin} className="transition-colors hover:text-zinc-950">
-              {t("footer_admin")}
-            </Link>
-            <div>{t("footer_currency")}: {config.currency || "USD"}</div>
+            <Link to={ROUTE_PATHS.about} className="transition-colors hover:text-zinc-950">{t("footer_about")}</Link>
+            <Link to={ROUTE_PATHS.contact} className="transition-colors hover:text-zinc-950">{t("footer_contact_link")}</Link>
+            <Link to={ROUTE_PATHS.faq} className="transition-colors hover:text-zinc-950">{t("footer_faq")}</Link>
+          </div>
+        </div>
+
+        <div>
+          <div className="text-sm font-semibold tracking-[-0.02em] text-zinc-950">
+            {t("footer_legal")}
+          </div>
+          <div className="mt-4 flex flex-col gap-3 text-sm text-zinc-600">
+            <Link to={ROUTE_PATHS.privacy} className="transition-colors hover:text-zinc-950">{t("footer_privacy")}</Link>
+            <Link to={ROUTE_PATHS.terms} className="transition-colors hover:text-zinc-950">{t("footer_terms")}</Link>
+            <Link to={ROUTE_PATHS.shippingPolicy} className="transition-colors hover:text-zinc-950">{t("footer_shipping_policy")}</Link>
           </div>
         </div>
 
         {hasContact ? (
           <div>
             <div className="text-sm font-semibold tracking-[-0.02em] text-zinc-950">
-              Contacto
+              {t("footer_contact_link")}
             </div>
             <div className="mt-4 flex flex-col gap-3 text-sm text-zinc-600">
               {config.contactEmail ? (
-                <a href={`mailto:${config.contactEmail}`} className="transition-colors hover:text-zinc-950">
-                  {config.contactEmail}
-                </a>
+                <a href={`mailto:${config.contactEmail}`} className="transition-colors hover:text-zinc-950">{config.contactEmail}</a>
               ) : null}
               {config.phone && config.phone !== config.whatsappNumber ? (
                 <div>{config.phone}</div>
@@ -122,7 +120,10 @@ export default function StoreFooter() {
       <div className="border-t border-zinc-200/80">
         <div className="mx-auto flex max-w-[1380px] flex-col gap-2 px-4 py-4 text-sm text-zinc-500 sm:px-6 sm:flex-row sm:items-center sm:justify-between lg:px-10">
           <p>{currentYear} {storeName}. {t("footer_rights")}</p>
-          <p>{t("footer_brand")}</p>
+          <div className="flex flex-wrap gap-4">
+            <Link to={ROUTE_PATHS.privacy} className="hover:text-zinc-950 transition-colors">{t("footer_privacy")}</Link>
+            <Link to={ROUTE_PATHS.terms} className="hover:text-zinc-950 transition-colors">{t("footer_terms")}</Link>
+          </div>
         </div>
       </div>
     </footer>
