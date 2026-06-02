@@ -1,4 +1,5 @@
 import { useDeferredValue, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import PageSEO from "../../components/shared/PageSEO";
 import ProductCard from "../../components/shared/ProductCard";
@@ -143,9 +144,12 @@ function CatalogState({ title, description, tone = "default" }) {
 export default function ProductCatalogPage() {
   const { t } = useLanguage();
   const { config } = useStoreConfig();
+  const [searchParams] = useSearchParams();
   const [page, setPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState(ALL_CATEGORIES_VALUE);
+  const [selectedCategory, setSelectedCategory] = useState(
+    searchParams.get("category") || ALL_CATEGORIES_VALUE
+  );
   const [sortValue, setSortValue] = useState("featured");
   const deferredSearchValue = useDeferredValue(searchValue);
 

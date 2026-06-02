@@ -12,10 +12,11 @@ export default function HomeCategoryCard({ category, index = 0 }) {
   const imageUrl = category.image?.url || "";
   const imageAlt = category.image?.alt || category.name;
   const gradientTone = fallbackTones[index % fallbackTones.length];
+  const categoryLink = `${ROUTE_PATHS.catalog}?category=${category.slug}`;
 
   return (
     <article className="overflow-hidden border border-zinc-200/80 bg-white shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
-      <Link to={ROUTE_PATHS.catalog} className="block">
+      <Link to={categoryLink} className="block">
         <div className="relative aspect-[6/5] overflow-hidden bg-zinc-100">
           {imageUrl ? (
             <img
@@ -48,7 +49,7 @@ export default function HomeCategoryCard({ category, index = 0 }) {
         </div>
 
         <Link
-          to={ROUTE_PATHS.catalog}
+          to={categoryLink}
           className="inline-flex items-center gap-2 text-sm font-medium text-zinc-950 transition-colors duration-200 hover:text-zinc-600"
         >
           Shop collection
