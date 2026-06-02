@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 
 import Button from "../../components/ui/Button";
 import SelectField from "../../components/ui/SelectField";
@@ -12,9 +13,11 @@ import { useStoreConfig } from "../../hooks/useStoreConfig";
 import { buildWhatsappCheckoutUrl } from "../../lib/build-whatsapp-url";
 import { formatCurrency } from "../../lib/format-currency";
 import { createOrder } from "../../services/api/orders.service";
-import { createStripeSession } from "../../services/api/stripe.service";
+import { createPaypalOrder, capturePaypalOrder } from "../../services/api/payments.service";
 import { validateCoupon } from "../../services/api/coupon.service";
 import { ROUTE_PATHS } from "../../routes/route-paths";
+
+const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID || "";
 
 const paymentMethodLabels = {
   whatsapp: "WhatsApp",
@@ -188,17 +191,6 @@ export default function CheckoutPage() {
 
       const created = response?.data || null;
 
-      // Redirect to Stripe Checkout before clearing the cart
-      if (formState.paymentMethod === "online_payment" && created?._id) {
-        const sessionResponse = await createStripeSession(created._id);
-        const stripeUrl = sessionResponse?.data?.url;
-        if (stripeUrl) {
-          clearCart();
-          window.location.href = stripeUrl;
-          return;
-        }
-      }
-
       setCreatedOrder(created);
 
       const whatsappMessage = [
@@ -365,9 +357,54 @@ export default function CheckoutPage() {
             </div>
           ) : null}
 
-          <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={isSubmitting}>
-            {isSubmitting ? "Creating Order..." : "Create Order"}
-          </Button>
+          {formState.paymentMethod === "online_payment" && PAYPAL_CLIENT_ID ? (
+            <PayPalScriptProvider options={{ clientId: PAYPAL_CLIENT_ID, currency, intent: "capture" }}>
+              <PayPalButtons
+                style={{ layout: "vertical", shape: "rect", label: "pay" }}
+                createOrder={async () => {
+                  if (!formState.customerName || !formState.phone || !formState.address) {
+                    throw new Error("Please fill in name, phone, and address.");
+                  }
+                  const res = await createPaypalOrder(total, currency);
+                  return res.data.paypalOrderId;
+                }}
+                onApprove={async (data) => {
+                  setIsSubmitting(true);
+                  try {
+                    const res = await capturePaypalOrder(
+                      data.orderID,
+                      {
+                        customerName: formState.customerName,
+                        phone: formState.phone,
+                        address: formState.address,
+                        notes: formState.notes,
+                        shipping,
+                        couponCode: appliedCoupon?.code || "",
+                        customerEmail: customer?.email || "",
+                        items: items.map((item) => ({
+                          product: item.productId,
+                          quantity: item.quantity,
+                          variantSelections: item.selectedVariants || {},
+                        })),
+                      },
+                      customerToken || null
+                    );
+                    setCreatedOrder(res?.data || {});
+                    clearCart();
+                  } catch (err) {
+                    setErrorMessage(err?.message || "Payment could not be completed.");
+                  } finally {
+                    setIsSubmitting(false);
+                  }
+                }}
+                onError={(err) => setErrorMessage("PayPal error. Please try again.")}
+              />
+            </PayPalScriptProvider>
+          ) : (
+            <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={isSubmitting}>
+              {isSubmitting ? "Creating Order..." : "Create Order"}
+            </Button>
+          )}
         </form>
 
         <aside className="rounded-[1.5rem] border border-zinc-200/80 bg-white p-4 shadow-[0_20px_60px_rgba(15,23,42,0.04)] sm:p-6 xl:sticky xl:top-20">
