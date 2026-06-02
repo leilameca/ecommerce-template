@@ -38,8 +38,7 @@ export default function AccountVerifyEmailPage() {
 
         {status === "success" ? (
           <div className="rounded-[1.5rem] border border-emerald-200 bg-emerald-50/70 p-6 text-center">
-            <div className="text-3xl">✓</div>
-            <h2 className="mt-3 text-lg font-semibold tracking-[-0.03em] text-zinc-950">{t("verify_email_success_title")}</h2>
+            <h2 className="text-lg font-semibold tracking-[-0.03em] text-zinc-950">{t("verify_email_success_title")}</h2>
             <p className="mt-2 text-sm text-zinc-600">{t("verify_email_success_copy")}</p>
             <Link
               to={ROUTE_PATHS.accountOrders}
