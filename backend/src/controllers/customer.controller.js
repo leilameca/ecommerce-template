@@ -112,6 +112,8 @@ const requestPasswordReset = asyncHandler(async (req, res) => {
   const customer = await Customer.findOne({ email: email.toLowerCase().trim() })
     .select("+resetPasswordToken +resetPasswordExpires");
 
+  console.log(`[forgot-password] email="${email}" found=${Boolean(customer)} isActive=${customer?.isActive}`);
+
   // Always respond 200 to prevent email enumeration
   if (!customer || !customer.isActive) {
     res.status(200).json({ success: true, message: "If that email exists, a reset link was sent." });
@@ -124,6 +126,7 @@ const requestPasswordReset = asyncHandler(async (req, res) => {
   await customer.save();
 
   const resetUrl = `${env.CLIENT_URL}/account/reset-password?token=${token}`;
+  console.log(`[forgot-password] Sending reset email to ${customer.email}`);
   await sendPasswordResetEmail({ email: customer.email, name: customer.name, resetUrl });
 
   res.status(200).json({ success: true, message: "If that email exists, a reset link was sent." });
