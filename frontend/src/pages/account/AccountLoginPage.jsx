@@ -34,10 +34,11 @@ export default function AccountLoginPage() {
       await login(email.trim(), password);
       navigate(ROUTE_PATHS.accountOrders);
     } catch (err) {
-      if (err?.message === "EMAIL_NOT_VERIFIED") {
+      const msg = err?.message || "";
+      if (msg.includes("NOT_VERIFIED") || msg.includes("EMAIL_NOT_VERIFIED")) {
         setNotVerified(true);
       } else {
-        setError(err?.message || t("account_login_failed"));
+        setError(msg || t("account_login_failed"));
       }
     } finally {
       setIsSubmitting(false);
