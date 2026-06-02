@@ -30,6 +30,7 @@ const emptyProductForm = {
   draftImageAlt: "",
   isActive: true,
   variants: [],
+  variantImages: {},
   draftVariantName: "",
 };
 
@@ -58,6 +59,7 @@ const mapProductToForm = (product) => ({
         draftOption: "",
       }))
     : [],
+  variantImages: product.variantImages && typeof product.variantImages === "object" ? { ...product.variantImages } : {},
   draftVariantName: "",
 });
 
@@ -154,12 +156,44 @@ export default function AdminProductsPage() {
   };
 
   const handleRemoveVariantOption = (variantIndex, option) => {
-    setFormState((cur) => ({
-      ...cur,
-      variants: cur.variants.map((v, i) =>
-        i === variantIndex ? { ...v, options: v.options.filter((o) => o !== option) } : v
-      ),
-    }));
+    setFormState((cur) => {
+      const variant = cur.variants[variantIndex];
+      const key = `${variant.name}:${option}`;
+      const newImages = { ...cur.variantImages };
+      delete newImages[key];
+      return {
+        ...cur,
+        variants: cur.variants.map((v, i) =>
+          i === variantIndex ? { ...v, options: v.options.filter((o) => o !== option) } : v
+        ),
+        variantImages: newImages,
+      };
+    });
+  };
+
+  const handleVariantImageUpload = async (variantName, option, file) => {
+    if (!file) return;
+    try {
+      const response = await uploadProductImage(file);
+      const url = response?.data?.url;
+      if (!url) return;
+      const key = `${variantName}:${option}`;
+      setFormState((cur) => ({
+        ...cur,
+        variantImages: { ...cur.variantImages, [key]: url },
+      }));
+    } catch {
+      // silent fail — image upload errors are non-blocking
+    }
+  };
+
+  const handleVariantImageRemove = (variantName, option) => {
+    const key = `${variantName}:${option}`;
+    setFormState((cur) => {
+      const newImages = { ...cur.variantImages };
+      delete newImages[key];
+      return { ...cur, variantImages: newImages };
+    });
   };
 
   const handleImageFieldChange = (index, fieldName, value) => {
@@ -272,6 +306,7 @@ export default function AdminProductsPage() {
       variants: formState.variants
         .filter((v) => v.name && v.options.length > 0)
         .map((v) => ({ name: v.name, options: v.options })),
+      variantImages: formState.variantImages,
     };
 
     try {
@@ -701,22 +736,49 @@ export default function AdminProductsPage() {
                           </Button>
                         </div>
 
-                        <div className="mb-3 flex flex-wrap gap-1.5">
-                          {variant.options.map((option) => (
-                            <span
-                              key={option}
-                              className="inline-flex items-center gap-1 rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-xs font-medium text-zinc-700"
-                            >
-                              {option}
-                              <button
-                                type="button"
-                                className="ml-0.5 text-zinc-400 hover:text-rose-600 transition-colors"
-                                onClick={() => handleRemoveVariantOption(variantIndex, option)}
-                              >
-                                ×
-                              </button>
-                            </span>
-                          ))}
+                        <div className="mb-3 flex flex-wrap gap-2">
+                          {variant.options.map((option) => {
+                            const imgKey = `${variant.name}:${option}`;
+                            const imgUrl = formState.variantImages?.[imgKey];
+                            return (
+                              <div key={option} className="flex flex-col items-center gap-1">
+                                <span className="inline-flex items-center gap-1 rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-xs font-medium text-zinc-700">
+                                  {option}
+                                  <button
+                                    type="button"
+                                    className="ml-0.5 text-zinc-400 hover:text-rose-600 transition-colors"
+                                    onClick={() => handleRemoveVariantOption(variantIndex, option)}
+                                  >
+                                    ×
+                                  </button>
+                                </span>
+                                {imgUrl ? (
+                                  <div className="relative">
+                                    <img src={imgUrl} alt={option} className="h-10 w-10 rounded-md border border-zinc-200 object-cover" />
+                                    <button
+                                      type="button"
+                                      onClick={() => handleVariantImageRemove(variant.name, option)}
+                                      className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] text-white"
+                                    >×</button>
+                                  </div>
+                                ) : (
+                                  <label className="cursor-pointer rounded-md border border-dashed border-zinc-300 p-1 text-zinc-400 hover:border-zinc-400 hover:text-zinc-600 transition-colors">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-5 w-5">
+                                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                                      <circle cx="8.5" cy="8.5" r="1.5" />
+                                      <path d="m21 15-5-5L5 21" />
+                                    </svg>
+                                    <input
+                                      type="file"
+                                      accept="image/png,image/jpeg,image/webp"
+                                      className="sr-only"
+                                      onChange={(e) => handleVariantImageUpload(variant.name, option, e.target.files?.[0])}
+                                    />
+                                  </label>
+                                )}
+                              </div>
+                            );
+                          })}
                         </div>
 
                         <div className="flex gap-2">

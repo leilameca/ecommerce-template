@@ -50,8 +50,10 @@ function ProductDetailState({ title, description, backLabel }) {
   );
 }
 
-function ProductImageGallery({ images, selectedImageIndex, onSelectImage }) {
-  const selectedImage = images[selectedImageIndex] || images[0];
+function ProductImageGallery({ images, selectedImageIndex, onSelectImage, variantImageUrl }) {
+  const selectedImage = variantImageUrl
+    ? { url: variantImageUrl, alt: "Variant image" }
+    : images[selectedImageIndex] || images[0];
   const hasMultipleImages = images.length > 1;
   const handlePreviousImage = () => onSelectImage((selectedImageIndex - 1 + images.length) % images.length);
   const handleNextImage = () => onSelectImage((selectedImageIndex + 1) % images.length);
@@ -92,7 +94,7 @@ function ProductImageGallery({ images, selectedImageIndex, onSelectImage }) {
   );
 }
 
-function ProductDetailsPanel({ product, currency, t }) {
+function ProductDetailsPanel({ product, currency, t, onVariantImageChange }) {
   const categoryName = product.category?.name || "Collection";
   const stockLabel =
     product.stock > 0
@@ -117,6 +119,8 @@ function ProductDetailsPanel({ product, currency, t }) {
   const handleSelectVariant = (variantName, option) => {
     setSelectedVariants((prev) => ({ ...prev, [variantName]: option }));
     setVariantError("");
+    const imgUrl = product.variantImages?.[`${variantName}:${option}`] || null;
+    if (onVariantImageChange) onVariantImageChange(imgUrl);
   };
 
   const handleAddToCart = () => {
@@ -238,10 +242,11 @@ export default function ProductDetailPage() {
   const { product, isLoading, errorMessage } = useProductDetail(slug);
   const { config } = useStoreConfig();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [variantImageUrl, setVariantImageUrl] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const currency = config.currency || "USD";
 
-  useEffect(() => { setSelectedImageIndex(0); }, [slug]);
+  useEffect(() => { setSelectedImageIndex(0); setVariantImageUrl(null); }, [slug]);
 
   useEffect(() => {
     if (!product?.category?.slug) return;
@@ -299,8 +304,8 @@ export default function ProductDetailPage() {
         {t("product_detail_eyebrow")}
       </div>
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_440px] xl:gap-12">
-        <ProductImageGallery images={images} selectedImageIndex={selectedImageIndex} onSelectImage={setSelectedImageIndex} />
-        <ProductDetailsPanel product={product} currency={currency} t={t} />
+        <ProductImageGallery images={images} selectedImageIndex={selectedImageIndex} onSelectImage={setSelectedImageIndex} variantImageUrl={variantImageUrl} />
+        <ProductDetailsPanel product={product} currency={currency} t={t} onVariantImageChange={setVariantImageUrl} />
       </div>
 
       {relatedProducts.length > 0 ? (

@@ -62,6 +62,10 @@ const productSchema = new mongoose.Schema(
         ],
       },
     ],
+    variantImages: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    },
     isActive: {
       type: Boolean,
       default: true,

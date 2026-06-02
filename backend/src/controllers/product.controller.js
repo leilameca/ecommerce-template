@@ -23,6 +23,7 @@ const ALLOWED_PRODUCT_FIELDS = [
   "category",
   "images",
   "variants",
+  "variantImages",
   "isActive",
 ];
 
@@ -196,6 +197,9 @@ const updateProduct = asyncHandler(async (req, res) => {
   }
 
   Object.assign(product, updateData);
+  if (updateData.variantImages !== undefined) {
+    product.markModified("variantImages");
+  }
   await product.save();
   await product.populate("category", PRODUCT_POPULATE_FIELDS);
 
