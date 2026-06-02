@@ -26,6 +26,7 @@ const env = Object.freeze({
   SMTP_USER: process.env.SMTP_USER?.trim() || "",
   SMTP_PASS: process.env.SMTP_PASS?.trim() || "",
   SMTP_FROM: process.env.SMTP_FROM?.trim() || "",
+  BREVO_API_KEY: process.env.BREVO_API_KEY?.trim() || "",
   STORE_NOTIFICATION_EMAIL: process.env.STORE_NOTIFICATION_EMAIL?.trim() || "",
 });
 
