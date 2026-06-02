@@ -1,34 +1,31 @@
-const mongoose = require("mongoose");
 const Category = require("../models/category.model");
 const Product = require("../models/product.model");
 const asyncHandler = require("../utils/async-handler");
-const ApiError = require("../utils/api-error");
 
-const IMG = (id) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=800&q=80`;
-
-const P = {
-  p1a: "1541643600914-78b084683702",
-  p1b: "1588405748880-12d1d2a59f75",
-  p2a: "1592945403244-b3fbafd7f539",
-  p2b: "1615634260167-c8cdede054de",
-  p3a: "1563170351-be82bc888aa4",
-  p3b: "1547887538-e3a2f32cb1cc",
-  p4a: "1587017539504-67cfbddac569",
-  p4b: "1523293182086-7651a899d37f",
-  p5a: "1584042283924-ae0aed82dfff",
-  p5b: "1590156546054-3d12e0c22e5c",
-  p6a: "1528360983277-13d401cdc186",
-  p6b: "1619994403073-2cec844b8e63",
+// Unsplash perfume photos — curated stable IDs
+const PHOTOS = {
+  f1: "https://images.unsplash.com/photo-1541643600914-78b084683702?auto=format&fit=crop&w=800&q=80",
+  f2: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=800&q=80",
+  f3: "https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=800&q=80",
+  f4: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80",
+  f5: "https://images.unsplash.com/photo-1563170351-be82bc888aa4?auto=format&fit=crop&w=800&q=80",
+  f6: "https://images.unsplash.com/photo-1587017539504-67cfbddac569?auto=format&fit=crop&w=800&q=80",
+  m1: "https://images.unsplash.com/photo-1547887538-e3a2f32cb1cc?auto=format&fit=crop&w=800&q=80",
+  m2: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=800&q=80",
+  m3: "https://images.unsplash.com/photo-1584042283924-ae0aed82dfff?auto=format&fit=crop&w=800&q=80",
+  m4: "https://images.unsplash.com/photo-1590156546054-3d12e0c22e5c?auto=format&fit=crop&w=800&q=80",
+  s1: "https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=800&q=80",
+  s2: "https://images.unsplash.com/photo-1619994403073-2cec844b8e63?auto=format&fit=crop&w=800&q=80",
 };
 
-const toImages = (ids) =>
-  ids.map((id, i) => ({ url: IMG(id), alt: `Product image ${i + 1}`, publicId: "" }));
+const img = (url, alt) => ({ url, alt, publicId: "" });
+const size = () => ({ name: "Tamaño", options: ["30ml", "50ml", "100ml"] });
 
 const CATEGORIES = [
-  { name: "Perfumes Mujer",  slug: "perfumes-mujer",  description: "Fragancias femeninas de larga duración" },
-  { name: "Perfumes Hombre", slug: "perfumes-hombre", description: "Fragancias masculinas sofisticadas" },
-  { name: "Sets & Regalos",  slug: "sets-regalos",    description: "Sets y estuches perfectos para regalar" },
-  { name: "Corporales",      slug: "corporales",      description: "Cremas, brumas y aceites corporales" },
+  { name: "Perfumes Mujer",  slug: "perfumes-mujer",  description: "Fragancias femeninas de alta perfumería" },
+  { name: "Perfumes Hombre", slug: "perfumes-hombre", description: "Fragancias masculinas de carácter" },
+  { name: "Sets & Regalos",  slug: "sets-regalos",    description: "Estuches y colecciones para regalar" },
+  { name: "Corporales",      slug: "corporales",      description: "Cuidado y perfume para el cuerpo" },
 ];
 
 const buildProducts = (cats) => {
@@ -38,145 +35,140 @@ const buildProducts = (cats) => {
   const corporal = cats.find((c) => c.slug === "corporales")._id;
 
   return [
+    // ─── Perfumes Mujer ───────────────────────────────────────────────────────
     {
-      name: "Rose Noir", slug: "rose-noir",
-      description: "Una fragancia oscura y seductora con corazón de rosa negra, oud y almizcle blanco. Proyección intensa y larga duración de hasta 12 horas.",
-      price: 95, stock: 20, category: mujer,
-      images: toImages([P.p1a, P.p1b, P.p2a]),
-      variants: [
-        { name: "Tamaño", options: ["30ml", "50ml", "100ml"] },
-        { name: "Edición", options: ["Clásica", "Intensa", "Limitada"] },
-      ],
-      variantImages: { "Edición:Clásica": IMG(P.p1a), "Edición:Intensa": IMG(P.p2a), "Edición:Limitada": IMG(P.p1b) },
+      name: "Mystère Rose",
+      slug: "mystere-rose",
+      description: "Una fragancia floral-amaderada de Eau de Parfum con gran proyección. Abre con bergamota fresca y peonía rosada, evoluciona hacia un corazón de rosa damascena absoluta y cierra con base de almizcle blanco y madera de sándalo cremoso. 8–10 horas de duración.",
+      price: 89,
+      stock: 24,
+      category: mujer,
+      images: [img(PHOTOS.f1, "Mystère Rose"), img(PHOTOS.f2, "Mystère Rose — detalle"), img(PHOTOS.f3, "Mystère Rose — botella")],
+      variants: [size()],
       isActive: true,
     },
     {
-      name: "Fleur Blanche", slug: "fleur-blanche",
-      description: "Fresca y femenina. Notas de jazmín blanco, gardenia y un fondo cálido de vainilla y sándalo. Perfecta para el día a día.",
-      price: 75, stock: 25, category: mujer,
-      images: toImages([P.p2b, P.p3a, P.p1a]),
-      variants: [
-        { name: "Tamaño", options: ["30ml", "50ml", "100ml"] },
-        { name: "Aroma", options: ["Jazmín", "Gardenia", "Vainilla"] },
-      ],
-      variantImages: { "Aroma:Jazmín": IMG(P.p2b), "Aroma:Gardenia": IMG(P.p3a), "Aroma:Vainilla": IMG(P.p1a) },
+      name: "Lumière Dorée",
+      slug: "lumiere-doree",
+      description: "Un Eau de Parfum Intense oriental y gourmand. Notas de apertura de bergamota italiana y naranja dulce; corazón de iris absoluto y gardenia; base lujosa de vainilla bourbon, cachemira y ámbar dorado. Exclusivo y adictivo.",
+      price: 128,
+      stock: 16,
+      category: mujer,
+      images: [img(PHOTOS.f4, "Lumière Dorée"), img(PHOTOS.f5, "Lumière Dorée — detalle"), img(PHOTOS.f1, "Lumière Dorée — botella")],
+      variants: [{ name: "Tamaño", options: ["50ml", "100ml"] }],
       isActive: true,
     },
     {
-      name: "Velvet Femme", slug: "velvet-femme",
-      description: "Opulenta y moderna. Melocotón jugoso en la salida, corazón floral y fondo de cedro y sándalo cremoso.",
-      price: 120, stock: 15, category: mujer,
-      images: toImages([P.p3b, P.p4a, P.p2b]),
-      variants: [
-        { name: "Tamaño", options: ["50ml", "100ml"] },
-        { name: "Color", options: ["Rosa", "Dorado", "Negro"] },
-      ],
-      variantImages: { "Color:Rosa": IMG(P.p3b), "Color:Dorado": IMG(P.p4a), "Color:Negro": IMG(P.p2b) },
+      name: "Velours Blanc",
+      slug: "velours-blanc",
+      description: "Ligero y contemporáneo, ideal para el uso diario. Eau de Toilette con notas frescas de jazmín sambac, bergamota y té blanco. Corazón suave de muguet y base de cedro blanco y almizcle limpio. Elegancia sin esfuerzo.",
+      price: 72,
+      stock: 30,
+      category: mujer,
+      images: [img(PHOTOS.f6, "Velours Blanc"), img(PHOTOS.f2, "Velours Blanc — detalle"), img(PHOTOS.f4, "Velours Blanc — botella")],
+      variants: [size()],
+      isActive: true,
+    },
+    // ─── Perfumes Hombre ──────────────────────────────────────────────────────
+    {
+      name: "Forêt Noire",
+      slug: "foret-noire",
+      description: "Eau de Parfum masculino de carácter profundo. Apertura de pimienta negra y cardamomo; corazón de cedro del Atlas y pachulí; base de vetiver haitiano y cuero suave. Sofisticación para el hombre moderno.",
+      price: 87,
+      stock: 20,
+      category: hombre,
+      images: [img(PHOTOS.m1, "Forêt Noire"), img(PHOTOS.m2, "Forêt Noire — detalle"), img(PHOTOS.m3, "Forêt Noire — botella")],
+      variants: [size()],
       isActive: true,
     },
     {
-      name: "Black Cedar", slug: "black-cedar",
-      description: "Masculino y sofisticado. Apertura de bergamota fresca, corazón de cedro atlástico y base de vetiver y pimienta negra.",
-      price: 85, stock: 18, category: hombre,
-      images: toImages([P.p4b, P.p5a, P.p3a]),
-      variants: [
-        { name: "Tamaño", options: ["30ml", "50ml", "100ml"] },
-        { name: "Versión", options: ["Original", "Extreme", "Sport"] },
-      ],
-      variantImages: { "Versión:Original": IMG(P.p4b), "Versión:Extreme": IMG(P.p5a), "Versión:Sport": IMG(P.p3a) },
+      name: "Mediterráneo",
+      slug: "mediterraneo",
+      description: "Fresco y energizante. Eau de Toilette inspirada en la brisa del mar Mediterráneo. Notas acuáticas, bergamota de Calabria y limón siciliano; corazón de artemisa y lavanda; base de almizcle blanco y madera de cedro.",
+      price: 65,
+      stock: 28,
+      category: hombre,
+      images: [img(PHOTOS.m4, "Mediterráneo"), img(PHOTOS.m1, "Mediterráneo — detalle"), img(PHOTOS.m2, "Mediterráneo — botella")],
+      variants: [size()],
       isActive: true,
     },
     {
-      name: "Océan Bleu", slug: "ocean-bleu",
-      description: "Fresco y dinámico. Notas acuáticas, bergamota y un fondo de almizcle blanco y madera suave.",
-      price: 70, stock: 22, category: hombre,
-      images: toImages([P.p5b, P.p6a, P.p4a]),
-      variants: [
-        { name: "Tamaño", options: ["30ml", "50ml", "100ml"] },
-        { name: "Intensidad", options: ["Eau de Toilette", "Eau de Parfum"] },
-      ],
-      variantImages: { "Intensidad:Eau de Toilette": IMG(P.p5b), "Intensidad:Eau de Parfum": IMG(P.p6a) },
+      name: "Bois Profond",
+      slug: "bois-profond",
+      description: "Eau de Parfum Intense oriental-amaderado. Oud agarwood de la mejor calidad, ámbar gris, especias cálidas de canela y nuez moscada. Base de benjuí y resina labdanum. Una fragancia de carácter imponente y larga estela.",
+      price: 115,
+      stock: 12,
+      category: hombre,
+      images: [img(PHOTOS.m3, "Bois Profond"), img(PHOTOS.m4, "Bois Profond — detalle"), img(PHOTOS.m1, "Bois Profond — botella")],
+      variants: [{ name: "Tamaño", options: ["50ml", "100ml"] }],
+      isActive: true,
+    },
+    // ─── Sets & Regalos ───────────────────────────────────────────────────────
+    {
+      name: "Coffret Prestige Femme",
+      slug: "coffret-prestige-femme",
+      description: "El regalo perfecto para ella. Estuche de lujo con nuestras tres fragancias femeninas más icónicas en formato de 30ml: Mystère Rose, Lumière Dorée y Velours Blanc. Presentación premium con caja de regalo incluida.",
+      price: 210,
+      stock: 10,
+      category: sets,
+      images: [img(PHOTOS.s1, "Coffret Prestige Femme"), img(PHOTOS.f1, "Detalle"), img(PHOTOS.f4, "Contenido")],
+      variants: [],
       isActive: true,
     },
     {
-      name: "Amber Wood", slug: "amber-wood",
-      description: "Profundo y misterioso. Ámbar dorado, madera de oud y especias orientales. Una fragancia que deja huella.",
-      price: 110, stock: 12, category: hombre,
-      images: toImages([P.p6b, P.p1a, P.p5a]),
-      variants: [
-        { name: "Tamaño", options: ["50ml", "100ml"] },
-        { name: "Edición", options: ["Ámbar", "Oud", "Especias"] },
-      ],
-      variantImages: { "Edición:Ámbar": IMG(P.p6b), "Edición:Oud": IMG(P.p1a), "Edición:Especias": IMG(P.p5a) },
+      name: "Duo Él & Ella",
+      slug: "duo-el-ella",
+      description: "El regalo ideal para celebrar a la pareja. Incluye Forêt Noire 50ml + Mystère Rose 50ml en un elegante estuche de madera con acabado mate. Perfecto para aniversarios, cumpleaños o el día especial.",
+      price: 168,
+      stock: 8,
+      category: sets,
+      images: [img(PHOTOS.s2, "Duo Él & Ella"), img(PHOTOS.m1, "Forêt Noire"), img(PHOTOS.f1, "Mystère Rose")],
+      variants: [],
       isActive: true,
     },
     {
-      name: "Set Romantique", slug: "set-romantique",
-      description: "El regalo perfecto para ella. 3 miniaturas de 30ml: Rose Noir, Fleur Blanche y Velvet Femme en elegante estuche.",
-      price: 150, stock: 10, category: sets,
-      images: toImages([P.p1b, P.p2a, P.p3b]),
-      variants: [
-        { name: "Presentación", options: ["Estuche Clásico", "Estuche Lujo"] },
-      ],
-      variantImages: { "Presentación:Estuche Clásico": IMG(P.p1b), "Presentación:Estuche Lujo": IMG(P.p2a) },
+      name: "Collection Découverte",
+      slug: "collection-decouverte",
+      description: "Descubre tu fragancia favorita antes de comprometerte con el frasco completo. 6 miniaturas de 10ml con nuestras fragancias más vendidas de mujer y hombre. Estuche de viaje incluido. Ideal como regalo o para probar.",
+      price: 78,
+      stock: 22,
+      category: sets,
+      images: [img(PHOTOS.s1, "Collection Découverte"), img(PHOTOS.s2, "Detalle"), img(PHOTOS.f2, "Contenido")],
+      variants: [],
+      isActive: true,
+    },
+    // ─── Corporales ───────────────────────────────────────────────────────────
+    {
+      name: "Lait Velouté Femme",
+      slug: "lait-veloutee-femme",
+      description: "Leche corporal perfumada de absorción rápida con notas de rosa damascena, vainilla de Madagascar y manteca de karité. Hidratación profunda de 24 horas con un sutil velo perfumado. Textura sedosa, no grasa.",
+      price: 48,
+      stock: 26,
+      category: corporal,
+      images: [img(PHOTOS.f3, "Lait Velouté Femme"), img(PHOTOS.f5, "Detalle"), img(PHOTOS.f6, "Textura")],
+      variants: [{ name: "Tamaño", options: ["200ml", "400ml"] }],
       isActive: true,
     },
     {
-      name: "Set Him & Her", slug: "set-him-her",
-      description: "El regalo ideal para parejas. Black Cedar 50ml + Fleur Blanche 50ml en estuche de lujo.",
-      price: 180, stock: 8, category: sets,
-      images: toImages([P.p4b, P.p2b, P.p5b]),
-      variants: [
-        { name: "Presentación", options: ["Caja Regalo", "Bolsa Premium"] },
-      ],
-      variantImages: { "Presentación:Caja Regalo": IMG(P.p4b), "Presentación:Bolsa Premium": IMG(P.p2b) },
+      name: "Brume Légère Corps",
+      slug: "brume-legere-corps",
+      description: "Bruma corporal refrescante de larga duración. Notas cítricas de bergamota, mandarina y pomelo; corazón floral de flor de loto y magnolia; base de almizcle suave. Ideal para verano o post-ducha.",
+      price: 38,
+      stock: 32,
+      category: corporal,
+      images: [img(PHOTOS.m2, "Brume Légère Corps"), img(PHOTOS.f2, "Detalle"), img(PHOTOS.m4, "Uso")],
+      variants: [{ name: "Tamaño", options: ["150ml", "250ml"] }],
       isActive: true,
     },
     {
-      name: "Miniature Collection", slug: "miniature-collection",
-      description: "5 miniaturas de 10ml con nuestras fragancias más queridas. Ideal para viajes o para regalar.",
-      price: 65, stock: 30, category: sets,
-      images: toImages([P.p6a, P.p3a, P.p1a]),
-      variants: [
-        { name: "Colección", options: ["Femenina", "Masculina", "Mixta"] },
-      ],
-      variantImages: { "Colección:Femenina": IMG(P.p6a), "Colección:Masculina": IMG(P.p3a), "Colección:Mixta": IMG(P.p1a) },
-      isActive: true,
-    },
-    {
-      name: "Body Silk Femme", slug: "body-silk-femme",
-      description: "Loción corporal ultra hidratante con notas de rosa damascena y manteca de karité.",
-      price: 45, stock: 25, category: corporal,
-      images: toImages([P.p3b, P.p2b, P.p1b]),
-      variants: [
-        { name: "Tamaño", options: ["200ml", "400ml"] },
-        { name: "Aroma", options: ["Rosa", "Coco", "Vainilla"] },
-      ],
-      variantImages: { "Aroma:Rosa": IMG(P.p3b), "Aroma:Coco": IMG(P.p2b), "Aroma:Vainilla": IMG(P.p1b) },
-      isActive: true,
-    },
-    {
-      name: "Body Mist Fresco", slug: "body-mist-fresco",
-      description: "Bruma corporal ligera y refrescante. Notas cítricas de bergamota, limón y flores blancas.",
-      price: 35, stock: 30, category: corporal,
-      images: toImages([P.p5a, P.p6b, P.p4a]),
-      variants: [
-        { name: "Tamaño", options: ["150ml", "250ml"] },
-        { name: "Fragancia", options: ["Cítrico", "Floral", "Acuático"] },
-      ],
-      variantImages: { "Fragancia:Cítrico": IMG(P.p5a), "Fragancia:Floral": IMG(P.p6b), "Fragancia:Acuático": IMG(P.p4a) },
-      isActive: true,
-    },
-    {
-      name: "Gold Elixir", slug: "gold-elixir",
-      description: "Aceite corporal seco con destellos dorados. Hidrata profundamente con aroma a vainilla y ámbar.",
-      price: 55, stock: 20, category: corporal,
-      images: toImages([P.p6b, P.p5b, P.p4b]),
-      variants: [
-        { name: "Tamaño", options: ["100ml", "200ml"] },
-        { name: "Acabado", options: ["Dorado", "Plateado", "Rosado"] },
-      ],
-      variantImages: { "Acabado:Dorado": IMG(P.p6b), "Acabado:Plateado": IMG(P.p5b), "Acabado:Rosado": IMG(P.p4b) },
+      name: "Élixir Corps Or",
+      slug: "elixir-corps-or",
+      description: "Aceite corporal seco de lujo con micro-partículas doradas. Fórmula no grasa a base de aceite de argán y jojoba. Perfumado con vainilla, ámbar y sándalo. Deja la piel iluminada, hidratada y con un aroma irresistible.",
+      price: 58,
+      stock: 18,
+      category: corporal,
+      images: [img(PHOTOS.s2, "Élixir Corps Or"), img(PHOTOS.f4, "Acabado"), img(PHOTOS.s1, "Textura")],
+      variants: [{ name: "Tamaño", options: ["100ml", "200ml"] }],
       isActive: true,
     },
   ];
@@ -212,7 +204,7 @@ const runSeed = asyncHandler(async (req, res) => {
 
   res.status(200).json({
     success: true,
-    message: `Seed complete. ${created} products created, ${products.length - created} already existed.`,
+    message: `Listo. ${created} productos creados, ${products.length - created} ya existían.`,
     data: { categoriesCount: CATEGORIES.length, productsCreated: created },
   });
 });
