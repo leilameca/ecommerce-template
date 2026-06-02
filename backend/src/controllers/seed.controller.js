@@ -2,173 +2,345 @@ const Category = require("../models/category.model");
 const Product = require("../models/product.model");
 const asyncHandler = require("../utils/async-handler");
 
-// Unsplash perfume photos — curated stable IDs
-const PHOTOS = {
-  f1: "https://images.unsplash.com/photo-1541643600914-78b084683702?auto=format&fit=crop&w=800&q=80",
-  f2: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=800&q=80",
-  f3: "https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=800&q=80",
-  f4: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80",
-  f5: "https://images.unsplash.com/photo-1563170351-be82bc888aa4?auto=format&fit=crop&w=800&q=80",
-  f6: "https://images.unsplash.com/photo-1587017539504-67cfbddac569?auto=format&fit=crop&w=800&q=80",
-  m1: "https://images.unsplash.com/photo-1547887538-e3a2f32cb1cc?auto=format&fit=crop&w=800&q=80",
-  m2: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=800&q=80",
-  m3: "https://images.unsplash.com/photo-1584042283924-ae0aed82dfff?auto=format&fit=crop&w=800&q=80",
-  m4: "https://images.unsplash.com/photo-1590156546054-3d12e0c22e5c?auto=format&fit=crop&w=800&q=80",
-  s1: "https://images.unsplash.com/photo-1528360983277-13d401cdc186?auto=format&fit=crop&w=800&q=80",
-  s2: "https://images.unsplash.com/photo-1619994403073-2cec844b8e63?auto=format&fit=crop&w=800&q=80",
+const u = (id) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=800&q=80`;
+const img = (url, alt) => ({ url, alt, publicId: "" });
+
+// ─── Photos organized by color/tone ──────────────────────────────────────────
+// Clothing
+const ROPA = {
+  blanco:  u("1583743814966-8d35de8ca9b9"),
+  negro:   u("1503341455253-b2e723bb3dbb"),
+  gris:    u("1556821840-3a63f8550908"),
+  azul:    u("1523381210434-271e8be8a52b"),
+  beige:   u("1523398503539-9a6a4b3b44b9"),
+  hoodie1: u("1578681994506-b8f463906a3a"),
+  hoodie2: u("1618354691373-d851c5c827a2"),
+  jogger1: u("1571945153237-4929e783af4a"),
+  jogger2: u("1617952986600-802f965dcdbc"),
 };
 
-const img = (url, alt) => ({ url, alt, publicId: "" });
-const size = () => ({ name: "Tamaño", options: ["30ml", "50ml", "100ml"] });
+// Gorras
+const GORRAS = {
+  cap_negro: u("1588850561407-ed78c282e89b"),
+  cap_blanc: u("1575428652377-a2d80e2277fc"),
+  cap_rojo:  u("1595950653106-bdbce89ff569"),
+  bucket1:   u("1514327605112-b82ab1255ec8"),
+  bucket2:   u("1521369909449-b7b5e07e3745"),
+  trucker1:  u("1556269743-cfefe33b6fe5"),
+};
+
+// Zapatos
+const ZAPATOS = {
+  snk_blanc: u("1542291026-7eec264c27ff"),
+  snk_negro: u("1542291026-7eec264c27ff"), // will override below
+  snk_gris:  u("1584735175097-086fa9c4aaff"),
+  shoe1:     u("1558618666-fcd25c85cd64"),
+  shoe2:     u("1542291026-7eec264c27ff"),
+  shoe3:     u("1491553895911-0055eca6402d"),
+  slide1:    u("1595950653106-bdbce89ff569"),
+  slide2:    u("1600269452121-4f2416e55c28"),
+};
+
+// Carteras / Accesorios
+const BAGS = {
+  tote_neg:  u("1548036161-18e851249499"),
+  tote_cam:  u("1590739225287-bd31519780c3"),
+  tote_bla:  u("1553062407-98eeb64c6a62"),
+  cross1:    u("1548036161-18e851249499"),
+  cross2:    u("1590739225287-bd31519780c3"),
+  wallet1:   u("1612263852701-62f569c7a678"),
+  wallet2:   u("1627634777217-89de4efad82f"),
+};
 
 const CATEGORIES = [
-  { name: "Perfumes Mujer",  slug: "perfumes-mujer",  description: "Fragancias femeninas de alta perfumería" },
-  { name: "Perfumes Hombre", slug: "perfumes-hombre", description: "Fragancias masculinas de carácter" },
-  { name: "Sets & Regalos",  slug: "sets-regalos",    description: "Estuches y colecciones para regalar" },
-  { name: "Corporales",      slug: "corporales",      description: "Cuidado y perfume para el cuerpo" },
+  { name: "Ropa",     slug: "ropa",     description: "Camisetas, hoodies y joggers" },
+  { name: "Gorras",   slug: "gorras",   description: "Snapbacks, bucket hats y truckers" },
+  { name: "Zapatos",  slug: "zapatos",  description: "Sneakers y slides" },
+  { name: "Carteras", slug: "carteras", description: "Tote bags, crossbody y billeteras" },
 ];
 
 const buildProducts = (cats) => {
-  const mujer    = cats.find((c) => c.slug === "perfumes-mujer")._id;
-  const hombre   = cats.find((c) => c.slug === "perfumes-hombre")._id;
-  const sets     = cats.find((c) => c.slug === "sets-regalos")._id;
-  const corporal = cats.find((c) => c.slug === "corporales")._id;
+  const ropa     = cats.find((c) => c.slug === "ropa")._id;
+  const gorras   = cats.find((c) => c.slug === "gorras")._id;
+  const zapatos  = cats.find((c) => c.slug === "zapatos")._id;
+  const carteras = cats.find((c) => c.slug === "carteras")._id;
 
   return [
-    // ─── Perfumes Mujer ───────────────────────────────────────────────────────
+    // ─── ROPA ─────────────────────────────────────────────────────────────────
     {
-      name: "Mystère Rose",
-      slug: "mystere-rose",
-      description: "Una fragancia floral-amaderada de Eau de Parfum con gran proyección. Abre con bergamota fresca y peonía rosada, evoluciona hacia un corazón de rosa damascena absoluta y cierra con base de almizcle blanco y madera de sándalo cremoso. 8–10 horas de duración.",
-      price: 89,
-      stock: 24,
-      category: mujer,
-      images: [img(PHOTOS.f1, "Mystère Rose"), img(PHOTOS.f2, "Mystère Rose — detalle"), img(PHOTOS.f3, "Mystère Rose — botella")],
-      variants: [size()],
+      name: "Camiseta Essential",
+      slug: "camiseta-essential",
+      description: "La base perfecta de cualquier outfit. Camiseta de algodón pima 100% en corte unisex ligeramente oversize. Cuello redondo reforzado, costuras dobles y tela de 200g/m² para mayor durabilidad. Disponible en tres colores.",
+      price: 28,
+      stock: 50,
+      category: ropa,
+      images: [
+        img(ROPA.blanco, "Camiseta Essential — Blanco"),
+        img(ROPA.negro, "Camiseta Essential — Negro"),
+        img(ROPA.gris, "Camiseta Essential — Gris"),
+      ],
+      variants: [
+        { name: "Talla", options: ["XS", "S", "M", "L", "XL"] },
+        { name: "Color", options: ["Blanco", "Negro", "Gris"] },
+      ],
+      variantImages: {
+        "Color:Blanco": ROPA.blanco,
+        "Color:Negro":  ROPA.negro,
+        "Color:Gris":   ROPA.gris,
+      },
       isActive: true,
     },
     {
-      name: "Lumière Dorée",
-      slug: "lumiere-doree",
-      description: "Un Eau de Parfum Intense oriental y gourmand. Notas de apertura de bergamota italiana y naranja dulce; corazón de iris absoluto y gardenia; base lujosa de vainilla bourbon, cachemira y ámbar dorado. Exclusivo y adictivo.",
-      price: 128,
-      stock: 16,
-      category: mujer,
-      images: [img(PHOTOS.f4, "Lumière Dorée"), img(PHOTOS.f5, "Lumière Dorée — detalle"), img(PHOTOS.f1, "Lumière Dorée — botella")],
-      variants: [{ name: "Tamaño", options: ["50ml", "100ml"] }],
-      isActive: true,
-    },
-    {
-      name: "Velours Blanc",
-      slug: "velours-blanc",
-      description: "Ligero y contemporáneo, ideal para el uso diario. Eau de Toilette con notas frescas de jazmín sambac, bergamota y té blanco. Corazón suave de muguet y base de cedro blanco y almizcle limpio. Elegancia sin esfuerzo.",
-      price: 72,
-      stock: 30,
-      category: mujer,
-      images: [img(PHOTOS.f6, "Velours Blanc"), img(PHOTOS.f2, "Velours Blanc — detalle"), img(PHOTOS.f4, "Velours Blanc — botella")],
-      variants: [size()],
-      isActive: true,
-    },
-    // ─── Perfumes Hombre ──────────────────────────────────────────────────────
-    {
-      name: "Forêt Noire",
-      slug: "foret-noire",
-      description: "Eau de Parfum masculino de carácter profundo. Apertura de pimienta negra y cardamomo; corazón de cedro del Atlas y pachulí; base de vetiver haitiano y cuero suave. Sofisticación para el hombre moderno.",
-      price: 87,
-      stock: 20,
-      category: hombre,
-      images: [img(PHOTOS.m1, "Forêt Noire"), img(PHOTOS.m2, "Forêt Noire — detalle"), img(PHOTOS.m3, "Forêt Noire — botella")],
-      variants: [size()],
-      isActive: true,
-    },
-    {
-      name: "Mediterráneo",
-      slug: "mediterraneo",
-      description: "Fresco y energizante. Eau de Toilette inspirada en la brisa del mar Mediterráneo. Notas acuáticas, bergamota de Calabria y limón siciliano; corazón de artemisa y lavanda; base de almizcle blanco y madera de cedro.",
-      price: 65,
-      stock: 28,
-      category: hombre,
-      images: [img(PHOTOS.m4, "Mediterráneo"), img(PHOTOS.m1, "Mediterráneo — detalle"), img(PHOTOS.m2, "Mediterráneo — botella")],
-      variants: [size()],
-      isActive: true,
-    },
-    {
-      name: "Bois Profond",
-      slug: "bois-profond",
-      description: "Eau de Parfum Intense oriental-amaderado. Oud agarwood de la mejor calidad, ámbar gris, especias cálidas de canela y nuez moscada. Base de benjuí y resina labdanum. Una fragancia de carácter imponente y larga estela.",
-      price: 115,
-      stock: 12,
-      category: hombre,
-      images: [img(PHOTOS.m3, "Bois Profond"), img(PHOTOS.m4, "Bois Profond — detalle"), img(PHOTOS.m1, "Bois Profond — botella")],
-      variants: [{ name: "Tamaño", options: ["50ml", "100ml"] }],
-      isActive: true,
-    },
-    // ─── Sets & Regalos ───────────────────────────────────────────────────────
-    {
-      name: "Coffret Prestige Femme",
-      slug: "coffret-prestige-femme",
-      description: "El regalo perfecto para ella. Estuche de lujo con nuestras tres fragancias femeninas más icónicas en formato de 30ml: Mystère Rose, Lumière Dorée y Velours Blanc. Presentación premium con caja de regalo incluida.",
-      price: 210,
-      stock: 10,
-      category: sets,
-      images: [img(PHOTOS.s1, "Coffret Prestige Femme"), img(PHOTOS.f1, "Detalle"), img(PHOTOS.f4, "Contenido")],
-      variants: [],
-      isActive: true,
-    },
-    {
-      name: "Duo Él & Ella",
-      slug: "duo-el-ella",
-      description: "El regalo ideal para celebrar a la pareja. Incluye Forêt Noire 50ml + Mystère Rose 50ml en un elegante estuche de madera con acabado mate. Perfecto para aniversarios, cumpleaños o el día especial.",
-      price: 168,
-      stock: 8,
-      category: sets,
-      images: [img(PHOTOS.s2, "Duo Él & Ella"), img(PHOTOS.m1, "Forêt Noire"), img(PHOTOS.f1, "Mystère Rose")],
-      variants: [],
-      isActive: true,
-    },
-    {
-      name: "Collection Découverte",
-      slug: "collection-decouverte",
-      description: "Descubre tu fragancia favorita antes de comprometerte con el frasco completo. 6 miniaturas de 10ml con nuestras fragancias más vendidas de mujer y hombre. Estuche de viaje incluido. Ideal como regalo o para probar.",
-      price: 78,
-      stock: 22,
-      category: sets,
-      images: [img(PHOTOS.s1, "Collection Découverte"), img(PHOTOS.s2, "Detalle"), img(PHOTOS.f2, "Contenido")],
-      variants: [],
-      isActive: true,
-    },
-    // ─── Corporales ───────────────────────────────────────────────────────────
-    {
-      name: "Lait Velouté Femme",
-      slug: "lait-veloutee-femme",
-      description: "Leche corporal perfumada de absorción rápida con notas de rosa damascena, vainilla de Madagascar y manteca de karité. Hidratación profunda de 24 horas con un sutil velo perfumado. Textura sedosa, no grasa.",
-      price: 48,
-      stock: 26,
-      category: corporal,
-      images: [img(PHOTOS.f3, "Lait Velouté Femme"), img(PHOTOS.f5, "Detalle"), img(PHOTOS.f6, "Textura")],
-      variants: [{ name: "Tamaño", options: ["200ml", "400ml"] }],
-      isActive: true,
-    },
-    {
-      name: "Brume Légère Corps",
-      slug: "brume-legere-corps",
-      description: "Bruma corporal refrescante de larga duración. Notas cítricas de bergamota, mandarina y pomelo; corazón floral de flor de loto y magnolia; base de almizcle suave. Ideal para verano o post-ducha.",
-      price: 38,
-      stock: 32,
-      category: corporal,
-      images: [img(PHOTOS.m2, "Brume Légère Corps"), img(PHOTOS.f2, "Detalle"), img(PHOTOS.m4, "Uso")],
-      variants: [{ name: "Tamaño", options: ["150ml", "250ml"] }],
-      isActive: true,
-    },
-    {
-      name: "Élixir Corps Or",
-      slug: "elixir-corps-or",
-      description: "Aceite corporal seco de lujo con micro-partículas doradas. Fórmula no grasa a base de aceite de argán y jojoba. Perfumado con vainilla, ámbar y sándalo. Deja la piel iluminada, hidratada y con un aroma irresistible.",
+      name: "Hoodie Urban",
+      slug: "hoodie-urban",
+      description: "Hoodie de felpa francesa 320g/m² con capucha ajustable y bolsillo canguro. Corte relaxed con costuras laterales para mayor movilidad. Interior suave afelpado. Ideal para el día a día o el gym.",
       price: 58,
-      stock: 18,
-      category: corporal,
-      images: [img(PHOTOS.s2, "Élixir Corps Or"), img(PHOTOS.f4, "Acabado"), img(PHOTOS.s1, "Textura")],
-      variants: [{ name: "Tamaño", options: ["100ml", "200ml"] }],
+      stock: 35,
+      category: ropa,
+      images: [
+        img(ROPA.hoodie1, "Hoodie Urban — Gris"),
+        img(ROPA.negro, "Hoodie Urban — Negro"),
+        img(ROPA.hoodie2, "Hoodie Urban — Azul"),
+      ],
+      variants: [
+        { name: "Talla", options: ["S", "M", "L", "XL"] },
+        { name: "Color", options: ["Gris", "Negro", "Azul"] },
+      ],
+      variantImages: {
+        "Color:Gris":  ROPA.hoodie1,
+        "Color:Negro": ROPA.negro,
+        "Color:Azul":  ROPA.hoodie2,
+      },
+      isActive: true,
+    },
+    {
+      name: "Jogger Classic",
+      slug: "jogger-classic",
+      description: "Pantalón jogger de tela French Terry con cintura elástica ajustable y bolsillos laterales con cremallera. Puños elastizados en el tobillo. Corte cónico moderno, perfecto para loungewear o streetwear.",
+      price: 45,
+      stock: 40,
+      category: ropa,
+      images: [
+        img(ROPA.jogger1, "Jogger Classic — Negro"),
+        img(ROPA.jogger2, "Jogger Classic — Gris"),
+        img(ROPA.beige, "Jogger Classic — Beige"),
+      ],
+      variants: [
+        { name: "Talla", options: ["S", "M", "L", "XL"] },
+        { name: "Color", options: ["Negro", "Gris", "Beige"] },
+      ],
+      variantImages: {
+        "Color:Negro": ROPA.jogger1,
+        "Color:Gris":  ROPA.jogger2,
+        "Color:Beige": ROPA.beige,
+      },
+      isActive: true,
+    },
+
+    // ─── GORRAS ───────────────────────────────────────────────────────────────
+    {
+      name: "Snapback Signature",
+      slug: "snapback-signature",
+      description: "Gorra snapback con visera plana y cierre ajustable trasero. Estructura de 6 paneles en tela twill de algodón 100%. Bordado frontal con el logo de la marca. Talla única ajustable.",
+      price: 32,
+      stock: 45,
+      category: gorras,
+      images: [
+        img(GORRAS.cap_negro, "Snapback Signature — Negro"),
+        img(GORRAS.cap_blanc, "Snapback Signature — Blanco"),
+        img(GORRAS.cap_rojo, "Snapback Signature — Rojo"),
+      ],
+      variants: [
+        { name: "Color", options: ["Negro", "Blanco", "Rojo"] },
+      ],
+      variantImages: {
+        "Color:Negro":  GORRAS.cap_negro,
+        "Color:Blanco": GORRAS.cap_blanc,
+        "Color:Rojo":   GORRAS.cap_rojo,
+      },
+      isActive: true,
+    },
+    {
+      name: "Bucket Hat Relaxed",
+      slug: "bucket-hat-relaxed",
+      description: "Bucket hat de ala ancha en tela de algodón lavado. Diseño reversible con interior estampado. Ideal para playa, festivales o salidas casuales. Ligero y plegable, cabe en cualquier bolsillo.",
+      price: 28,
+      stock: 38,
+      category: gorras,
+      images: [
+        img(GORRAS.bucket1, "Bucket Hat Relaxed — Negro"),
+        img(GORRAS.bucket2, "Bucket Hat Relaxed — Beige"),
+        img(GORRAS.cap_blanc, "Bucket Hat Relaxed — Blanco"),
+      ],
+      variants: [
+        { name: "Color", options: ["Negro", "Beige", "Blanco"] },
+      ],
+      variantImages: {
+        "Color:Negro": GORRAS.bucket1,
+        "Color:Beige": GORRAS.bucket2,
+        "Color:Blanco": GORRAS.cap_blanc,
+      },
+      isActive: true,
+    },
+    {
+      name: "Trucker Cap",
+      slug: "trucker-cap",
+      description: "Gorra trucker clásica con panel frontal estructurado y malla trasera transpirable. Cierre snapback ajustable. Bordado minimalista en el panel frontal. El accesorio streetwear más versátil.",
+      price: 25,
+      stock: 42,
+      category: gorras,
+      images: [
+        img(GORRAS.trucker1, "Trucker Cap — Negro"),
+        img(GORRAS.cap_blanc, "Trucker Cap — Blanco"),
+        img(GORRAS.cap_negro, "Trucker Cap — Gris"),
+      ],
+      variants: [
+        { name: "Color", options: ["Negro", "Blanco", "Gris"] },
+      ],
+      variantImages: {
+        "Color:Negro":  GORRAS.trucker1,
+        "Color:Blanco": GORRAS.cap_blanc,
+        "Color:Gris":   GORRAS.cap_negro,
+      },
+      isActive: true,
+    },
+
+    // ─── ZAPATOS ──────────────────────────────────────────────────────────────
+    {
+      name: "Sneaker Low Essential",
+      slug: "sneaker-low-essential",
+      description: "Sneaker de caña baja con suela de goma vulcanizada y plantilla acolchada removible. Upper en lona de algodón reforzada con ojales metálicos. Corte clásico que combina con todo. Unisex.",
+      price: 75,
+      stock: 30,
+      category: zapatos,
+      images: [
+        img(ZAPATOS.shoe1, "Sneaker Low — Blanco"),
+        img(ZAPATOS.shoe3, "Sneaker Low — Negro"),
+        img(ZAPATOS.snk_gris, "Sneaker Low — Gris"),
+      ],
+      variants: [
+        { name: "Talla", options: ["36", "37", "38", "39", "40", "41", "42", "43", "44"] },
+        { name: "Color", options: ["Blanco", "Negro", "Gris"] },
+      ],
+      variantImages: {
+        "Color:Blanco": ZAPATOS.shoe1,
+        "Color:Negro":  ZAPATOS.shoe3,
+        "Color:Gris":   ZAPATOS.snk_gris,
+      },
+      isActive: true,
+    },
+    {
+      name: "Sneaker High Urban",
+      slug: "sneaker-high-urban",
+      description: "Sneaker de caña alta con soporte de tobillo y cordones planos. Suela de goma dentada antideslizante. Material exterior en cuero sintético premium con detalles en gamuza. Estilo urbano con comodidad todo el día.",
+      price: 95,
+      stock: 22,
+      category: zapatos,
+      images: [
+        img(ZAPATOS.shoe2, "Sneaker High — Blanco"),
+        img(ZAPATOS.shoe3, "Sneaker High — Negro"),
+        img(ZAPATOS.slide1, "Sneaker High — Rojo"),
+      ],
+      variants: [
+        { name: "Talla", options: ["36", "37", "38", "39", "40", "41", "42", "43", "44"] },
+        { name: "Color", options: ["Blanco", "Negro", "Rojo"] },
+      ],
+      variantImages: {
+        "Color:Blanco": ZAPATOS.shoe2,
+        "Color:Negro":  ZAPATOS.shoe3,
+        "Color:Rojo":   ZAPATOS.slide1,
+      },
+      isActive: true,
+    },
+    {
+      name: "Slide Sport",
+      slug: "slide-sport",
+      description: "Sandalia slide unisex con banda superior en EVA acolchado y suela con textura antideslizante. Ultraligera y cómoda para usar después del gym, en casa o en la playa. Lavable a mano.",
+      price: 38,
+      stock: 48,
+      category: zapatos,
+      images: [
+        img(ZAPATOS.slide2, "Slide Sport — Blanco"),
+        img(ZAPATOS.shoe3, "Slide Sport — Negro"),
+        img(ZAPATOS.snk_gris, "Slide Sport — Gris"),
+      ],
+      variants: [
+        { name: "Talla", options: ["36", "37", "38", "39", "40", "41", "42", "43", "44"] },
+        { name: "Color", options: ["Blanco", "Negro", "Gris"] },
+      ],
+      variantImages: {
+        "Color:Blanco": ZAPATOS.slide2,
+        "Color:Negro":  ZAPATOS.shoe3,
+        "Color:Gris":   ZAPATOS.snk_gris,
+      },
+      isActive: true,
+    },
+
+    // ─── CARTERAS ─────────────────────────────────────────────────────────────
+    {
+      name: "Tote Bag Classic",
+      slug: "tote-bag-classic",
+      description: "Bolso tote spacioso en lona de algodón 400g reforzada con remaches en las asas. Interior con bolsillo con cremallera y organizador de bolígrafos. Capacidad 20L. Lavable a máquina. El bolso más versátil del guardarropa.",
+      price: 42,
+      stock: 35,
+      category: carteras,
+      images: [
+        img(BAGS.tote_neg, "Tote Bag Classic — Negro"),
+        img(BAGS.tote_cam, "Tote Bag Classic — Camel"),
+        img(BAGS.tote_bla, "Tote Bag Classic — Blanco"),
+      ],
+      variants: [
+        { name: "Color", options: ["Negro", "Camel", "Blanco"] },
+      ],
+      variantImages: {
+        "Color:Negro":  BAGS.tote_neg,
+        "Color:Camel":  BAGS.tote_cam,
+        "Color:Blanco": BAGS.tote_bla,
+      },
+      isActive: true,
+    },
+    {
+      name: "Mini Crossbody",
+      slug: "mini-crossbody",
+      description: "Bolso crossbody compacto en cuero PU de alta calidad. Correa ajustable de 60–120cm, bolsillo frontal con imán y compartimento principal con cremallera YKK. Ideal para salidas rápidas o festivales. Cabe el móvil, llaves y cartera.",
+      price: 55,
+      stock: 28,
+      category: carteras,
+      images: [
+        img(BAGS.cross1, "Mini Crossbody — Negro"),
+        img(BAGS.tote_cam, "Mini Crossbody — Marrón"),
+        img(BAGS.tote_bla, "Mini Crossbody — Beige"),
+      ],
+      variants: [
+        { name: "Color", options: ["Negro", "Marrón", "Beige"] },
+      ],
+      variantImages: {
+        "Color:Negro":  BAGS.cross1,
+        "Color:Marrón": BAGS.tote_cam,
+        "Color:Beige":  BAGS.tote_bla,
+      },
+      isActive: true,
+    },
+    {
+      name: "Billetera Slim",
+      slug: "billetera-slim",
+      description: "Billetera minimalista de cuero genuino con 6 ranuras para tarjetas, 2 bolsillos laterales y compartimento para billetes. Costuras visibles en hilo contrastante. Delgada (8mm) para llevar en el bolsillo trasero sin incomodidad.",
+      price: 35,
+      stock: 55,
+      category: carteras,
+      images: [
+        img(BAGS.wallet1, "Billetera Slim — Negro"),
+        img(BAGS.wallet2, "Billetera Slim — Marrón"),
+        img(BAGS.tote_cam, "Billetera Slim — Camel"),
+      ],
+      variants: [
+        { name: "Color", options: ["Negro", "Marrón", "Camel"] },
+      ],
+      variantImages: {
+        "Color:Negro":  BAGS.wallet1,
+        "Color:Marrón": BAGS.wallet2,
+        "Color:Camel":  BAGS.tote_cam,
+      },
       isActive: true,
     },
   ];
