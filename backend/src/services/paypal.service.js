@@ -7,7 +7,9 @@ const getBaseUrl = () =>
 
 const getAccessToken = async () => {
   const auth = Buffer.from(`${env.PAYPAL_CLIENT_ID}:${env.PAYPAL_CLIENT_SECRET}`).toString("base64");
-  const res = await fetch(`${getBaseUrl()}/v1/oauth2/token`, {
+  const url = `${getBaseUrl()}/v1/oauth2/token`;
+  console.log(`[paypal] Getting access token from ${url}`);
+  const res = await fetch(url, {
     method: "POST",
     headers: {
       Authorization: `Basic ${auth}`,
@@ -16,7 +18,11 @@ const getAccessToken = async () => {
     body: "grant_type=client_credentials",
   });
   const data = await res.json();
-  if (!data.access_token) throw new Error("Failed to get PayPal access token");
+  if (!data.access_token) {
+    console.error("[paypal] Token error:", JSON.stringify(data));
+    throw new Error(`PayPal auth failed: ${data.error_description || data.error || "unknown"}`);
+  }
+  console.log("[paypal] Access token obtained");
   return data.access_token;
 };
 

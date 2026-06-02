@@ -14,7 +14,9 @@ const createPaypalOrderHandler = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Valid amount is required.");
   }
 
-  const curr = (currency || env.PAYPAL_CURRENCY || "USD").toUpperCase();
+  console.log(`[paypal] create-order: amount=${amount} currency=${currency} mode=${env.PAYPAL_MODE} clientId=${env.PAYPAL_CLIENT_ID ? "set" : "MISSING"}`);
+
+  const curr = (currency || "USD").toUpperCase();
   const order = await createPaypalOrder(Number(amount), curr);
 
   res.status(200).json({
