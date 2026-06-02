@@ -9,6 +9,8 @@ const {
   resetPassword,
   updateCustomerProfile,
   changeCustomerPassword,
+  verifyEmail,
+  resendVerification,
 } = require("../controllers/customer.controller");
 const { protectCustomer } = require("../middlewares/customer.middleware");
 
@@ -16,6 +18,8 @@ const router = express.Router();
 
 router.post("/register", registerCustomer);
 router.post("/login", loginCustomer);
+router.get("/verify-email", verifyEmail);
+router.post("/resend-verification", resendVerification);
 router.post("/forgot-password", requestPasswordReset);
 router.post("/reset-password", resetPassword);
 router.get("/me", protectCustomer, getCustomerProfile);

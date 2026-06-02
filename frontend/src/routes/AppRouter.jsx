@@ -16,6 +16,7 @@ import AccountOrdersPage from "../pages/account/AccountOrdersPage";
 import AccountProfilePage from "../pages/account/AccountProfilePage";
 import AccountForgotPasswordPage from "../pages/account/AccountForgotPasswordPage";
 import AccountResetPasswordPage from "../pages/account/AccountResetPasswordPage";
+import AccountVerifyEmailPage from "../pages/account/AccountVerifyEmailPage";
 import OrderStatusPage from "../pages/order/OrderStatusPage";
 import AboutPage from "../pages/info/AboutPage";
 import ContactPage from "../pages/info/ContactPage";
@@ -53,6 +54,7 @@ export default function AppRouter() {
           <Route path={ROUTE_PATHS.accountProfile} element={<AccountProfilePage />} />
           <Route path={ROUTE_PATHS.accountForgotPassword} element={<AccountForgotPasswordPage />} />
           <Route path={ROUTE_PATHS.accountResetPassword} element={<AccountResetPasswordPage />} />
+          <Route path={ROUTE_PATHS.accountVerifyEmail} element={<AccountVerifyEmailPage />} />
           <Route path={ROUTE_PATHS.about} element={<AboutPage />} />
           <Route path={ROUTE_PATHS.contact} element={<ContactPage />} />
           <Route path={ROUTE_PATHS.faq} element={<FaqPage />} />

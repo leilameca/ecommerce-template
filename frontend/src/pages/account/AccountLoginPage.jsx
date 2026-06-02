@@ -5,6 +5,7 @@ import Button from "../../components/ui/Button";
 import TextInput from "../../components/ui/TextInput";
 import { useCustomerAuth } from "../../hooks/useCustomerAuth";
 import { useLanguage } from "../../hooks/useLanguage";
+import { resendVerification } from "../../services/api/customers.service";
 import { ROUTE_PATHS } from "../../routes/route-paths";
 
 export default function AccountLoginPage() {
@@ -15,6 +16,8 @@ export default function AccountLoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [notVerified, setNotVerified] = useState(false);
+  const [resendDone, setResendDone] = useState(false);
 
   if (isAuthenticated) {
     navigate(ROUTE_PATHS.accountOrders, { replace: true });
@@ -24,15 +27,28 @@ export default function AccountLoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setNotVerified(false);
+    setResendDone(false);
     setIsSubmitting(true);
     try {
       await login(email.trim(), password);
       navigate(ROUTE_PATHS.accountOrders);
     } catch (err) {
-      setError(err?.message || t("account_login_failed"));
+      if (err?.message === "EMAIL_NOT_VERIFIED") {
+        setNotVerified(true);
+      } else {
+        setError(err?.message || t("account_login_failed"));
+      }
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleResend = async () => {
+    try {
+      await resendVerification(email.trim());
+      setResendDone(true);
+    } catch {}
   };
 
   return (
@@ -75,6 +91,20 @@ export default function AccountLoginPage() {
           {error ? (
             <div className="rounded-xl border border-rose-200 bg-rose-50/70 px-3.5 py-2.5 text-sm text-rose-700">
               {error}
+            </div>
+          ) : null}
+
+          {notVerified ? (
+            <div className="rounded-xl border border-amber-200 bg-amber-50/70 px-3.5 py-2.5 text-sm text-amber-800">
+              {t("verify_email_required")}
+              {" "}
+              {resendDone ? (
+                <span className="font-medium">{t("verify_email_resent")}</span>
+              ) : (
+                <button type="button" onClick={handleResend} className="font-medium underline">
+                  {t("verify_email_resend")}
+                </button>
+              )}
             </div>
           ) : null}
 

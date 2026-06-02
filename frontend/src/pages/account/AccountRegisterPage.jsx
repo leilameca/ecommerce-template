@@ -5,15 +5,17 @@ import Button from "../../components/ui/Button";
 import TextInput from "../../components/ui/TextInput";
 import { useCustomerAuth } from "../../hooks/useCustomerAuth";
 import { useLanguage } from "../../hooks/useLanguage";
+import { registerCustomer } from "../../services/api/customers.service";
 import { ROUTE_PATHS } from "../../routes/route-paths";
 
 export default function AccountRegisterPage() {
   const { t } = useLanguage();
-  const { register, isAuthenticated } = useCustomerAuth();
+  const { isAuthenticated } = useCustomerAuth();
   const navigate = useNavigate();
   const [formState, setFormState] = useState({ name: "", email: "", password: "", phone: "" });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [verificationSent, setVerificationSent] = useState(false);
 
   if (isAuthenticated) {
     navigate(ROUTE_PATHS.accountOrders, { replace: true });
@@ -27,19 +29,38 @@ export default function AccountRegisterPage() {
     setError("");
     setIsSubmitting(true);
     try {
-      await register({
-        name: formState.name.trim(),
-        email: formState.email.trim(),
-        password: formState.password,
-        phone: formState.phone.trim(),
-      });
-      navigate(ROUTE_PATHS.accountOrders);
+      await registerCustomer(
+        formState.name.trim(),
+        formState.email.trim(),
+        formState.password,
+        formState.phone.trim(),
+      );
+      setVerificationSent(true);
     } catch (err) {
       setError(err?.message || t("account_register_failed"));
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (verificationSent) {
+    return (
+      <div className="flex min-h-[60vh] items-start justify-center py-4 sm:py-8">
+        <div className="w-full max-w-sm space-y-5">
+          <div className="rounded-[1.5rem] border border-emerald-200 bg-emerald-50/70 p-6 text-center">
+            <div className="text-3xl">✉️</div>
+            <h2 className="mt-3 text-lg font-semibold tracking-[-0.03em] text-zinc-950">{t("verify_email_sent_title")}</h2>
+            <p className="mt-2 text-sm leading-6 text-zinc-600">{t("verify_email_sent_copy")}</p>
+          </div>
+          <p className="text-center text-sm text-zinc-500">
+            <Link to={ROUTE_PATHS.accountLogin} className="font-medium text-zinc-950 hover:underline">
+              {t("forgot_password_back_login")}
+            </Link>
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-[60vh] items-start justify-center py-4 sm:py-8">

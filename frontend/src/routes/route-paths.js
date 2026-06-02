@@ -19,6 +19,7 @@ export const ROUTE_PATHS = {
   accountProfile: "/account/profile",
   accountForgotPassword: "/account/forgot-password",
   accountResetPassword: "/account/reset-password",
+  accountVerifyEmail: "/account/verify-email",
   adminLogin: "/admin/login",
   adminDashboard: "/admin",
   adminProducts: "/admin/products",

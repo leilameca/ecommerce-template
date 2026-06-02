@@ -5,7 +5,7 @@ const Order = require("../models/order.model");
 const ApiError = require("../utils/api-error");
 const asyncHandler = require("../utils/async-handler");
 const { signCustomerToken } = require("../utils/jwt");
-const { sendPasswordResetEmail } = require("../services/email.service");
+const { sendPasswordResetEmail, sendEmailVerification } = require("../services/email.service");
 const { env } = require("../config/env");
 
 const ORDER_PRODUCT_POPULATE_FIELDS = "name slug price";
@@ -38,19 +38,24 @@ const registerCustomer = asyncHandler(async (req, res) => {
     throw new ApiError(409, "This email is already registered.");
   }
 
+  const verificationToken = crypto.randomBytes(32).toString("hex");
   const customer = await Customer.create({
     name: name.trim(),
     email: email.toLowerCase().trim(),
     password,
     phone: phone ? String(phone).trim() : "",
+    isEmailVerified: false,
+    emailVerificationToken: crypto.createHash("sha256").update(verificationToken).digest("hex"),
+    emailVerificationExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
   });
 
-  const token = signCustomerToken(customer);
+  const verifyUrl = `${env.CLIENT_URL}/account/verify-email?token=${verificationToken}`;
+  await sendEmailVerification({ email: customer.email, name: customer.name, verifyUrl });
 
   res.status(201).json({
     success: true,
-    message: "Account created successfully.",
-    data: { token, customer: formatCustomer(customer) },
+    message: "Account created. Please check your email to verify your account.",
+    data: { requiresVerification: true },
   });
 });
 
@@ -67,6 +72,10 @@ const loginCustomer = asyncHandler(async (req, res) => {
 
   if (!customer || !customer.isActive) {
     throw new ApiError(401, "Invalid credentials.");
+  }
+
+  if (customer.isEmailVerified === false) {
+    throw new ApiError(401, "EMAIL_NOT_VERIFIED");
   }
 
   const isValid = await customer.comparePassword(password);
@@ -208,6 +217,55 @@ const changeCustomerPassword = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, message: "Password changed successfully." });
 });
 
+const verifyEmail = asyncHandler(async (req, res) => {
+  const { token } = req.query;
+  if (!token) throw new ApiError(400, "Verification token is required.");
+
+  const hashed = crypto.createHash("sha256").update(token).digest("hex");
+  const customer = await Customer.findOne({
+    emailVerificationToken: hashed,
+    emailVerificationExpires: { $gt: new Date() },
+  }).select("+emailVerificationToken +emailVerificationExpires");
+
+  if (!customer) throw new ApiError(400, "Verification link is invalid or has expired.");
+
+  customer.isEmailVerified = true;
+  customer.emailVerificationToken = null;
+  customer.emailVerificationExpires = null;
+  await customer.save();
+
+  const jwtToken = signCustomerToken(customer);
+  res.status(200).json({
+    success: true,
+    message: "Email verified successfully.",
+    data: { token: jwtToken, customer: formatCustomer(customer) },
+  });
+});
+
+const resendVerification = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  if (!email) throw new ApiError(400, "Email is required.");
+
+  const customer = await Customer.findOne({ email: email.toLowerCase().trim() })
+    .select("+emailVerificationToken +emailVerificationExpires");
+
+  // Always respond 200 to prevent enumeration
+  if (!customer || customer.isEmailVerified !== false) {
+    res.status(200).json({ success: true, message: "If that account exists and is unverified, a new link was sent." });
+    return;
+  }
+
+  const verificationToken = crypto.randomBytes(32).toString("hex");
+  customer.emailVerificationToken = crypto.createHash("sha256").update(verificationToken).digest("hex");
+  customer.emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  await customer.save();
+
+  const verifyUrl = `${env.CLIENT_URL}/account/verify-email?token=${verificationToken}`;
+  await sendEmailVerification({ email: customer.email, name: customer.name, verifyUrl });
+
+  res.status(200).json({ success: true, message: "If that account exists and is unverified, a new link was sent." });
+});
+
 module.exports = {
   registerCustomer,
   loginCustomer,
@@ -217,4 +275,6 @@ module.exports = {
   resetPassword,
   updateCustomerProfile,
   changeCustomerPassword,
+  verifyEmail,
+  resendVerification,
 };

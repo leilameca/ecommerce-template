@@ -59,3 +59,14 @@ export function changeCustomerPassword(token, currentPassword, newPassword) {
     body: { currentPassword, newPassword },
   });
 }
+
+export function verifyEmail(token) {
+  return apiRequest(`/customers/verify-email?token=${token}`);
+}
+
+export function resendVerification(email) {
+  return apiRequest("/customers/resend-verification", {
+    method: "POST",
+    body: { email },
+  });
+}

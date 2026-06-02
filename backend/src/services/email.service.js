@@ -146,6 +146,18 @@ const sendPasswordResetEmail = async ({ email, name, resetUrl }) => {
   await sendEmail({ to: email, subject: "Reset your password", html });
 };
 
+const sendEmailVerification = async ({ email, name, verifyUrl }) => {
+  const html = `
+    <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#18181b">
+      <h2 style="font-size:20px;font-weight:600;margin-bottom:4px">Verify your email</h2>
+      <p style="color:#71717a;font-size:14px">Hi ${name}, click the button below to verify your email address and activate your account.</p>
+      <a href="${verifyUrl}" style="display:inline-block;margin:20px 0;background:#111;color:#fff;padding:12px 24px;border-radius:999px;text-decoration:none;font-size:14px;font-weight:500">Verify email</a>
+      <p style="font-size:12px;color:#a1a1aa">This link expires in 24 hours. If you did not create an account, ignore this email.</p>
+    </div>
+  `;
+  await sendEmail({ to: email, subject: "Verify your email address", html });
+};
+
 const sendContactMessage = async ({ name, email, message }) => {
   const to = env.STORE_NOTIFICATION_EMAIL || getSenderEmail();
   const html = `
@@ -159,4 +171,4 @@ const sendContactMessage = async ({ name, email, message }) => {
   await sendEmail({ to, subject: `Contact message from ${name}`, html, replyTo: email });
 };
 
-module.exports = { sendOrderNotification, sendCustomerOrderConfirmation, sendPasswordResetEmail, sendContactMessage };
+module.exports = { sendOrderNotification, sendCustomerOrderConfirmation, sendPasswordResetEmail, sendEmailVerification, sendContactMessage };
