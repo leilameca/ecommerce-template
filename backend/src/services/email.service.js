@@ -129,7 +129,12 @@ const sendCustomerOrderConfirmation = async (order) => {
 };
 
 const sendPasswordResetEmail = async ({ email, name, resetUrl }) => {
-  if (!isEmailConfigured()) return;
+  if (!isEmailConfigured()) {
+    console.error("[email] SMTP not configured — missing SMTP_HOST, SMTP_USER, SMTP_PASS or SMTP_FROM");
+    return;
+  }
+
+  console.log(`[email] Sending password reset to ${email} via ${env.SMTP_HOST}:${env.SMTP_PORT} as ${env.SMTP_USER}`);
 
   const html = `
     <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#18181b">
@@ -147,8 +152,10 @@ const sendPasswordResetEmail = async ({ email, name, resetUrl }) => {
       subject: "Reset your password",
       html,
     });
+    console.log(`[email] Password reset email sent successfully to ${email}`);
   } catch (error) {
     console.error("[email] Failed to send password reset email:", error.message);
+    console.error("[email] Full error:", JSON.stringify({ code: error.code, command: error.command, response: error.response }));
   }
 };
 
