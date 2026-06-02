@@ -363,8 +363,10 @@ export default function CheckoutPage() {
                 style={{ layout: "vertical", shape: "rect", label: "pay" }}
                 createOrder={async () => {
                   if (!formState.customerName || !formState.phone || !formState.address) {
-                    throw new Error("Please fill in name, phone, and address.");
+                    setErrorMessage("Please fill in your name, phone, and address before paying.");
+                    throw new Error("validation_error");
                   }
+                  setErrorMessage("");
                   const res = await createPaypalOrder(total, currency);
                   return res.data.paypalOrderId;
                 }}
@@ -397,7 +399,11 @@ export default function CheckoutPage() {
                     setIsSubmitting(false);
                   }
                 }}
-                onError={(err) => setErrorMessage("PayPal error. Please try again.")}
+                onError={(err) => {
+                  if (!err?.message?.includes("validation_error")) {
+                    setErrorMessage("PayPal error. Please try again.");
+                  }
+                }}
               />
             </PayPalScriptProvider>
           ) : (
