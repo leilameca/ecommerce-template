@@ -27,8 +27,8 @@ const env = Object.freeze({
   SMTP_PASS: process.env.SMTP_PASS?.trim() || "",
   SMTP_FROM: process.env.SMTP_FROM?.trim() || "",
   BREVO_API_KEY: process.env.BREVO_API_KEY?.trim() || "",
-  PAYPAL_CLIENT_ID: process.env.PAYPAL_CLIENT_ID?.trim() || "",
-  PAYPAL_CLIENT_SECRET: process.env.PAYPAL_CLIENT_SECRET?.trim() || "",
+  PAYPAL_CLIENT_ID: (process.env.PAYPAL_CLIENT_ID || "").replace(/\s/g, ""),
+  PAYPAL_CLIENT_SECRET: (process.env.PAYPAL_CLIENT_SECRET || "").replace(/\s/g, ""),
   PAYPAL_MODE: process.env.PAYPAL_MODE?.trim() || "sandbox",
   STORE_NOTIFICATION_EMAIL: process.env.STORE_NOTIFICATION_EMAIL?.trim() || "",
 });
