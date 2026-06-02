@@ -14,6 +14,7 @@ const analyticsRoutes = require("./analytics.routes");
 const customerRoutes = require("./customer.routes");
 const contactRoutes = require("./contact.routes");
 const paymentRoutes = require("./payment.routes");
+const seedRoutes = require("./seed.routes");
 
 const router = express.Router();
 
@@ -31,5 +32,6 @@ router.use("/analytics", analyticsRoutes);
 router.use("/customers", customerRoutes);
 router.use("/contact", contactRoutes);
 router.use("/payments", paymentRoutes);
+router.use("/seed", seedRoutes);
 
 module.exports = router;
