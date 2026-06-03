@@ -1,5 +1,11 @@
 import { useDeferredValue, useEffect, useRef, useState } from "react";
 
+const extractI18n = (v, lang) => {
+  if (!v) return "";
+  if (typeof v === "object" && !Array.isArray(v)) return v[lang] || "";
+  return String(v);
+};
+
 import AdminPageHeader from "../../components/shared/AdminPageHeader";
 import SurfaceMessage from "../../components/shared/SurfaceMessage";
 import Button from "../../components/ui/Button";
@@ -21,7 +27,8 @@ const emptyProductForm = {
   id: "",
   name: "",
   slug: "",
-  description: "",
+  description_en: "",
+  description_es: "",
   price: "",
   stock: "",
   category: "",
@@ -38,7 +45,8 @@ const mapProductToForm = (product) => ({
   id: product._id,
   name: product.name || "",
   slug: product.slug || "",
-  description: product.description || "",
+  description_en: extractI18n(product.description, "en"),
+  description_es: extractI18n(product.description, "es"),
   price: String(product.price ?? ""),
   stock: String(product.stock ?? ""),
   category: product.category?._id || "",
@@ -291,7 +299,7 @@ export default function AdminProductsPage() {
     const payload = {
       name: formState.name,
       slug: formState.slug || undefined,
-      description: formState.description,
+      description: { en: formState.description_en, es: formState.description_es },
       price: Number(formState.price),
       stock: Number(formState.stock),
       category: formState.category,
@@ -514,11 +522,16 @@ export default function AdminProductsPage() {
               />
 
               <TextareaField
-                label={t("admin_description")}
-                value={formState.description}
-                onChange={(event) =>
-                  handleFormChange("description", event.target.value)
-                }
+                label={`${t("admin_description")} (ES)`}
+                value={formState.description_es}
+                onChange={(event) => handleFormChange("description_es", event.target.value)}
+                placeholder="Descripción en español"
+              />
+              <TextareaField
+                label={`${t("admin_description")} (EN)`}
+                value={formState.description_en}
+                onChange={(event) => handleFormChange("description_en", event.target.value)}
+                placeholder="Description in English"
               />
 
               <div className="grid gap-4 sm:grid-cols-2">

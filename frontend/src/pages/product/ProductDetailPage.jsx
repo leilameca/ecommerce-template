@@ -7,6 +7,7 @@ import Button from "../../components/ui/Button";
 import { useCart } from "../../hooks/useCart";
 import { useLanguage } from "../../hooks/useLanguage";
 import { formatCurrency } from "../../lib/format-currency";
+import { getLocalizedText } from "../../lib/localize-config";
 import { useProductDetail } from "../../hooks/useProductDetail";
 import { useStoreConfig } from "../../hooks/useStoreConfig";
 import { getProducts } from "../../services/api/products.service";
@@ -94,7 +95,7 @@ function ProductImageGallery({ images, selectedImageIndex, onSelectImage, varian
   );
 }
 
-function ProductDetailsPanel({ product, currency, t, onVariantImageChange }) {
+function ProductDetailsPanel({ product, currency, t, language, onVariantImageChange }) {
   const categoryName = product.category?.name || "Collection";
   const stockLabel =
     product.stock > 0
@@ -144,7 +145,7 @@ function ProductDetailsPanel({ product, currency, t, onVariantImageChange }) {
           <div className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-zinc-950 sm:text-3xl">{formatCurrency(product.price, currency)}</div>
         </div>
         <p className="max-w-2xl text-[15px] leading-7 text-zinc-600 sm:text-base sm:leading-8">
-          {product.description || t("product_detail_fallback_copy")}
+          {getLocalizedText(product.description, language) || t("product_detail_fallback_copy")}
         </p>
       </div>
 
@@ -238,7 +239,7 @@ function ProductDetailsPanel({ product, currency, t, onVariantImageChange }) {
 
 export default function ProductDetailPage() {
   const { slug } = useParams();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { product, isLoading, errorMessage } = useProductDetail(slug);
   const { config } = useStoreConfig();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -305,7 +306,7 @@ export default function ProductDetailPage() {
       </div>
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_440px] xl:gap-12">
         <ProductImageGallery images={images} selectedImageIndex={selectedImageIndex} onSelectImage={setSelectedImageIndex} variantImageUrl={variantImageUrl} />
-        <ProductDetailsPanel product={product} currency={currency} t={t} onVariantImageChange={setVariantImageUrl} />
+        <ProductDetailsPanel product={product} currency={currency} t={t} language={language} onVariantImageChange={setVariantImageUrl} />
       </div>
 
       {relatedProducts.length > 0 ? (

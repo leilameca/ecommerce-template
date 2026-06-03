@@ -22,8 +22,6 @@ import { getSalesAnalytics } from "../../services/api/analytics.service";
 import { getOrders } from "../../services/api/orders.service";
 import { getProducts } from "../../services/api/products.service";
 import { getCategories } from "../../services/api/categories.service";
-import { apiRequest } from "../../services/api/client";
-import Button from "../../components/ui/Button";
 
 const STATUS_COLORS = {
   pending: "#a1a1aa",
@@ -104,22 +102,6 @@ export default function AdminDashboardPage() {
   const [recentOrders, setRecentOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
-  const [seedStatus, setSeedStatus] = useState("");
-  const [isSeedRunning, setIsSeedRunning] = useState(false);
-
-  const handleSeed = async (reset = false) => {
-    if (!window.confirm(reset ? "¿Eliminar TODO y crear datos de demo?" : "¿Agregar 12 productos de demo a la tienda?")) return;
-    setIsSeedRunning(true);
-    setSeedStatus("");
-    try {
-      const res = await apiRequest(`/seed${reset ? "?reset=true" : ""}`, { method: "POST" });
-      setSeedStatus(res?.message || "Listo");
-    } catch (err) {
-      setSeedStatus(`Error: ${err?.message}`);
-    } finally {
-      setIsSeedRunning(false);
-    }
-  };
 
   useEffect(() => {
     let isMounted = true;
@@ -285,22 +267,6 @@ export default function AdminDashboardPage() {
         </div>
       </section>
 
-      {/* Demo seed section */}
-      <section className="rounded-[1.5rem] border border-dashed border-zinc-300 bg-zinc-50/80 p-5 sm:p-6">
-        <div className="text-[10px] font-medium uppercase tracking-[0.26em] text-zinc-400">Datos de demostración</div>
-        <p className="mt-1 text-sm text-zinc-500">Llena la tienda con 12 productos de perfumes con variantes e imágenes para presentar a clientes.</p>
-        <div className="mt-4 flex flex-wrap gap-3">
-          <Button type="button" variant="secondary" size="sm" disabled={isSeedRunning} onClick={() => handleSeed(false)}>
-            {isSeedRunning ? "Creando..." : "Agregar productos demo"}
-          </Button>
-          <Button type="button" variant="danger" size="sm" disabled={isSeedRunning} onClick={() => handleSeed(true)}>
-            Reiniciar con datos frescos
-          </Button>
-        </div>
-        {seedStatus ? (
-          <p className="mt-3 text-sm font-medium text-emerald-700">{seedStatus}</p>
-        ) : null}
-      </section>
     </div>
   );
 }

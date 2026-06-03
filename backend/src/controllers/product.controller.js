@@ -201,6 +201,9 @@ const updateProduct = asyncHandler(async (req, res) => {
     product.variantImages = updateData.variantImages;
     product.markModified("variantImages");
   }
+  if (updateData.description !== undefined) {
+    product.markModified("description");
+  }
   console.log(`[product] update id=${product._id} variantImages=${JSON.stringify(product.variantImages)}`);
   await product.save();
   await product.populate("category", PRODUCT_POPULATE_FIELDS);
