@@ -37,6 +37,12 @@ const sortProducts = (products, sortValue) => {
   return sortedProducts;
 };
 
+const toSearchText = (val) => {
+  if (!val) return "";
+  if (typeof val === "object") return `${val.en || ""} ${val.es || ""}`;
+  return String(val);
+};
+
 const filterProducts = ({ products, selectedCategory, searchQuery }) => {
   return products.filter((product) => {
     const matchesCategory =
@@ -47,7 +53,7 @@ const filterProducts = ({ products, selectedCategory, searchQuery }) => {
     const matchesSearch =
       normalizedSearch.length === 0 ||
       product.name.toLowerCase().includes(normalizedSearch) ||
-      product.description?.toLowerCase().includes(normalizedSearch) ||
+      toSearchText(product.description).toLowerCase().includes(normalizedSearch) ||
       product.category?.name?.toLowerCase().includes(normalizedSearch);
 
     return matchesCategory && matchesSearch;
