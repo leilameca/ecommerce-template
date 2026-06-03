@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 
+import { useLanguage } from "../../hooks/useLanguage";
+import { getLocalizedText } from "../../lib/localize-config";
 import { ROUTE_PATHS } from "../../routes/route-paths";
 
 const fallbackTones = [
@@ -9,10 +11,12 @@ const fallbackTones = [
 ];
 
 export default function HomeCategoryCard({ category, index = 0 }) {
+  const { language } = useLanguage();
   const imageUrl = category.image?.url || "";
   const imageAlt = category.image?.alt || category.name;
   const gradientTone = fallbackTones[index % fallbackTones.length];
   const categoryLink = `${ROUTE_PATHS.catalog}?category=${category.slug}`;
+  const description = getLocalizedText(category.description, language);
 
   return (
     <article className="overflow-hidden border border-zinc-200/80 bg-white shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
@@ -43,8 +47,7 @@ export default function HomeCategoryCard({ category, index = 0 }) {
           </h3>
 
           <p className="line-clamp-3 text-sm leading-7 text-zinc-600">
-            {category.description ||
-              "A refined collection prepared for clean merchandising and premium storefront storytelling."}
+            {description || (language === "es" ? "Explora esta colección" : "Explore this collection")}
           </p>
         </div>
 

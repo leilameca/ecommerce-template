@@ -26,9 +26,8 @@ const categorySchema = new mongoose.Schema(
       lowercase: true,
     },
     description: {
-      type: String,
+      type: mongoose.Schema.Types.Mixed,
       default: "",
-      trim: true,
     },
     image: {
       type: categoryImageSchema,

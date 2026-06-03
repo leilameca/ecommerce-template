@@ -1,5 +1,11 @@
 import { useDeferredValue, useEffect, useRef, useState } from "react";
 
+const extractI18n = (v, lang) => {
+  if (!v) return "";
+  if (typeof v === "object" && !Array.isArray(v)) return v[lang] || "";
+  return String(v);
+};
+
 import AdminPageHeader from "../../components/shared/AdminPageHeader";
 import SurfaceMessage from "../../components/shared/SurfaceMessage";
 import Button from "../../components/ui/Button";
@@ -18,7 +24,8 @@ const emptyCategoryForm = {
   id: "",
   name: "",
   slug: "",
-  description: "",
+  description_es: "",
+  description_en: "",
   imageUrl: "",
   imageAlt: "",
   isActive: true,
@@ -28,7 +35,8 @@ const mapCategoryToForm = (category) => ({
   id: category._id,
   name: category.name || "",
   slug: category.slug || "",
-  description: category.description || "",
+  description_es: extractI18n(category.description, "es"),
+  description_en: extractI18n(category.description, "en"),
   imageUrl: category.image?.url || "",
   imageAlt: category.image?.alt || "",
   isActive: Boolean(category.isActive),
@@ -122,7 +130,7 @@ export default function AdminCategoriesPage() {
     const payload = {
       name: formState.name,
       slug: formState.slug || undefined,
-      description: formState.description,
+      description: { en: formState.description_en, es: formState.description_es },
       image: formState.imageUrl
         ? {
             url: formState.imageUrl,
@@ -262,7 +270,7 @@ export default function AdminCategoriesPage() {
                         {category.name}
                       </h2>
                       <p className="mt-2 text-sm leading-6 text-zinc-600">
-                        {category.description || "No description provided."}
+                        {extractI18n(category.description, "es") || extractI18n(category.description, "en") || "Sin descripción."}
                       </p>
                     </div>
 
@@ -327,11 +335,16 @@ export default function AdminCategoriesPage() {
               />
 
               <TextareaField
-                label={t("admin_description")}
-                value={formState.description}
-                onChange={(event) =>
-                  handleFormChange("description", event.target.value)
-                }
+                label={`${t("admin_description")} (ES)`}
+                value={formState.description_es}
+                onChange={(event) => handleFormChange("description_es", event.target.value)}
+                placeholder="Descripción en español"
+              />
+              <TextareaField
+                label={`${t("admin_description")} (EN)`}
+                value={formState.description_en}
+                onChange={(event) => handleFormChange("description_en", event.target.value)}
+                placeholder="Description in English"
               />
 
               <div className="space-y-3 rounded-md border border-zinc-200 bg-zinc-50/70 p-4">

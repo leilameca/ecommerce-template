@@ -151,6 +151,9 @@ const updateCategory = asyncHandler(async (req, res) => {
   }
 
   Object.assign(category, updateData);
+  if (updateData.description !== undefined) {
+    category.markModified("description");
+  }
   await category.save();
 
   res.status(200).json({
