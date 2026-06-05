@@ -34,6 +34,11 @@ const productSchema = new mongoose.Schema(
       required: [true, "Product price is required."],
       min: 0,
     },
+    compareAtPrice: {
+      type: Number,
+      default: null,
+      min: 0,
+    },
     stock: {
       type: Number,
       default: 0,

@@ -561,6 +561,9 @@ export const translations = {
     account_change_password_btn: "Update password",
     account_password_changed: "Password updated successfully.",
     account_password_mismatch: "New passwords don't match.",
+    admin_compare_at_price: "Compare-at price (original / before discount)",
+    admin_compare_at_price_placeholder: "Leave empty if no discount",
+    admin_generate_invoice: "Generate Invoice",
   },
   es: {
     common_language: "Idioma",
@@ -1124,5 +1127,8 @@ export const translations = {
     account_change_password_btn: "Actualizar contraseña",
     account_password_changed: "Contraseña actualizada correctamente.",
     account_password_mismatch: "Las contraseñas nuevas no coinciden.",
+    admin_compare_at_price: "Precio anterior (antes del descuento)",
+    admin_compare_at_price_placeholder: "Dejar vacío si no hay descuento",
+    admin_generate_invoice: "Generar Factura",
   },
 };

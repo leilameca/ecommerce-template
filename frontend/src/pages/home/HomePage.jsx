@@ -29,7 +29,7 @@ function SectionHeader({ title, actionLabel, actionTo }) {
   );
 }
 
-function CategoryTile({ category, index }) {
+function CategoryTile({ category, index, language }) {
   const imageUrl = category.image?.url || "";
   const imageAlt = category.image?.alt || category.name;
   const fallbackBackgrounds = ["bg-zinc-100", "bg-stone-100", "bg-neutral-100"];
@@ -54,7 +54,7 @@ function CategoryTile({ category, index }) {
             {category.name}
           </h3>
           <p className="line-clamp-2 text-sm leading-6 text-zinc-500">
-            {category.description || "Clean merchandising for a stronger storefront entry point."}
+            {getLocalizedText(category.description, language) || ""}
           </p>
         </div>
       </article>
@@ -62,7 +62,7 @@ function CategoryTile({ category, index }) {
   );
 }
 
-function ProductTile({ product, currency }) {
+function ProductTile({ product, currency, language }) {
   const imageUrl = product.images?.[0]?.url || "";
   const imageAlt = product.images?.[0]?.alt || product.name;
   const productPath = ROUTE_PATHS.productDetail.replace(":slug", product.slug);
@@ -104,8 +104,7 @@ function ProductTile({ product, currency }) {
             </Link>
 
             <p className="mt-2 line-clamp-2 text-sm leading-6 text-zinc-500">
-              {product.description ||
-                "A refined item presented with quiet hierarchy and strong image priority."}
+              {getLocalizedText(product.description, language) || ""}
             </p>
           </div>
 
@@ -202,7 +201,7 @@ export default function HomePage() {
                 <div className="h-4 w-full animate-pulse bg-zinc-100" />
               </div>
             ) : (
-              <CategoryTile key={category._id} category={category} index={index} />
+              <CategoryTile key={category._id} category={category} index={index} language={language} />
             )
           )}
         </div>
@@ -220,7 +219,7 @@ export default function HomePage() {
                 <div className="h-5 w-2/3 animate-pulse bg-zinc-100" />
               </div>
             ) : (
-              <ProductTile key={product._id} product={product} currency={currency} />
+              <ProductTile key={product._id} product={product} currency={currency} language={language} />
             )
           )}
         </div>

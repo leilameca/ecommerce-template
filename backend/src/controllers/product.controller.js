@@ -19,6 +19,7 @@ const ALLOWED_PRODUCT_FIELDS = [
   "slug",
   "description",
   "price",
+  "compareAtPrice",
   "stock",
   "category",
   "images",

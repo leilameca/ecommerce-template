@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 
 import { formatCurrency } from "../../lib/format-currency";
+import { useLanguage } from "../../hooks/useLanguage";
+import { getLocalizedText } from "../../lib/localize-config";
 import { ROUTE_PATHS } from "../../routes/route-paths";
 import QuickAddToCartButton from "./QuickAddToCartButton";
 
@@ -9,10 +11,15 @@ const createProductPath = (slug) => {
 };
 
 export default function ProductCard({ product }) {
+  const { language } = useLanguage();
   const currency = product.currency || "USD";
   const imageUrl = product.images?.[0]?.url || "";
   const categoryName = product.category?.name || "Collection";
   const isLowStock = product.stock > 0 && product.stock <= 5;
+  const hasDiscount = product.compareAtPrice != null && product.compareAtPrice > product.price;
+  const discountPercent = hasDiscount
+    ? Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)
+    : 0;
 
   return (
     <article className="group overflow-hidden rounded-[2rem] border border-zinc-200/80 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.05)] transition-transform duration-300 hover:-translate-y-1">
@@ -36,6 +43,12 @@ export default function ProductCard({ product }) {
             <div className="absolute left-4 top-4 rounded-full bg-white/92 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.24em] text-zinc-500 shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur-sm">
               {categoryName}
             </div>
+
+            {hasDiscount ? (
+              <div className="absolute bottom-4 left-4 rounded-full bg-rose-500 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white shadow-[0_4px_12px_rgba(244,63,94,0.35)]">
+                -{discountPercent}%
+              </div>
+            ) : null}
           </div>
         </Link>
 
@@ -56,14 +69,21 @@ export default function ProductCard({ product }) {
           </Link>
 
           <p className="line-clamp-2 text-sm leading-7 text-zinc-600">
-            {product.description || "A premium catalog item prepared for a polished storefront experience."}
+            {getLocalizedText(product.description, language) || ""}
           </p>
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <div className="text-xl font-semibold tracking-[-0.04em] text-zinc-950">
-              {formatCurrency(product.price, currency)}
+            <div className="flex items-baseline gap-2">
+              <div className="text-xl font-semibold tracking-[-0.04em] text-zinc-950">
+                {formatCurrency(product.price, currency)}
+              </div>
+              {hasDiscount ? (
+                <div className="text-sm text-zinc-400 line-through">
+                  {formatCurrency(product.compareAtPrice, currency)}
+                </div>
+              ) : null}
             </div>
 
             <div className="mt-1 text-xs font-medium uppercase tracking-[0.22em] text-zinc-400">

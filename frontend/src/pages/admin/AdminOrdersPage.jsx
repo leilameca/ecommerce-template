@@ -1,11 +1,13 @@
 import { useDeferredValue, useEffect, useState } from "react";
 
 import AdminPageHeader from "../../components/shared/AdminPageHeader";
+import InvoiceModal from "../../components/shared/InvoiceModal";
 import SurfaceMessage from "../../components/shared/SurfaceMessage";
 import Button from "../../components/ui/Button";
 import SelectField from "../../components/ui/SelectField";
 import TextInput from "../../components/ui/TextInput";
 import { useLanguage } from "../../hooks/useLanguage";
+import { useStoreConfig } from "../../hooks/useStoreConfig";
 import { formatCurrency } from "../../lib/format-currency";
 import { getOrders, updateOrderStatus } from "../../services/api/orders.service";
 
@@ -28,10 +30,12 @@ const formatStatusLabel = (status) =>
 
 export default function AdminOrdersPage() {
   const { t } = useLanguage();
+  const { config: storeConfig } = useStoreConfig();
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [savingOrderId, setSavingOrderId] = useState("");
+  const [invoiceOrder, setInvoiceOrder] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const deferredSearchQuery = useDeferredValue(searchQuery);
 
@@ -110,6 +114,14 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="space-y-8">
+      {invoiceOrder ? (
+        <InvoiceModal
+          order={invoiceOrder}
+          storeConfig={storeConfig}
+          onClose={() => setInvoiceOrder(null)}
+        />
+      ) : null}
+
       <AdminPageHeader
         eyebrow={t("admin_order_operations")}
         title={t("admin_orders_title")}
@@ -290,6 +302,14 @@ export default function AdminOrdersPage() {
                             {savingOrderId === order._id
                               ? t("admin_saving")
                               : t("admin_update_order")}
+                          </Button>
+
+                          <Button
+                            variant="secondary"
+                            className="w-full sm:col-span-2 2xl:col-span-1"
+                            onClick={() => setInvoiceOrder(order)}
+                          >
+                            {t("admin_generate_invoice")}
                           </Button>
                         </div>
                       </div>

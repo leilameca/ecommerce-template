@@ -30,6 +30,7 @@ const emptyProductForm = {
   description_en: "",
   description_es: "",
   price: "",
+  compareAtPrice: "",
   stock: "",
   category: "",
   images: [],
@@ -48,6 +49,7 @@ const mapProductToForm = (product) => ({
   description_en: extractI18n(product.description, "en"),
   description_es: extractI18n(product.description, "es"),
   price: String(product.price ?? ""),
+  compareAtPrice: product.compareAtPrice != null ? String(product.compareAtPrice) : "",
   stock: String(product.stock ?? ""),
   category: product.category?._id || "",
   images: Array.isArray(product.images)
@@ -301,6 +303,7 @@ export default function AdminProductsPage() {
       slug: formState.slug || undefined,
       description: { en: formState.description_en, es: formState.description_es },
       price: Number(formState.price),
+      compareAtPrice: formState.compareAtPrice !== "" ? Number(formState.compareAtPrice) : null,
       stock: Number(formState.stock),
       category: formState.category,
       images: formState.images
@@ -449,15 +452,18 @@ export default function AdminProductsPage() {
                         {product.name}
                       </h2>
                       <p className="mt-2 text-sm leading-6 text-zinc-600">
-                        {product.description || "No description provided."}
+                        {extractI18n(product.description, "es") || extractI18n(product.description, "en") || "Sin descripción."}
                       </p>
                       <div className="mt-2 text-sm text-zinc-500">
                         {product.category?.name || "Uncategorized"} · {t("admin_stock")} {product.stock}
                       </div>
                     </div>
 
-                    <div className="text-left text-sm font-medium text-zinc-950 2xl:text-right">
-                      {formatCurrency(product.price)}
+                    <div className="text-left text-sm 2xl:text-right">
+                      <span className="font-medium text-zinc-950">{formatCurrency(product.price)}</span>
+                      {product.compareAtPrice > product.price ? (
+                        <span className="ml-2 text-xs text-zinc-400 line-through">{formatCurrency(product.compareAtPrice)}</span>
+                      ) : null}
                     </div>
 
                     <div className="flex flex-col gap-2 sm:flex-row md:flex-col 2xl:flex-row 2xl:justify-end">
@@ -555,6 +561,16 @@ export default function AdminProductsPage() {
                   required
                 />
               </div>
+
+              <TextInput
+                label={t("admin_compare_at_price")}
+                type="number"
+                min="0"
+                step="0.01"
+                value={formState.compareAtPrice}
+                onChange={(event) => handleFormChange("compareAtPrice", event.target.value)}
+                placeholder={t("admin_compare_at_price_placeholder")}
+              />
 
               <SelectField
                 label={t("admin_category")}
