@@ -39,8 +39,8 @@ export default function AboutPage() {
         </p>
       </section>
 
-      <div className="rounded-[2rem] border border-zinc-200/80 bg-zinc-950 p-8 text-white sm:p-12">
-        <div className="text-[10px] font-medium uppercase tracking-[0.32em] text-zinc-400">
+      <div className="rounded-[2rem] p-8 text-white sm:p-12" style={{ backgroundColor: "var(--color-primary, #111)" }}>
+        <div className="text-[10px] font-medium uppercase tracking-[0.32em] text-white/50">
           {t("about_mission_label")}
         </div>
         <h2 className="mt-4 text-2xl font-semibold tracking-[-0.04em] sm:text-3xl">
@@ -58,7 +58,7 @@ export default function AboutPage() {
         <div className="grid gap-4 sm:grid-cols-3">
           {values.map(({ key, icon }) => (
             <div key={key} className="rounded-[2rem] border border-zinc-200/80 bg-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.04)]">
-              <div className="text-2xl text-zinc-300">{icon}</div>
+              <div className="text-2xl" style={{ color: "var(--color-primary, #111)" }}>{icon}</div>
               <h3 className="mt-4 text-base font-semibold tracking-[-0.03em] text-zinc-950">
                 {t(`about_${key}_title`)}
               </h3>
